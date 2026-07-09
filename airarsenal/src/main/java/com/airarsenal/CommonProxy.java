@@ -1,20 +1,35 @@
 package com.airarsenal;
 
+import net.minecraft.world.World;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 public class CommonProxy {
 
-    public void preInit(FMLPreInitializationEvent event) {
-        // Server-side pre-init logic goes here
-    }
+    public void preInit(FMLPreInitializationEvent event) {}
 
-    public void init(FMLInitializationEvent event) {
-        // Server-side init logic goes here
-    }
+    public void init(FMLInitializationEvent event) {}
 
-    public void postInit(FMLPostInitializationEvent event) {
-        // Server-side post-init logic goes here
-    }
+    public void postInit(FMLPostInitializationEvent event) {}
+
+    // ── Propeller particle stubs (no-op on server) ────────────────────────────
+
+    /**
+     * Spawns CRIT-style spark particles in a spin pattern around the propeller nose.
+     * No-op on the server side; overridden in {@link ClientProxy}.
+     */
+    public void spawnPropellerSparks(World world, double x, double y, double z) {}
+
+    /**
+     * Spawns large smoke particles rising from the propeller nose.
+     * No-op on the server side; overridden in {@link ClientProxy}.
+     */
+    public void spawnPropellerSmoke(World world, double x, double y, double z) {}
+
+    /**
+     * Spawns flame particles intermittently at the propeller nose.
+     * No-op on the server side; overridden in {@link ClientProxy}.
+     */
+    public void spawnPropellerFire(World world, double x, double y, double z) {}
 }
