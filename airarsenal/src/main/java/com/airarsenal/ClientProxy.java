@@ -3,13 +3,15 @@ package com.airarsenal;
 import com.airarsenal.client.KeyBindings;
 import com.airarsenal.client.TacModeController;
 import com.airarsenal.client.gui.TacModeHUD;
-import net.minecraft.client.Minecraft;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.config.ConfigManager;
+import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class ClientProxy extends CommonProxy {
 
@@ -20,20 +22,32 @@ public class ClientProxy extends CommonProxy {
     public void preInit(FMLPreInitializationEvent event) {
         super.preInit(event);
         KeyBindings.register();
-        // Register renderers and model loaders here (Chunk 10)
     }
 
     @Override
     public void init(FMLInitializationEvent event) {
         super.init(event);
+
         tacModeController = new TacModeController();
         MinecraftForge.EVENT_BUS.register(tacModeController);
         MinecraftForge.EVENT_BUS.register(new TacModeHUD(tacModeController));
+
+        // Register config-changed listener here (client only) — ConfigChangedEvent
+        // is a client-only class and must NOT be referenced on a dedicated server.
+        MinecraftForge.EVENT_BUS.register(this);
     }
 
     @Override
     public void postInit(FMLPostInitializationEvent event) {
         super.postInit(event);
+    }
+
+    /** Re-syncs config when the in-game GUI saves changes. Client side only. */
+    @SubscribeEvent
+    public void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent event) {
+        if (event.getModID().equals(AirArsenal.MODID)) {
+            ConfigManager.sync(AirArsenal.MODID, net.minecraftforge.common.config.Config.Type.INSTANCE);
+        }
     }
 
     // ── Propeller particle effects ────────────────────────────────────────────

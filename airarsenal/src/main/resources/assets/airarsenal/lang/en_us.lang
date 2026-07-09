@@ -6,3 +6,22 @@ item.airarsenal.wood_biplane=Wood Biplane
 # Chunk 4
 item.airarsenal.iron_monoplane=Iron Monoplane
 entity.airarsenal.bullet=Bullet
+
+# Chunk 6 — Craftable bombs
+item.airarsenal.iron_bomb=Iron Bomb
+item.airarsenal.heavy_bomb=Heavy Bomb
+item.airarsenal.napalm_canister=Napalm Canister
+
+# Chunk 6 — Loot-only bomb entities (display names)
+entity.airarsenal.iron_bomb=Iron Bomb
+entity.airarsenal.heavy_bomb=Heavy Bomb
+entity.airarsenal.napalm_bomb=Napalm Bomb
+entity.airarsenal.cluster_bomb=Cluster Bomb
+entity.airarsenal.emp_bomb=EMP Bomb
+entity.airarsenal.smoke_bomb=Smoke Bomb
+entity.airarsenal.depth_charge=Depth Charge
+entity.airarsenal.fuel_air_bomb=Fuel-Air Bomb
+
+# Config keys
+config.airarsenal.allowBlockDestruction=Allow Block Destruction
+config.airarsenal.allowFriendlyFire=Allow Friendly Fire

@@ -1,0 +1,138 @@
+Chunk 7 — Guided Missiles & Predator Strike Camera
+
+### Context
+Chunks 1–6 complete. Full bomb system working with config.
+
+This chunk adds the three most complex weapons:
+1. **Hellfire Missile** — laser-guided, steers toward laser dot, player must hold lock
+2. **BrahMos Cruise Missile** — fire-and-forget, flies to a waypoint set before launch, massive blast
+3. **Predator Strike** — player's view switches to missile nose cam, player steers for 8 seconds, CoD-style
+
+#### Hellfire specs:
+- Speed: 160 b/s (3.2 blocks/tick — fast entity)
+- Range: 8000 blocks (max entity lifetime before self-destruct)
+- Warhead: 6-block blast radius, armor-piercing (bypasses `isImmuneToExplosions`)
+- Guidance: steers toward whatever entity is in the shooter's crosshair with lock-on active
+- If lock broken (target dies, out of range): missile continues straight
+
+#### BrahMos specs:
+- Speed: 220 b/s (4.4 blocks/tick)
+- Range: unlimited until waypoint reached
+- Warhead: 14-block blast radius (= `DamageCalculator` equivalent of 43× TNT, cube root scaled)
+- Guidance: flies to a BlockPos waypoint set by right-click on ground before boarding plane
+- Player carries a `BrahMosTargeter` item to set waypoints
+- No player control after launch
+
+#### Predator Strike specs:
+- Missile speed: 160 b/s
+- Player control window: 8 seconds (160 ticks)
+- When fired:
+  1. Server spawns `PredatorMissileEntity`
+  2. Server sends `PacketPredatorCameraStart` to client with entity ID
+  3. Client switches `Minecraft.getMinecraft().renderViewEntity` to the missile entity
+  4. Screen gets a grainy black-and-white shader effect (post-process)
+  5. Player moves mouse → sends `PacketMissileSteer` to server → server adjusts missile yaw/pitch
+  6. After 160 ticks OR on impact: server sends `PacketPredatorCameraEnd` → client restores player view
+
+### Your Task
+
+#### Create `HellfireEntity.java` at `com.airarsenal.entity.projectile`
+Extends `EntityThrowable`.
+
+Fields:
+- `targetEntity` (Entity) — the locked-on target
+- `speed` = 3.2f blocks/tick
+- `lifetimeTicks` (int)
+
+In `onUpdate()`:
+- If `targetEntity != null && targetEntity.isEntityAlive()`:
+  - Compute vector from missile position to target centre
+  - Normalise and scale to speed
+  - Smoothly interpolate current motion toward target vector (`motionX = lerp(motionX, targetVecX, 0.15)`)
+- Apply motion
+- Increment `lifetimeTicks` — despawn at 8000 ticks
+
+`onImpact()`: explosion radius 6f, `isUnblockable = true` for all entities hit
+
+#### Create `BrahMosEntity.java` at `com.airarsenal.entity.projectile`
+Extends `Entity`.
+
+Fields:
+- `targetPos` (BlockPos)
+- `speed` = 4.4f
+
+In `onUpdate()`:
+- Fly toward `targetPos` at constant speed (compute direction vector, normalise, scale)
+- On reaching within 2 blocks of `targetPos`: trigger explosion
+- On block collision: trigger explosion immediately
+
+`triggerExplosion()`: radius 14f, always breaks blocks (BrahMos overrides config — it's a cruise missile)
+
+#### Create `ItemBrahMosTargeter.java` at `com.airarsenal.item`
+- Right-click on a block: saves `BlockPos` to player's NBT tag `"brahmos_target"`
+- Right-click in air: clears target
+- In hand, displays target coords in item tooltip
+- Non-craftable (creative/loot only)
+
+#### Create `PredatorMissileEntity.java` at `com.airarsenal.entity.projectile`
+Extends `Entity`.
+
+Fields:
+- `controllerPlayer` (EntityPlayerMP)
+- `lifetimeTicks` (int), max 160
+- `yawInput` (float), `pitchInput` (float)
+
+In `onUpdate()` (server-side):
+- Apply `yawInput` and `pitchInput` to rotationYaw/rotationPitch (smoothly clamped)
+- Move forward at 3.2 blocks/tick in facing direction
+- On block collision: trigger 8-block explosion, send `PacketPredatorCameraEnd`
+- At 160 ticks: self-destruct same as impact
+
+#### Create network packets and register them in `ModNetwork.java`:
+Add discriminator IDs 3, 4, 5 to the existing `SimpleNetworkWrapper` registration block (IDs 1 and 2 were registered in Chunk 5):
+```java
+INSTANCE.registerMessage(PacketPredatorCameraStart.Handler.class, PacketPredatorCameraStart.class, 3, Side.CLIENT);
+INSTANCE.registerMessage(PacketPredatorCameraEnd.Handler.class,   PacketPredatorCameraEnd.class,   4, Side.CLIENT);
+INSTANCE.registerMessage(PacketMissileSteer.Handler.class,        PacketMissileSteer.class,         5, Side.SERVER);
+```
+
+Packet definitions:
+- `PacketPredatorCameraStart(int missileEntityId)` — server → client
+  - Client handler: `Minecraft.getMinecraft().renderViewEntity = world.getEntityByID(missileEntityId)`
+    *(In 1.12.2, `Minecraft.renderViewEntity` is a public field — direct assignment is valid and the standard approach)*
+  - Apply grainy shader: `Minecraft.getMinecraft().entityRenderer.loadShader(new ResourceLocation("airarsenal", "shaders/post/predator_cam.json"))`
+- `PacketPredatorCameraEnd` — server → client
+  - Client handler: restore `renderViewEntity = minecraft.player`; call `Minecraft.getMinecraft().entityRenderer.stopUseShader()`
+- `PacketMissileSteer(float yaw, float pitch)` — client → server
+  - Sent **every 2 ticks** while in Predator camera mode (tick counter in `TacModeController`, send when `tickCount % 2 == 0`)
+  - Server handler: sets `yawInput`/`pitchInput` on the `PredatorMissileEntity` the player controls
+
+#### Create shader file `assets/airarsenal/shaders/post/predator_cam.json`:
+Forge 1.12.2 uses vanilla-compatible post-process shaders.
+Apply `desaturate` + `scanlines` effect to create the drone feed look.
+Use the vanilla `blur` pass as a base — set `"desaturationAmount": 1.0` to go full greyscale.
+
+#### Modify Tac Mode (`TacModeController.java`):
+- While in Predator camera mode: re-route mouse delta to `PacketMissileSteer` instead of player look
+- Lock Minecraft's normal look input during camera control
+
+#### Register all 3 missile entities in `ModEntities.java`
+
+### Acceptance Criteria
+- [ ] Hellfire steers smoothly toward locked target — visible curve when target moves laterally
+- [ ] If Hellfire target dies mid-flight: missile goes straight and self-destructs at max range
+- [ ] BrahMos flies to player-set waypoint and detonates with 14-block blast
+- [ ] `ItemBrahMosTargeter` saves and displays target coordinates in tooltip
+- [ ] Predator Strike: camera switches to missile nose, mouse steers the missile
+- [ ] Grainy shader applies on camera switch, removes on camera end
+- [ ] On impact during Predator Strike: camera snaps back to player within 1 tick
+- [ ] `PacketMissileSteer` is rate-limited — sent every 2 ticks, not every tick (performance)
+- [ ] No client code runs on server, no server code runs on client (side checks on all handlers)
+- [ ] **Do NOT add a `topAttack` boolean to `PacketMissileSteer` yet** — that extension comes in Chunk 8 when the Missile Command Truck is implemented. Keep this packet at `(float yaw, float pitch)` only.
+
+### ⚠️ STOP AFTER THIS CHUNK
+The next chunk (Chunk 8) adds ground-based artillery (AA Cannon, Flak Battery, MANPADS, Mortar, Howitzer, MLRS), the Missile Command Truck, Static Missile Battery, and armoured vehicle NPC targets (ArmoredTruck, Tank).
+Do NOT add any placeable artillery blocks, ground weapon entities, vehicle entities, or armoured NPCs yet.
+Wait for the next prompt.
+
+---

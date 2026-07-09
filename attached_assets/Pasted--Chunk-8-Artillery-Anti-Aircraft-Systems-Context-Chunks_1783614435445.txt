@@ -1,0 +1,207 @@
+ Chunk 8 — Artillery & Anti-Aircraft Systems
+
+### Context
+Chunks 1–7 complete. Full air combat system: planes, guns, bombs, guided missiles, Predator Strike.
+
+This chunk adds **ground-based systems** — both anti-aircraft and ground-to-ground artillery.
+All are **multi-block placeable structures** (a base block + facing direction + a targeting entity).
+
+#### Artillery roster:
+| Name | Type | Range | Damage | Fire rate | Targets |
+|---|---|---|---|---|---|
+| AA Cannon | Anti-air | 80 blocks vertical | 8 HP to plane | 2/sec | Planes |
+| Flak Battery | Anti-air | 120 blocks | 15 HP + 5-block burst | 1/2sec | Planes |
+| MANPADS | Shoulder-fired item | 100 blocks | 20 HP | 1 shot + reload | Planes |
+| Mortar | Ground-to-ground | 10–60 blocks (arc) | 6-block blast | Manual | Any |
+| Howitzer | Ground-to-ground | 20–150 blocks | 10-block blast | Manual | Any |
+| MLRS | Ground-to-ground | 30–120 blocks | 5-block each × 8 | 3-sec burst | Area |
+| **Missile Command Truck** | **Mobile vehicle** | **150-block signal range** | **25 HP, AP 70** | **Manual, 2 tubes** | **Armored vehicles / any** |
+| **Static Missile Battery** | **Placeable block** | **150-block signal range** | **25 HP, AP 70** | **Manual** | **Armored vehicles / any** |
+
+#### AA auto-targeting logic:
+AA Cannon and Flak Battery auto-target the nearest `BasePlaneEntity` within range.
+They rotate (yaw/pitch) toward the target at a fixed turn rate — not instant (simulates real AA gun traversal).
+Firing is automatic while a target is in range and within 30° of aim direction.
+
+#### Armored vehicle targets:
+Two NPC vehicle entities that are resistant to ordinary weapons and designed to be priority targets for the Missile Command Truck / Static Battery:
+
+| Entity | Health | Armor DR | Speed | Threat |
+|---|---|---|---|---|
+| `ArmoredTruckEntity` | 150 HP | DR 50 (light rounds ~24% damage, guided missile 100%) | 0.3 blocks/tick patrol | None (passive until attacked) |
+| `TankEntity` | 250 HP | DR 80 (AP rounds ~60%, guided missile ~87.5% — requires multiple hits) | 0.2 blocks/tick patrol | Fires `TankShellEntity` at players within 30 blocks every 3 sec |
+
+Both are non-craftable, spawn via creative spawn eggs or loot. They drop iron/gold blocks on death.
+
+### Your Task
+
+#### Create `BaseArtilleryBlock.java` at `com.airarsenal.block.artillery`
+Extends `BlockHorizontal` (faces a direction on placement).
+- Has a paired `TileEntity` that stores: current target entity ID, cooldown ticks, ammo count, yaw/pitch toward target
+- Player right-clicks to configure (open simple GUI — or sneak+right-click to toggle auto/manual mode)
+- All targeting logic lives in the TileEntity `update()` method (server side only — guard with `if (world.isRemote) return;`)
+- **Do NOT spawn any external controller entity** — the TileEntity update loop is sufficient and simpler
+
+#### Create `AACannonBlock.java` + `AACannonTileEntity.java`:
+- `AACannonTileEntity.update()`:
+  - Scan for `BasePlaneEntity` within 80-block sphere
+  - If found: rotate toward it at 3°/tick (yaw and pitch)
+  - If within 30° of aim: fire `AAShellEntity` every 10 ticks (2/sec)
+- `AAShellEntity`: fast projectile (2 blocks/tick), on hit plane: deal 8 HP to `planeHealth`
+
+#### Create `FlakBatteryBlock.java` + `FlakBatteryTileEntity.java`:
+- Same targeting logic but range 120 blocks, turn rate 2°/tick
+- Fires every 20 ticks (1/2sec)
+- `FlakShellEntity`: detonates at target position even if it misses (proximity fuse at 5 blocks from target)
+- Detonation: 5-block blast, deals 15 HP to any `BasePlaneEntity` within 5 blocks
+
+#### Create `ItemMANPADS.java` at `com.airarsenal.item`:
+- Shoulder-fired missile (held item, not a block)
+- Right-click + hold: begins 40-tick lock-on animation (HUD shows locking ring)
+- Release right-click after lock: fires `ManpadsEntity` (same guidance as Hellfire but slower — 2 blocks/tick)
+- After firing: item goes into 200-tick cooldown (reload)
+- Max range 100 blocks — self-destructs beyond that
+- Non-craftable
+
+#### Create `MortarBlock.java` + `MortarTileEntity.java`:
+- Placed block with GUI: slider for angle (45°–85° elevation, controls range)
+- Range formula: `R = v₀² × sin(2θ) / g` where v₀=1.5, g=0.05 (MC gravity constant)
+  - This gives roughly 10–60 blocks depending on angle
+- Player right-clicks with `ItemMortarShell` in hand to load + fire
+- `MortarShellEntity`: follows parabolic arc using initial velocity vector from angle
+- Impact: 6-block explosion
+
+#### Create `HowitzerBlock.java` + `HowitzerTileEntity.java`:
+- Two-player operation: one player sets target with `ItemLaserDesignator` (marks a `BlockPos`), one player fires
+- Or: single player can operate via GUI (select coordinates manually)
+- `HowitzerShellEntity`: high initial velocity (4 blocks/tick), long arc
+- Impact: 10-block explosion
+
+#### Create `MLRSBlock.java` + `MLRSTileEntity.java`:
+- Player right-clicks with `ItemRocketPod` (stack of 8 rockets) to load
+- On fire: launches all 8 `MLRSRocketEntity` within 3-second burst (every 5 ticks)
+- Each rocket: random spread (±8 blocks from aim direction), 5-block impact blast
+- 15-second reload after burst
+
+#### Create `MissileTruckEntity.java` at `com.airarsenal.entity.vehicle`
+Extends `Entity`. A drivable ground vehicle (4-wheel, moves on terrain).
+
+Fields:
+- `launchTubeCount = 2` (two guided missiles ready)
+- `reloadTicks` (int) — 100-tick reload per tube after firing
+- `controllingPlayer` (EntityPlayerMP) — whoever mounted it
+
+Mount/dismount: same `processInitialInteract` pattern as planes.
+
+Movement (server-side, in `onUpdate()`):
+- Player W/S → move forward/back at up to 0.35 blocks/tick
+- Player A/D → turn (yaw ±3°/tick)
+- No pitch control — stays on ground, uses gravity
+
+Firing (triggered by right-click / attack key while mounted):
+- If `launchTubeCount > 0` and no reload pending:
+  - Spawn `TruckGuidedMissileEntity` at truck's look vector from turret origin (top-centre of truck)
+  - Decrement `launchTubeCount`; start `reloadTicks` countdown
+  - Send `PacketGuidanceStart(int missileEntityId)` → client:
+    - Client handler: `renderViewEntity = missile`, apply `predator_cam.json` shader (reuse Chunk 7 asset)
+- Reload: `launchTubeCount` restores 1 per 100 ticks (can reload mid-guidance session)
+
+HUD while mounted (draw with `RenderGameOverlayEvent.Post`, client only):
+- Two tube indicators (filled/empty squares) top-right
+- "SIGNAL RANGE: XXXm" readout — green ≤ 120 blocks, yellow 120–150, red (NO SIGNAL) > 150
+
+#### Create `StaticMissileBatteryBlock.java` + `StaticMissileBatteryTileEntity.java` at `com.airarsenal.block.artillery`
+Identical firing mechanic to `MissileTruckEntity` but placed as a block (like the Howitzer).
+- Player right-clicks to sit; can rotate turret with A/D while seated
+- Single launch tube, 80-tick reload
+- Slightly shorter signal range: 120 blocks max control
+
+#### Create `TruckGuidedMissileEntity.java` at `com.airarsenal.entity.projectile`
+Extends `Entity`. The player-steerable missile for both vehicle platforms.
+
+Fields:
+- `controllerPlayer` (EntityPlayerMP)
+- `launchPos` (BlockPos) — position where it was fired from
+- `lifetimeTicks` (int), max 160
+- `yawInput` (float), `pitchInput` (float)
+- `topAttackMode` (boolean) — toggled by Shift while guiding
+
+Guidance in `onUpdate()` (server-side):
+- Apply `yawInput`/`pitchInput` smoothly (same clamped logic as `PredatorMissileEntity`)
+- Move at 2.5 blocks/tick in facing direction
+- **Signal range check**: if distance to `launchPos` > 150 blocks:
+  - Stop reading inputs — missile flies straight at current heading
+  - Send `PacketGuidanceLost` → client: overlay flashes "NO SIGNAL", HUD dims
+- **Top-attack mode** (when `topAttackMode == true`):
+  - For first 40 ticks: force missile to pitch upward +2°/tick regardless of input (climbs arc)
+  - After 40 ticks: lock yaw, pitch downward to dive onto target from above
+  - Effect: missile attacks from above, bypassing frontal armour — COD Javelin behaviour
+- On block/entity hit: 6-block explosion, AP rating 70 (kills armoured targets reliably)
+- At 160 ticks: self-destruct with small explosion
+
+Packets — register IDs 6, 7, 8 in `ModNetwork.java` (IDs 1–2 from Chunk 5, IDs 3–5 from Chunk 7):
+```java
+INSTANCE.registerMessage(PacketGuidanceStart.Handler.class, PacketGuidanceStart.class, 6, Side.CLIENT);
+INSTANCE.registerMessage(PacketGuidanceLost.Handler.class,  PacketGuidanceLost.class,  7, Side.CLIENT);
+INSTANCE.registerMessage(PacketGuidanceEnd.Handler.class,   PacketGuidanceEnd.class,   8, Side.CLIENT);
+// PacketMissileSteer (ID 5) is extended in-place — no new ID needed, just add topAttack field
+```
+
+Packet definitions:
+- `PacketGuidanceStart(int missileEntityId)` — server → client: switches `renderViewEntity` to missile, applies `predator_cam.json` shader (reuse Chunk 7 asset)
+- `PacketGuidanceLost` — server → client: signal lost overlay (`"NO SIGNAL"` flashes red on HUD)
+- `PacketGuidanceEnd` — server → client: restores `renderViewEntity` to player, removes shader
+- `PacketMissileSteer(float yaw, float pitch, boolean topAttack)` — client → server, every 2 ticks
+  - **Extends** the Chunk 7 `PacketMissileSteer` (same discriminator ID 5) — add `topAttack` boolean field using `buf.writeBoolean` / `buf.readBoolean`
+  - Chunk 7's Predator Strike handler reads only `yaw` and `pitch`; update it to also read (and ignore) the `topAttack` byte so the buffer doesn't desync
+
+#### Create `ArmoredTruckEntity.java` at `com.airarsenal.entity.vehicle`
+Extends `EntityCreature`. Passive NPC vehicle that patrols in a straight line and turns at walls.
+
+- Health: 150 HP
+- Armor DR: 50 — override `attackEntityFrom(DamageSource, float)` and replace the incoming amount with `DamageCalculator.calculateDamage(amount, incomingAP, 50)` where `incomingAP` is read from a custom `DamageSource` subclass `AirArsenalDamageSource(String name, int ap)`. Light rounds (AP 12): ~24% damage. AP rounds (AP 48): ~96%. Guided missile (AP 70): full damage (capped at 1.0)
+- Movement: `0.3` blocks/tick forward, reverses direction on collision
+- No attack AI
+- Model: flat rectangular box (like an armoured personnel carrier), placeholder cuboid
+- Drop: 4–8 iron ingots, chance of `ItemHeavyRound`
+- Spawn egg: creative only
+
+#### Create `TankEntity.java` at `com.airarsenal.entity.vehicle`
+Extends `EntityCreature`. Hostile armoured vehicle.
+
+- Health: 250 HP
+- Armor DR: 80 — same `attackEntityFrom` override using `AirArsenalDamageSource`. AP rounds (AP 48): 60% damage. Guided missile (AP 70): 87.5% damage (min(70/80, 1.0) = 0.875 — tough but not invulnerable). Confirm this is intentional design: tanks require multiple missile hits to destroy.
+- Movement: `0.2` blocks/tick patrol
+- **Combat AI**: if any player is within 30 blocks → stop moving, rotate turret toward player (yaw only), fire `TankShellEntity` every 60 ticks
+- `TankShellEntity`: 3 blocks/tick, 8-block explosion on impact, ignores entity armour (goes straight through)
+- Drop: 2–4 gold blocks, guaranteed `ItemBrahMosTargeter`
+- Spawn egg: creative only
+
+#### Register all blocks in `ModBlocks.java`, all entities in `ModEntities.java`
+#### Add all `en_us.lang` entries
+
+### Acceptance Criteria
+- [ ] AA Cannon rotates visually toward planes and fires — does NOT instantly snap to target
+- [ ] AA Cannon misses when plane moves faster than gun traversal rate (skill-based evasion works)
+- [ ] Flak Battery proximity fuse triggers within 5 blocks even on a miss
+- [ ] MANPADS requires 40-tick lock before firing — can be interrupted
+- [ ] Mortar angle slider produces correct range variation (45° = short, 85° = near-max)
+- [ ] Howitzer fires from player-designated coordinates
+- [ ] MLRS fires 8 rockets with visible spread — not all hitting same spot
+- [ ] All artillery blocks persist their state (loaded ammo, cooldown) through chunk unload/reload
+- [ ] None of the artillery TileEntity update methods run on client side
+- [ ] Missile Command Truck drives on ground — does not float, respects gravity
+- [ ] Firing the truck missile switches view to nose-cam with shader active
+- [ ] Signal lost beyond 150 blocks — missile flies straight, HUD shows "NO SIGNAL"
+- [ ] Top-attack mode: missile arcs upward for 40 ticks then dives — visibly different trajectory from normal mode
+- [ ] AP 70 missile does full damage to `TankEntity` (DR 80 < AP 70 → min(70/80, 1.0) = 0.875, not full — confirm this is intentional: tank is tough but not invincible to guided missiles)
+- [ ] `ArmoredTruckEntity` takes only ~30% damage from light rounds, ~100% from guided missiles
+- [ ] `TankEntity` fires back at players within 30 blocks
+- [ ] `PacketMissileSteer` extended with `topAttack` boolean — does NOT break the Chunk 7 Predator Strike packet (verify by checking handler)
+
+### ⚠️ STOP AFTER THIS CHUNK
+The next chunk (Chunk 9) adds the non-craftable advanced planes: Fighter Jet, Predator Drone (with remote pilot mode), Stealth Bomber, and Attack Helicopter. It also adds the fuel system for all planes.
+Do NOT add any of these planes, the fuel system, any spawn structures, or the armoured vehicle loot tables yet.
+Wait for the next prompt.
+
+---
