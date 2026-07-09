@@ -1,0 +1,108 @@
+ 📦 Chunk 1 — Project Foundation & Mod Skeleton
+
+### Context
+We are building a Minecraft Forge 1.12.2 mod called **AirArsenal**.
+- Mod ID: `airarsenal`
+- Mod name: `Air Arsenal`
+- Java 8
+- Forge version: `1.12.2-14.23.5.2860` (last stable 1.12.2 Forge)
+- Package root: `com.airarsenal`
+
+This chunk sets up the full Gradle project skeleton. No game content yet — just the scaffolding everything else will build on.
+
+### Your Task
+
+Create the following file structure from scratch:
+
+```
+airarsenal/
+├── build.gradle
+├── gradle.properties
+├── gradlew                  (standard Forge gradlew wrapper — copy standard content)
+├── gradlew.bat
+├── gradle/
+│   └── wrapper/
+│       └── gradle-wrapper.properties
+├── src/
+│   └── main/
+│       ├── java/
+│       │   └── com/
+│       │       └── airarsenal/
+│       │           ├── AirArsenal.java          (main mod class)
+│       │           ├── CommonProxy.java
+│       │           ├── ClientProxy.java
+│       │           ├── registry/
+│       │           │   ├── ModItems.java         (item registry stub)
+│       │           │   ├── ModBlocks.java        (block registry stub)
+│       │           │   └── ModEntities.java      (entity registry stub)
+│       │           └── creativetab/
+│       │               └── AirArsenalTab.java    (custom creative tab)
+│       └── resources/
+│           ├── mcmod.info
+│           ├── pack.mcmeta
+│           └── assets/
+│               └── airarsenal/
+│                   ├── lang/
+│                   │   └── en_us.lang
+│                   └── textures/
+│                       └── items/
+│                           └── .gitkeep
+```
+
+#### `build.gradle` requirements:
+- Forge MDK 1.12.2 standard format
+- Group: `com.airarsenal`
+- Version: `1.0.0`
+- Mappings: `stable_39` (last stable for 1.12.2)
+- No extra dependencies beyond Forge
+
+#### `AirArsenal.java` requirements:
+- `@Mod` annotation with modid, name, version
+- `@SidedProxy` for CommonProxy / ClientProxy
+- `@EventBusSubscriber` inner setup class
+- `preInit`, `init`, `postInit` lifecycle methods
+- Each lifecycle method calls the matching proxy method
+- Logger via `LogManager.getLogger`
+
+#### `ModItems.java` requirements:
+- `@ObjectHolder("airarsenal")` on the class
+- Empty for now — just the class with a `register(IForgeRegistry<Item> registry)` method stub
+- `@SubscribeEvent` on the register method
+
+#### `ModBlocks.java` requirements:
+- Same pattern as ModItems but for Block registry
+
+#### `ModEntities.java` requirements:
+- Static `register()` method — empty for now
+- Comment block listing all entities that will be registered in future chunks:
+  ```java
+  // CHUNK 2: WoodBiplaneEntity
+  // CHUNK 3: PropellerEntity
+  // CHUNK 4: IronMonoplaneEntity, BulletEntity
+  // CHUNK 6: BombEntity
+  // CHUNK 7: HellfireEntity, PredatorStrikeEntity
+  // CHUNK 9: FighterJetEntity, PredatorDroneEntity, StealthBomberEntity
+  ```
+
+#### `AirArsenalTab.java` requirements:
+- Extends `CreativeTabs`
+- Tab icon: `Items.IRON_INGOT` as placeholder (will be replaced later)
+- Label: `"Air Arsenal"`
+
+#### `mcmod.info` requirements:
+- All standard fields filled in
+- Description: `"Planes, bombs, guided missiles, artillery, and tactical aerial combat for Minecraft 1.12.2"`
+
+### Acceptance Criteria
+- [ ] All files exist with correct package declarations
+- [ ] `AirArsenal.java` compiles without errors (check imports are correct for Forge 1.12.2)
+- [ ] `ModEntities.java` has the chunk comment roadmap
+- [ ] No TODO placeholders left — stubs must be syntactically complete Java
+- [ ] `mcmod.info` is valid JSON
+
+### ⚠️ STOP AFTER THIS CHUNK
+The next chunk (Chunk 2) covers the base plane entity and Wood Biplane.
+Do NOT begin any entity, item, or game mechanic work.
+Wait for the next prompt to be sent before continuing.
+
+---

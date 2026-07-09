@@ -1,0 +1,16 @@
+[
+  {
+    "modid": "airarsenal",
+    "name": "Air Arsenal",
+    "description": "Planes, bombs, guided missiles, artillery, and tactical aerial combat for Minecraft 1.12.2",
+    "version": "${version}",
+    "mcversion": "${mcversion}",
+    "url": "",
+    "updateUrl": "",
+    "authorList": ["AirArsenal Team"],
+    "credits": "",
+    "logoFile": "",
+    "screenshots": [],
+    "dependencies": []
+  }
+]

@@ -1,0 +1,107 @@
+Chunk 2 — Base Plane Entity & Wood Biplane
+
+### Context
+Built on top of Chunk 1. The project skeleton exists.
+We are adding the first flyable plane: the **Wood Biplane**.
+
+#### Design specs:
+- **Speed**: 18 blocks/second top speed
+- **Lift**: plane gains altitude when moving forward above a threshold speed (10 b/s)
+- **Gravity**: when speed drops below lift threshold, plane descends at 0.05 blocks/tick
+- **Controls**:
+  - `W` = throttle up (increase speed toward max)
+  - `S` = throttle down / brake
+  - `A` / `D` = yaw left / right
+  - `Space` = pitch up (nose up)
+  - `Shift` = pitch down (nose down)
+- **Mount**: right-click plane entity to mount, `Shift` to dismount
+- **Health**: 40 HP (20 hearts)
+- **Fuel**: unlimited for now (fuel system added in Chunk 9)
+- **Weapons**: 0 hardpoints (unarmed)
+- **Craftable**: yes (see recipe below)
+
+#### Crafting recipe (shaped):
+```
+[ ]  [S]  [ ]
+[P]  [P]  [P]
+[~]  [P]  [~]
+```
+Where: `P` = Oak Plank, `S` = Stick, `~` = String
+Result: 1x Wood Biplane item (places/spawns the entity)
+
+### Your Task
+
+#### Create `BasePlaneEntity.java` at `com.airarsenal.entity.plane`
+Abstract class extending `Entity` (not `EntityLivingBase`).
+
+Must include:
+- `speed` (float) — current forward speed
+- `maxSpeed` (float) — set by subclass
+- `pitch` (float) — nose up/down angle
+- `yaw` (float) — left/right heading
+- `planeHealth` (float) — separate from entity health
+- `maxPlaneHealth` (float) — set by subclass
+- `weapons` (`List<IPlaneWeapon>`) — weapon slots; size determines hardpoint count; populated by subclass constructor; `IPlaneWeapon` is a simple interface with `tryFire(World, Entity, Vec3d)` and `getDisplayName()` — define this interface in `com.airarsenal.combat.weapon`
+- `isTacModeActive` (boolean) — false for now, toggled in Chunk 5
+- Abstract method `getPlaneType()` returning a String identifier
+- `applyFlightPhysics()` method — called each tick:
+  - If speed ≥ 10: apply lift (move upward by `speed * 0.002` per tick)
+  - If speed < 10: apply gravity (move downward by 0.05 per tick)
+  - Apply forward movement in the direction the plane is facing
+- `readEntityFromNBT` / `writeEntityToNBT` — persist speed, health, pitch, yaw
+- `processInput(boolean forward, boolean back, boolean left, boolean right, boolean up, boolean down)` method:
+  - forward: speed += 0.3, capped at maxSpeed
+  - back: speed -= 0.5, floored at 0
+  - left: yaw -= 2.5f
+  - right: yaw += 2.5f
+  - up: pitch -= 1.5f, clamped to -45
+  - down: pitch += 1.5f, clamped to +30
+
+#### Create `WoodBiplaneEntity.java` at `com.airarsenal.entity.plane`
+Extends `BasePlaneEntity`.
+
+- `maxSpeed` = 18
+- `maxPlaneHealth` = 40
+- `weapons` = empty `ArrayList` (no hardpoints — unarmed)
+- `getPlaneType()` returns `"wood_biplane"`
+- Override `onUpdate()` to call `applyFlightPhysics()` each tick
+- Override `processInitialInteract(EntityPlayer player, EnumHand hand)` — if player is not already riding a plane, call `player.startRiding(this)` and return `EnumActionResult.SUCCESS`
+
+#### Create `ItemWoodBiplane.java` at `com.airarsenal.item`
+Extends `Item`.
+
+- Right-click on ground: spawns `WoodBiplaneEntity` at clicked position
+- Stack size: 1
+- Register in `ModItems.java`
+- Add `en_us.lang` entry: `item.airarsenal.wood_biplane=Wood Biplane`
+
+#### Register entity in `ModEntities.java`:
+```java
+EntityRegistry.registerModEntity(
+    new ResourceLocation("airarsenal", "wood_biplane"),
+    WoodBiplaneEntity.class,
+    "wood_biplane", 1, AirArsenal.instance, 80, 3, true
+);
+```
+
+#### Add crafting recipe in `init` phase of `AirArsenal.java`
+
+#### Create placeholder model JSON:
+`assets/airarsenal/models/entity/wood_biplane.json`
+Simple box model (3×1×1 blocks) as placeholder — proper model in Chunk 10.
+
+### Acceptance Criteria
+- [ ] `WoodBiplaneEntity` registered and spawnable via item
+- [ ] Player can right-click item on ground and plane entity appears
+- [ ] Player can right-click the entity to mount it
+- [ ] Shift dismounts correctly
+- [ ] NBT persistence works (speed/health saved on chunk reload)
+- [ ] Crafting recipe produces the item
+- [ ] No raw `System.out.println` — use `AirArsenal.logger`
+
+### ⚠️ STOP AFTER THIS CHUNK
+The next chunk (Chunk 3) adds the propeller system with its own hitbox, damage states, and detach mechanic.
+Do NOT add any propeller, weapon, or second plane logic yet.
+Wait for the next prompt.
+
+---
