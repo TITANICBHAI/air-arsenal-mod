@@ -1,0 +1,94 @@
+
+## 📦 Chunk 5 — Tac Mode HUD & Weapon System
+
+### Context
+Chunks 1–4 complete. Two planes fly and the Iron Monoplane fires bullets with full armor penetration math.
+
+Tac Mode is the **tactical overlay state** that activates while mounted in a weapon-capable plane.
+It replaces the normal crosshair with a targeting reticle and enables weapon cycling.
+
+#### Tac Mode behaviour:
+- Toggle with `F` key (configurable)
+- Only activates if plane's `weapons` list is non-empty (`!weapons.isEmpty()`)
+- When active:
+  - Normal crosshair hidden
+  - Custom targeting reticle drawn (circle + crosshair lines + range readout)
+  - Scroll wheel cycles through available weapons on this plane's hardpoints
+  - Right click = lock-on (if weapon supports it) or arm weapon
+  - Left click = fire selected weapon
+- When inactive:
+  - Normal crosshair restored
+  - Scroll wheel = standard Minecraft hotbar behaviour
+
+#### HUD elements to draw (all client-side):
+1. **Targeting reticle** — centre screen, white circle (radius 12px) with 4 lines extending outward
+2. **Weapon name** — bottom-centre of screen, current weapon name e.g. `"Light Machine Gun [500]"` (name + ammo)
+3. **Lock-on indicator** — if weapon supports lock-on and a target entity is within 40 blocks in view: reticle turns red and shrinks to 6px radius over 1.5 seconds (30 ticks)
+4. **Speed readout** — top-left corner: `"SPD: 18.3 b/s"`
+5. **Altitude readout** — top-left under speed: `"ALT: 74m"`
+6. **Plane HP bar** — top-right: small bar labelled `"AIRFRAME"` showing `planeHealth / maxPlaneHealth`
+7. **Propeller HP bar** — below airframe bar, labelled `"PROPELLER"` with colour:
+   - Green: INTACT
+   - Yellow: DAMAGED
+   - Orange: HEAVY_DAMAGE
+   - Red: CRITICAL
+   - Black/grey: DESTROYED
+
+### Your Task
+
+#### Create `KeyBindings.java` at `com.airarsenal.client`
+Registers all mod keybindings via `ClientRegistry.registerKeyBinding`.
+- `KEY_TAC_MODE` — default `F`, category `"Air Arsenal"`
+- `KEY_NEXT_WEAPON` — scroll up (handled separately via mouse event)
+- `KEY_PREV_WEAPON` — scroll down
+
+#### Create `TacModeHUD.java` at `com.airarsenal.client.gui`
+Plain class (no interface needed) — registered as a Forge event listener via `MinecraftForge.EVENT_BUS.register(new TacModeHUD())` in `ClientProxy.init()`. Subscribe to `RenderGameOverlayEvent.Post` with `@SubscribeEvent`.
+
+Only renders when:
+1. `Minecraft.getMinecraft().player` is riding a `BasePlaneEntity`
+2. The plane's `isTacModeActive == true`
+
+Drawing (use `GlStateManager` + `Tessellator` or `Gui` static methods — no external libraries):
+- Reticle: draw 4 lines and a circle using GL11 line primitives centred on screen
+- All text: use `fontRenderer.drawStringWithShadow`
+- Lock-on red state: interpolate reticle radius from 12→6 over 30 ticks when target acquired
+
+#### Create `TacModeController.java` at `com.airarsenal.client`
+Handles client-side key input while mounted.
+
+Subscribe to `InputUpdateEvent` (or tick event with key polling):
+- If `KEY_TAC_MODE.isPressed()`: send `PacketTacModeToggle` to server (see below)
+- If player mounted on plane with `isTacModeActive`: capture mouse clicks and send weapon fire packet instead of default MC action
+
+#### Create network packets at `com.airarsenal.network`:
+- `PacketTacModeToggle` — client → server: toggles `isTacModeActive` on the plane entity the player is riding
+- `PacketWeaponFire` — client → server: tells server to fire the currently selected weapon in direction of player's look vector
+
+#### Create `ModNetwork.java` at `com.airarsenal.network`:
+- Uses `SimpleNetworkWrapper` (standard Forge 1.12.2 networking)
+- Registers both packets with discriminator IDs 1 and 2
+
+#### Modify `BasePlaneEntity.java`:
+- Add `selectedWeaponIndex` (int)
+- Add `getSelectedWeapon()` — return `weapons.get(selectedWeaponIndex)` if `selectedWeaponIndex < weapons.size()`, else null
+- Handle `PacketWeaponFire` server-side: call `selectedWeapon.tryFire(...)` if not null
+
+### Acceptance Criteria
+- [ ] `F` key toggles Tac Mode — `isTacModeActive` flips on server
+- [ ] HUD renders ONLY when mounted on a plane with `isTacModeActive == true`
+- [ ] Reticle centred on screen with 4 lines
+- [ ] Weapon name + ammo count shown at bottom centre
+- [ ] Speed and altitude readouts update every tick
+- [ ] Airframe HP bar and Propeller HP bar render correctly in all 5 propeller states
+- [ ] Lock-on target detection finds nearest entity within 40 blocks in player's forward view cone (30°)
+- [ ] Reticle turns red and animates to smaller size when locked
+- [ ] Network packets reach server without NPE when plane entity is null
+- [ ] When player is NOT riding any `BasePlaneEntity`: Tac Mode HUD does not render, keybinding tick handler exits early without side effects, and all `PacketWeaponFire` server handlers null-check the riding entity before acting
+
+### ⚠️ STOP AFTER THIS CHUNK
+The next chunk (Chunk 6) adds the full bomb system: Iron Bomb, Heavy Bomb, Napalm, Cluster, EMP, Smoke, Depth Charge, Fuel-Air Bomb, and the bomb bay mechanic with crater generation.
+Do NOT add any bomb entities, bomb bay, or explosion logic yet.
+Wait for the next prompt.
+
+---

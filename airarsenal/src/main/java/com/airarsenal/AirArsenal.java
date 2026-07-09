@@ -63,7 +63,8 @@ public class AirArsenal {
     // ── Crafting recipes ──────────────────────────────────────────────────────
 
     private void registerRecipes() {
-        // Wood Biplane
+
+        // ── Wood Biplane ──────────────────────────────────────────────────────
         // [ ]  [S]  [ ]
         // [P]  [P]  [P]
         // [~]  [P]  [~]
@@ -75,12 +76,28 @@ public class AirArsenal {
             " S ",
             "PPP",
             "~P~",
-            'P', new ItemStack(Blocks.PLANKS, 1, 0),   // Oak Planks (meta 0)
+            'P', new ItemStack(Blocks.PLANKS, 1, 0),
             'S', new ItemStack(Items.STICK),
             '~', new ItemStack(Items.STRING)
         );
 
-        // CHUNK 4+: IronMonoplane recipe here
-        // CHUNK 9+: FighterJet recipe here
+        // ── Iron Monoplane ────────────────────────────────────────────────────
+        // [ ]  [G]  [ ]
+        // [I]  [I]  [I]
+        // [L]  [I]  [L]
+        // I = Iron Ingot, G = Glass Pane, L = Leather
+        GameRegistry.addShapedRecipe(
+            new ResourceLocation(MODID, "iron_monoplane"),
+            null,
+            new ItemStack(ModItems.IRON_MONOPLANE),
+            " G ",
+            "III",
+            "LIL",
+            'I', new ItemStack(Items.IRON_INGOT),
+            'G', new ItemStack(Blocks.GLASS_PANE),
+            'L', new ItemStack(Items.LEATHER)
+        );
+
+        // CHUNK 9+: PropellerFighter, FighterJet, StealthBomber recipes here
     }
 }

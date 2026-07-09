@@ -1,3 +1,8 @@
 itemGroup.airarsenal=Air Arsenal
 
+# Chunk 2
 item.airarsenal.wood_biplane=Wood Biplane
+
+# Chunk 4
+item.airarsenal.iron_monoplane=Iron Monoplane
+entity.airarsenal.bullet=Bullet
