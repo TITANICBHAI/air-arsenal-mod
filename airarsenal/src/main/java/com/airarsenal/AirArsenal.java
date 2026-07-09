@@ -1,8 +1,11 @@
 package com.airarsenal;
 
-import com.airarsenal.registry.ModBlocks;
 import com.airarsenal.registry.ModEntities;
 import com.airarsenal.registry.ModItems;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
@@ -10,12 +13,13 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Mod(
-    modid = AirArsenal.MODID,
-    name  = AirArsenal.MOD_NAME,
+    modid   = AirArsenal.MODID,
+    name    = AirArsenal.MOD_NAME,
     version = AirArsenal.VERSION,
     acceptedMinecraftVersions = "[1.12.2]"
 )
@@ -47,11 +51,36 @@ public class AirArsenal {
     public void init(FMLInitializationEvent event) {
         LOGGER.info("Air Arsenal init starting");
         proxy.init(event);
+        registerRecipes();
     }
 
     @EventHandler
     public void postInit(FMLPostInitializationEvent event) {
         LOGGER.info("Air Arsenal postInit starting");
         proxy.postInit(event);
+    }
+
+    // ── Crafting recipes ──────────────────────────────────────────────────────
+
+    private void registerRecipes() {
+        // Wood Biplane
+        // [ ]  [S]  [ ]
+        // [P]  [P]  [P]
+        // [~]  [P]  [~]
+        // P = Oak Plank, S = Stick, ~ = String
+        GameRegistry.addShapedRecipe(
+            new ResourceLocation(MODID, "wood_biplane"),
+            null,
+            new ItemStack(ModItems.WOOD_BIPLANE),
+            " S ",
+            "PPP",
+            "~P~",
+            'P', new ItemStack(Blocks.PLANKS, 1, 0),   // Oak Planks (meta 0)
+            'S', new ItemStack(Items.STICK),
+            '~', new ItemStack(Items.STRING)
+        );
+
+        // CHUNK 4+: IronMonoplane recipe here
+        // CHUNK 9+: FighterJet recipe here
     }
 }

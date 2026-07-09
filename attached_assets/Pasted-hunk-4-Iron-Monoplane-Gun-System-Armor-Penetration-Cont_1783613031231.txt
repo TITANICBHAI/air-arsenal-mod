@@ -1,0 +1,167 @@
+hunk 4 — Iron Monoplane, Gun System & Armor Penetration
+
+### Context
+Chunks 1–3 complete. Wood Biplane flies with a full propeller system.
+Now we add the **Iron Monoplane** (first armed plane) and the bullet damage system.
+
+#### Iron Monoplane specs:
+- Speed: 35 b/s
+- Health: 60 HP
+- Propeller health: 45
+- Hardpoints: 1
+- Weapon: Light Machine Gun (fixed, nose-mounted)
+- Craftable: yes
+
+#### Crafting recipe (shaped):
+```
+[ ]  [G]  [ ]
+[I]  [I]  [I]
+[L]  [I]  [L]
+```
+Where: `I` = Iron Ingot, `G` = Glass Pane, `L` = Leather
+Result: 1x Iron Monoplane item
+
+#### Bullet types:
+| Bullet | Damage | Armor Penetration (AP) | Source |
+|---|---|---|---|
+| Light Round | 4 HP | 12 | Light Machine Gun (Iron Monoplane) |
+| Heavy Round | 10 HP | 28 | Propeller Fighter (Chunk 9) |
+| AP Round | 14 HP | 48 | Fighter Jet (Chunk 9) |
+
+#### Armor Defense Rating (DR) per full set:
+| Armor | DR |
+|---|---|
+| None | 0 |
+| Leather | 8 |
+| Gold | 12 |
+| Chainmail | 16 |
+| Iron | 24 |
+| Diamond | 36 |
+| Netherite | 40 (not in 1.12.2 — reserved for compat layer) |
+
+#### Damage formula:
+```java
+float penetrationRatio = Math.min(bulletAP / (float) armorDR, 1.0f);
+float actualDamage = baseDamage * penetrationRatio;
+// If armorDR == 0, deal full damage (unarmoured target)
+```
+
+#### Hit location multipliers:
+| Location | Multiplier | Detection method |
+|---|---|---|
+| Head | ×1.8 | Ray hits above `entity.posY + entity.height * 0.75` |
+| Torso | ×1.0 | Ray hits between 40% and 75% of entity height |
+| Limbs | ×0.6 | Ray hits below 40% of entity height |
+
+### Your Task
+
+#### Create `AirArsenalDamageSource.java` at `com.airarsenal.combat`
+Extends `DamageSource`. Carries an AP rating so armoured entities can read it in `attackEntityFrom`.
+
+```java
+public class AirArsenalDamageSource extends DamageSource {
+    public final int armorPenetration;
+    public AirArsenalDamageSource(String name, int ap) {
+        super(name);
+        this.armorPenetration = ap;
+    }
+}
+```
+
+Pre-built static instances for convenience (add as needed):
+- `BULLET_LIGHT   = new AirArsenalDamageSource("airarsenal.bullet.light",  12)`
+- `BULLET_HEAVY   = new AirArsenalDamageSource("airarsenal.bullet.heavy",  28)`
+- `BULLET_AP      = new AirArsenalDamageSource("airarsenal.bullet.ap",     48)`
+- `MISSILE_GUIDED = new AirArsenalDamageSource("airarsenal.missile.guided",70)`
+- `SHELL_TANK     = new AirArsenalDamageSource("airarsenal.shell.tank",    80)` (bypasses all armour)
+
+#### Create `DamageCalculator.java` at `com.airarsenal.combat`
+Pure utility class (no entity, no state).
+
+Static methods only:
+- `getArmorDR(EntityPlayer player)` — reads player's equipped armour and returns total DR
+- `calculateBulletDamage(float baseDamage, int bulletAP, int armorDR, float locationMultiplier)` — applies formula above; used by `BulletEntity`
+- `calculateDamage(float baseDamage, int ap, int dr)` — same formula without a location multiplier (multiplier = 1.0); used by armoured vehicle damage overrides (`attackEntityFrom`) and explosion-sourced hits. This is the general-purpose entry point for any non-bullet damage that respects AP/DR.
+- `getLocationMultiplier(Entity target, Vec3d hitPos)` — returns float based on hit height relative to target bounding box
+- No side effects — pure calculation, fully unit-testable
+
+#### Create `BulletEntity.java` at `com.airarsenal.entity.projectile`
+Extends `EntityThrowable`.
+
+Fields:
+- `baseDamage` (float)
+- `armorPenetration` (int)
+- `shooterEntity` (Entity)
+
+On hit entity:
+1. Detect hit location via `getLocationMultiplier`
+2. Get target armor DR if target is `EntityPlayer`, else DR = 0
+3. Call `DamageCalculator.calculateBulletDamage`
+4. Apply damage via `AirArsenalDamageSource.BULLET_LIGHT` (or HEAVY/AP depending on `armorPenetration` field) — use the pre-built static instances defined above
+5. Spawn `EnumParticleTypes.CRIT` at hit position (client only)
+6. Despawn bullet entity
+
+On hit block:
+- Spawn `EnumParticleTypes.BLOCK_CRACK` (stone texture) at hit position
+- Despawn bullet entity
+- No block damage (block breaking from bullets = Chunk 10 optional config)
+
+Max range: despawn after 80 ticks (~64 blocks at bullet speed)
+Bullet speed: 3.5 blocks/tick (set via `motionX/Y/Z` on spawn)
+
+#### Create `LightMachineGun.java` at `com.airarsenal.combat.weapon`
+Not an Item — a weapon component attached to a plane's hardpoint.
+
+Fields:
+- `fireRate` — 4 bullets/second (fires every 5 ticks)
+- `cooldownTicks` (int) — ticks since last shot
+- `baseDamage` = 4f
+- `armorPenetration` = 12
+- `ammo` (int) — 500 rounds default, -1 = infinite
+
+Method `tryFire(World world, Entity shooter, Vec3d direction)`:
+- If cooldown > 0: decrement, return false
+- If ammo == 0: return false (empty)
+- Spawn `BulletEntity` at shooter position + forward offset
+- Set bullet velocity = `direction × 3.5`
+- Decrement ammo if not infinite
+- Reset cooldown to 5 ticks
+- Return true
+
+#### Create `IronMonoplaneEntity.java` at `com.airarsenal.entity.plane`
+Extends `BasePlaneEntity`.
+
+- `maxSpeed` = 35
+- `maxPlaneHealth` = 60
+- Propeller health = 45
+- Constructor: `weapons.add(new LightMachineGun())` — gives the plane 1 weapon slot
+- `getPlaneType()` returns `"iron_monoplane"`
+- In `onUpdate()` (server-side, check `!world.isRemote`): iterate `weapons` and call `weapon.tryFire(world, this, getLookVec())` each tick — the weapon's internal cooldown controls fire rate; Tac Mode (Chunk 5) will add proper client-driven input gating, so this auto-fire placeholder is intentional for now
+
+#### Create `ItemIronMonoplane.java` and register it in `ModItems.java`
+Same pattern as `ItemWoodBiplane`.
+
+#### Register both `BulletEntity` and `IronMonoplaneEntity` in `ModEntities.java`
+
+#### Add `en_us.lang` entries:
+```
+item.airarsenal.iron_monoplane=Iron Monoplane
+entity.airarsenal.bullet=Bullet
+```
+
+### Acceptance Criteria
+- [ ] `DamageCalculator` correctly returns 1.33♥ for light round vs diamond armour (12/36 × 4 = 1.33)
+- [ ] `DamageCalculator` correctly returns 4♥ for light round vs no armour
+- [ ] Head shots deal ×1.8 multiplier on top of penetration result
+- [ ] `BulletEntity` despawns after 80 ticks if nothing hit
+- [ ] `LightMachineGun` fires at 4 shots/second (every 5 ticks) not faster
+- [ ] Iron Monoplane spawns, flies, gun fires bullets toward its facing direction
+- [ ] Bullets visually travel as entities before hitting something
+- [ ] Both planes (Wood Biplane + Iron Monoplane) coexist with no registry conflicts
+
+### ⚠️ STOP AFTER THIS CHUNK
+The next chunk (Chunk 5) adds Tac Mode — the HUD overlay, keybinding, weapon cycling, and lock-on system.
+Do NOT add any HUD, keybinding, or Tac Mode logic yet.
+Wait for the next prompt.
+
+---

@@ -1,0 +1,93 @@
+Chunk 3 — Propeller System
+
+### Context
+Chunks 1 and 2 are complete. The Wood Biplane flies and is mountable.
+
+The propeller is the **most critical plane component**. It has:
+- Its own health pool (separate from plane HP)
+- Its own hitbox (smaller than the plane, positioned at the nose)
+- 4 visual/functional damage states
+- A detach mechanic when destroyed
+
+#### Propeller damage states:
+| HP % | Visual | Speed penalty | Control penalty |
+|---|---|---|---|
+| 100% | Clean spin (particle blur) | None | None |
+| 75% | Small sparks | −10% max speed | None |
+| 50% | Smoke + sparks | −35% max speed | ±3° random yaw drift per tick |
+| 25% | Heavy smoke + fire particles | −65% max speed | ±7° random yaw drift per tick |
+| 0% | Propeller flies off | Zero thrust (plane glides only) | Constant pitch-down 0.3°/tick |
+
+When propeller HP = 0:
+1. Spawn a `PropellerShardEntity` flying in a random direction
+2. Shard deals 6 HP damage to any entity it hits (armor-piercing — bypasses armor calculation)
+3. Plane loses all thrust (speed decays at 0.4/tick, gravity always applies)
+4. Plane begins controlled glide toward ground
+
+#### Propeller as a contact hazard:
+If any entity (mob or player) touches the propeller hitbox while plane is moving (speed > 5):
+- Deal `4 × (speed / maxSpeed)` damage per tick
+- This also deals 2 HP damage to the propeller itself
+
+### Your Task
+
+#### Create `PropellerComponent.java` at `com.airarsenal.entity.plane.component`
+Not an entity — a data class attached to `BasePlaneEntity`.
+
+Must include:
+- `maxHealth` (float) — set by plane (Wood Biplane = 30)
+- `currentHealth` (float)
+- `getDamageState()` returning enum `PropellerState { INTACT, DAMAGED, HEAVY_DAMAGE, CRITICAL, DESTROYED }`
+- `takeDamage(float amount)` — reduces health, triggers state change effects
+- `getSpeedMultiplier()` — returns float based on state:
+  - INTACT: 1.0f
+  - DAMAGED: 0.9f
+  - HEAVY_DAMAGE: 0.65f
+  - CRITICAL: 0.35f
+  - DESTROYED: 0.0f
+- `getYawDrift()` — returns float random drift per tick based on state
+- `writeToNBT(NBTTagCompound)` / `readFromNBT(NBTTagCompound)` for persistence
+
+#### Modify `BasePlaneEntity.java`:
+- Add `PropellerComponent propeller` field
+- In constructor: initialise propeller with `maxHealth = 30`
+- In `applyFlightPhysics()`:
+  - Multiply speed by `propeller.getSpeedMultiplier()`
+  - Add `propeller.getYawDrift()` to yaw each tick
+  - If `propeller.getDamageState() == DESTROYED`: skip lift, always apply gravity
+- Add `onPropellerContact(Entity toucher)` — called when entity enters propeller zone:
+  - If speed > 5: deal damage to toucher and to propeller
+- Update NBT read/write to include propeller state
+
+#### Create `PropellerShardEntity.java` at `com.airarsenal.entity.projectile`
+Extends `EntityThrowable`.
+
+- On spawn: random velocity vector (magnitude 0.8–1.4, random direction within 60° cone forward)
+- On hit entity: deal 6 HP true damage (no armor reduction — use `DamageSource.causeIndirectMagicDamage` as base then override `isUnblockable()` to return true)
+- On hit block: stop and drop as a `Items.IRON_NUGGET` (scrap)
+- Despawn after 60 ticks if not hit anything
+
+#### Create particle effects (client-side only, in `ClientProxy.java`):
+- `spawnPropellerSparks(World world, double x, double y, double z)` — spawns `EnumParticleTypes.CRIT` particles in a spin pattern
+- `spawnPropellerSmoke(World world, double x, double y, double z)` — spawns `EnumParticleTypes.SMOKE_LARGE` rising upward
+- `spawnPropellerFire(World world, double x, double y, double z)` — spawns `EnumParticleTypes.FLAME` intermittently
+
+These are called from `BasePlaneEntity.onUpdate()` based on `propeller.getDamageState()`.
+
+#### Register `PropellerShardEntity` in `ModEntities.java`
+
+### Acceptance Criteria
+- [ ] `PropellerComponent` correctly transitions through all 5 states as damage is applied
+- [ ] Speed multiplier applies correctly — a CRITICAL propeller plane moves at 35% speed
+- [ ] Random yaw drift activates only at HEAVY_DAMAGE and worse
+- [ ] At DESTROYED: `PropellerShardEntity` spawns, flies, and deals 6 HP true damage
+- [ ] Contact damage works — standing in front of a moving plane hurts the entity and the propeller
+- [ ] Particle effects fire only on client side (no server-side particle calls)
+- [ ] NBT correctly saves/restores propeller health across sessions
+
+### ⚠️ STOP AFTER THIS CHUNK
+The next chunk (Chunk 4) adds the Iron Monoplane, the gun system, bullet types, and the armor penetration damage formula.
+Do NOT add any weapons, bullets, or second plane yet.
+Wait for the next prompt.
+
+---
