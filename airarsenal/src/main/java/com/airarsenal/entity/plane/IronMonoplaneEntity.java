@@ -13,11 +13,10 @@ import net.minecraft.world.World;
  *   <li>Structural health:  60 HP</li>
  *   <li>Propeller health:   45 HP</li>
  *   <li>Hardpoints:         1 (nose-mounted Light Machine Gun)</li>
- *   <li>Fuel:               unlimited (fuel system added in Chunk 9)</li>
  * </ul>
  *
- * <p>The LMG fires automatically every 5 ticks toward the plane's look vector.
- * Proper player-input gating (fire-key, Tac Mode) is added in Chunk 5.</p>
+ * <p>Weapon firing is driven by {@link com.airarsenal.network.PacketWeaponFire}
+ * (Chunk 5). The auto-fire placeholder from Chunk 4 has been removed.</p>
  */
 public class IronMonoplaneEntity extends BasePlaneEntity {
 
@@ -26,10 +25,8 @@ public class IronMonoplaneEntity extends BasePlaneEntity {
         this.maxSpeed       = 35f;
         this.maxPlaneHealth = 60f;
         this.planeHealth    = this.maxPlaneHealth;
-
-        // Override the default propeller (30 HP from BasePlaneEntity) with 45 HP
+        // Override the default 30 HP propeller with the Iron Monoplane's 45 HP one
         this.propeller = new PropellerComponent(45f);
-
         // One hardpoint: fixed nose LMG
         this.weapons.add(new LightMachineGun());
     }
@@ -41,15 +38,8 @@ public class IronMonoplaneEntity extends BasePlaneEntity {
 
     @Override
     public void onUpdate() {
-        super.onUpdate(); // handles propeller contact, particles
+        super.onUpdate(); // propeller contact check + particles
         applyFlightPhysics();
-
-        // ── Auto-fire all weapons toward look vector (server side only) ───────
-        // Chunk 5 will replace this placeholder with proper client-driven input gating.
-        if (!world.isRemote) {
-            for (com.airarsenal.combat.weapon.IPlaneWeapon weapon : weapons) {
-                weapon.tryFire(world, this, getLookVec());
-            }
-        }
+        // Weapon firing is now handled server-side by PacketWeaponFire.Handler
     }
 }

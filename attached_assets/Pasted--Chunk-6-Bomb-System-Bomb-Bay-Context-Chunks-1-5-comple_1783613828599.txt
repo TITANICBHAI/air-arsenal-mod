@@ -1,0 +1,119 @@
+## 📦 Chunk 6 — Bomb System & Bomb Bay
+
+### Context
+Chunks 1–5 complete. Two planes fly with full Tac Mode HUD and machine gun fire.
+
+Bombs are dropped from planes via a **bomb bay** — a loadout slot separate from hardpoints.
+Bombs fall with realistic gravity, hit terrain or entities, and produce varied effects.
+
+#### Bomb roster:
+| Bomb | Blast radius | Special | Craftable |
+|---|---|---|---|
+| Iron Bomb | 8 blocks | Standard explosion, destroys blocks if config allows | ✅ |
+| Heavy Bomb | 14 blocks | Leaves a 4-block deep crater | ✅ |
+| Napalm Canister | 6 + 20-block fire spread | Fire DOT 10 seconds | ✅ |
+| Cluster Bomb | Splits into 12 mini-bombs (2-block each) scattered over 20 blocks | No single large blast | ❌ Loot only |
+| EMP Bomb | No explosion — disables all redstone in 25-block radius for 600 ticks (30s) | Block-affecting, not entity damage | ❌ Loot only |
+| Smoke Bomb | Dense coloured smoke cloud for 400 ticks (20s) | Applies Blindness II to entities inside | ❌ Loot only |
+| Depth Charge | Underwater: ×2.5 blast amplification | Normal 5-block blast in air | ❌ Loot only |
+| Fuel-Air Bomb | Two-phase: dispersal (2 ticks) then ignition | 20-block shockwave, no crater | ❌ Loot only |
+
+#### Bomb bay mechanic:
+- Heavy Bomber plane (Chunk 9) has a bomb bay — until then, bombs are dropped via a hand-held `BombDispenser` item as a placeholder
+- `BombDispenser` item: when used while mounted in any plane, drops selected bomb type from plane's position
+- Bomb type is selected via `PacketWeaponFire` (re-use network infrastructure from Chunk 5)
+
+#### Block breaking config:
+- `AirArsenalConfig.java` must have a boolean `allowBlockDestruction` (default: true)
+- All bomb explosion effects check this flag before breaking blocks
+- Entity damage always applies regardless of config
+
+### Your Task
+
+#### Create `AirArsenalConfig.java` at `com.airarsenal.config`
+Uses `@Config` annotation (Forge 1.12.2 config system).
+- Category: `"gameplay"`
+- `allowBlockDestruction` (boolean, default true, comment: "If false, bombs damage entities but do not break blocks")
+- `allowFriendlyFire` (boolean, default true, comment: "If false, bombs do not damage the plane that dropped them")
+
+#### Create `BaseBombEntity.java` at `com.airarsenal.entity.projectile`
+Extends `Entity`.
+
+Fields:
+- `fuseTime` (int) — ticks until arming (0 = armed on drop)
+- `droppedByEntity` (Entity)
+
+Physics in `onUpdate()`:
+- Apply gravity: `motionY -= 0.03` per tick
+- Apply air resistance: `motionX *= 0.99`, `motionZ *= 0.99`
+- Move by motion vector
+- On collision with block (use bounding box check): call `onImpact()`
+- On collision with non-dropper entity: call `onEntityImpact(Entity)`
+
+Abstract method `onImpact()` — each bomb implements its own.
+
+#### Create individual bomb classes, all extending `BaseBombEntity`:
+
+**`IronBombEntity.java`**
+- `onImpact()`: call `world.createExplosion(droppedByEntity, x, y, z, 8f, AirArsenalConfig.allowBlockDestruction)` (Forge explosion with configurable block breaking)
+
+**`HeavyBombEntity.java`**
+- `onImpact()`: same as IronBomb with radius 14f, then call `generateCrater(x, y, z, 4)`:
+  - `generateCrater`: iterate sphere of radius 4 below impact point, replace stone/dirt/grass with air
+
+**`NapalmBombEntity.java`**
+- `onImpact()`: small explosion (radius 6), then spread fire:
+  - Find all non-air blocks within 20 blocks horizontally, 3 blocks above each
+  - Place fire blocks on flammable surfaces (check `block.isFlammable`)
+  - Apply `PotionEffect(MobEffects.WITHER, 200, 1)` to all entities in 6-block radius
+
+**`ClusterBombEntity.java`**
+- `onImpact()`: spawn 12 `IronBombEntity` instances with randomised horizontal velocity (±0.8 random, downward 0.3) and radius 2f
+
+**`EMPBombEntity.java`**
+- `onImpact()`: no explosion, no block breaking
+- Find all `TileEntity` instances within 25 blocks
+- If `TileEntityComparator` or powered block: add to a world-saved list `EMPDisabledBlocks` with expiry tick
+- Apply `PotionEffect(MobEffects.WEAKNESS, 600, 2)` to all entities within 25 blocks
+
+**`SmokeBombEntity.java`**
+- `onImpact()`: mark impact position, spawn smoke particles every 5 ticks for 400 ticks using `SMOKE_LARGE`
+- Apply `PotionEffect(MobEffects.BLINDNESS, 100, 1)` to any entity entering within 15 blocks while smoke active
+
+**`DepthChargeEntity.java`**
+- `onImpact()`: check if impact position is in water (`world.getBlockState(pos).getMaterial() == Material.WATER`)
+  - In water: explosion radius 12.5f (5 × 2.5)
+  - In air: explosion radius 5f
+
+**`FuelAirBombEntity.java`**
+- Two-phase:
+  1. On impact: set `phase = DISPERSAL`. Spawn `CLOUD` particles in 20-block sphere. Wait 2 ticks.
+  2. After 2 ticks (`phase = IGNITION`): call explosion of radius 20f — entity damage only, block breaking = false always (shockwave, not crater)
+
+#### Create craftable bomb items:
+- `ItemIronBomb.java` — right-click while mounted: drops `IronBombEntity` from plane position
+- `ItemHeavyBomb.java` — same for Heavy Bomb
+- `ItemNapalmCanister.java` — same for Napalm
+
+Crafting recipes:
+- Iron Bomb: `[I][G][I] / [G][T][G] / [I][G][I]` where I=Iron, G=Gunpowder, T=TNT
+- Heavy Bomb: Iron Bomb + 4 Iron Blocks surrounding
+- Napalm Canister: `[B][B][B] / [B][L][B] / [I][I][I]` where B=Blaze Powder, L=Lava Bucket, I=Iron
+
+#### Register all 8 bomb entities in `ModEntities.java`
+
+### Acceptance Criteria
+- [ ] All 8 bomb entities spawn, fall with gravity, and trigger on block impact
+- [ ] `allowBlockDestruction = false` prevents block breaking for all bombs — entity damage still works
+- [ ] Crater generates correctly for Heavy Bomb (4 blocks deep sphere)
+- [ ] Cluster Bomb spawns exactly 12 sub-bombs with random spread
+- [ ] EMP Bomb applies weakness to entities but never breaks blocks regardless of config
+- [ ] Depth Charge deals 2.5× damage underwater vs air
+- [ ] Fuel-Air Bomb fires in two distinct phases with 2-tick delay
+- [ ] Craftable bombs have working shaped recipes
+- [ ] Config file generates at `config/airarsenal.cfg` on first run
+
+### ⚠️ STOP AFTER THIS CHUNK
+The next chunk (Chunk 7) adds guided weapons: the Hellfire missile with laser designation, the BrahMos cruise missile, and the Predator Strike camera mode where the player controls the missile in first-person nose-cam view.
+Do NOT add any guided missiles, camera switching, or laser designator logic yet.
+Wait for the next prompt.

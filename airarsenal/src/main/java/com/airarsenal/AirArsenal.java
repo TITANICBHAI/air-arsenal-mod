@@ -1,5 +1,6 @@
 package com.airarsenal;
 
+import com.airarsenal.network.ModNetwork;
 import com.airarsenal.registry.ModEntities;
 import com.airarsenal.registry.ModItems;
 import net.minecraft.init.Blocks;
@@ -43,6 +44,7 @@ public class AirArsenal {
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         LOGGER.info("Air Arsenal preInit starting");
+        ModNetwork.register();   // must be before any world/entity loading
         proxy.preInit(event);
         ModEntities.register();
     }
@@ -63,12 +65,10 @@ public class AirArsenal {
     // ── Crafting recipes ──────────────────────────────────────────────────────
 
     private void registerRecipes() {
-
-        // ── Wood Biplane ──────────────────────────────────────────────────────
+        // Wood Biplane
         // [ ]  [S]  [ ]
         // [P]  [P]  [P]
         // [~]  [P]  [~]
-        // P = Oak Plank, S = Stick, ~ = String
         GameRegistry.addShapedRecipe(
             new ResourceLocation(MODID, "wood_biplane"),
             null,
@@ -81,11 +81,10 @@ public class AirArsenal {
             '~', new ItemStack(Items.STRING)
         );
 
-        // ── Iron Monoplane ────────────────────────────────────────────────────
+        // Iron Monoplane
         // [ ]  [G]  [ ]
         // [I]  [I]  [I]
         // [L]  [I]  [L]
-        // I = Iron Ingot, G = Glass Pane, L = Leather
         GameRegistry.addShapedRecipe(
             new ResourceLocation(MODID, "iron_monoplane"),
             null,
