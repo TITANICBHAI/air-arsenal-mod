@@ -11,6 +11,14 @@ env = { "CI" = "true" }
 [workflows]
 runButton = "Project"
 
+[[workflows.workflow]]
+name = "Push to GitHub"
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "bash scripts/github-push.sh"
+
 [agent]
 stack = "PNPM_WORKSPACE"
 expertMode = true
