@@ -28,6 +28,32 @@ entity.airarsenal.hellfire=Hellfire Missile
 entity.airarsenal.brahmos=BrahMos Cruise Missile
 entity.airarsenal.predator_missile=Predator Strike Missile
 
+# Chunk 8 — Artillery & AA
+tile.airarsenal.aa_cannon.name=AA Cannon
+tile.airarsenal.flak_battery.name=Flak Battery
+tile.airarsenal.mortar.name=Mortar
+tile.airarsenal.howitzer.name=Howitzer
+tile.airarsenal.mlrs.name=MLRS
+tile.airarsenal.static_missile_battery.name=Static Missile Battery
+
+item.airarsenal.manpads.name=MANPADS
+item.airarsenal.mortar_shell.name=Mortar Shell
+item.airarsenal.laser_designator.name=Laser Designator
+item.airarsenal.rocket_pod.name=Rocket Pod
+item.airarsenal.heavy_round.name=Heavy Round
+
+entity.airarsenal.aa_shell.name=AA Shell
+entity.airarsenal.flak_shell.name=Flak Shell
+entity.airarsenal.manpads_missile.name=MANPADS Missile
+entity.airarsenal.mortar_shell.name=Mortar Shell
+entity.airarsenal.howitzer_shell.name=Howitzer Shell
+entity.airarsenal.mlrs_rocket.name=MLRS Rocket
+entity.airarsenal.missile_truck.name=Missile Truck
+entity.airarsenal.truck_guided_missile.name=Guided Missile
+entity.airarsenal.armored_truck.name=Armored Truck
+entity.airarsenal.tank.name=Tank
+entity.airarsenal.tank_shell.name=Tank Shell
+
 # Config keys
 config.airarsenal.allowBlockDestruction=Allow Block Destruction
 config.airarsenal.allowFriendlyFire=Allow Friendly Fire

@@ -240,6 +240,33 @@ public abstract class BasePlaneEntity extends Entity {
     }
 
     // ─────────────────────────────────────────────────────────────────────────
+    //  Direct airframe damage (Chunk 8 — AA/Flak ground fire)
+    // ─────────────────────────────────────────────────────────────────────────
+
+    /**
+     * Applies direct damage to the airframe, bypassing the AP/DR bullet formula.
+     * Used by ground-based anti-air (AA Cannon, Flak Battery). Server-side only.
+     *
+     * @param amount HP to remove from {@link #planeHealth}.
+     */
+    public void damagePlane(float amount) {
+        if (world.isRemote) return;
+        planeHealth = Math.max(0f, planeHealth - amount);
+        if (planeHealth <= 0f) {
+            onPlaneDestroyed();
+        }
+    }
+
+    /** Ejects any rider and removes the plane. Called when {@link #planeHealth} reaches 0. */
+    protected void onPlaneDestroyed() {
+        for (Entity passenger : getPassengers()) {
+            passenger.dismountRidingEntity();
+        }
+        AirArsenal.LOGGER.info("{} destroyed by ground fire", getPlaneType());
+        setDead();
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
     //  Mounting
     // ─────────────────────────────────────────────────────────────────────────
 

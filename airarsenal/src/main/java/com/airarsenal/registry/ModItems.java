@@ -30,6 +30,26 @@ public class ModItems {
     @ObjectHolder("napalm_canister")
     public static final Item NAPALM_CANISTER = null;
 
+    // ── Chunk 7 ───────────────────────────────────────────────────────────────
+    @ObjectHolder("brahmos_targeter")
+    public static final Item BRAHMOS_TARGETER = null;
+
+    // ── Chunk 8 ───────────────────────────────────────────────────────────────
+    @ObjectHolder("manpads")
+    public static final Item MANPADS = null;
+
+    @ObjectHolder("mortar_shell")
+    public static final Item MORTAR_SHELL = null;
+
+    @ObjectHolder("laser_designator")
+    public static final Item LASER_DESIGNATOR = null;
+
+    @ObjectHolder("rocket_pod")
+    public static final Item ROCKET_POD = null;
+
+    @ObjectHolder("heavy_round")
+    public static final Item HEAVY_ROUND = null;
+
     @SubscribeEvent
     public static void register(RegistryEvent.Register<Item> event) {
         IForgeRegistry<Item> registry = event.getRegistry();
@@ -44,6 +64,16 @@ public class ModItems {
         registry.register(new ItemIronBomb());
         registry.register(new ItemHeavyBomb());
         registry.register(new ItemNapalmCanister());
+
+        // Chunk 7 — was previously missing from registration; fixed here.
+        registry.register(new ItemBrahMosTargeter());
+
+        // Chunk 8 — Artillery & AA
+        registry.register(new ItemMANPADS());
+        registry.register(new ItemMortarShell());
+        registry.register(new ItemLaserDesignator());
+        registry.register(new ItemRocketPod());
+        registry.register(new ItemHeavyRound());
 
         // CHUNK 9+: PropellerFighter, FighterJet, StealthBomber spawn items
     }

@@ -95,6 +95,34 @@ public class TacModeController {
             return; // skip normal flight input during nose-cam control
         }
 
+        // ── Missile Truck / Static Battery guidance mode ─────────────────────
+        if (activeGuidanceMissileId >= 0) {
+            handleTruckGuidanceTick(mc);
+            // Guidance steering doesn't take over the camera, so normal input
+            // (including driving the truck, if mounted) continues below.
+        }
+
+        // ── Missile Truck driving input ───────────────────────────────────────
+        if (player.getRidingEntity() instanceof com.airarsenal.entity.vehicle.MissileTruckEntity) {
+            com.airarsenal.entity.vehicle.MissileTruckEntity truck =
+                (com.airarsenal.entity.vehicle.MissileTruckEntity) player.getRidingEntity();
+            truck.setDriveInput(
+                mc.gameSettings.keyBindForward.isKeyDown(),
+                mc.gameSettings.keyBindBack.isKeyDown(),
+                mc.gameSettings.keyBindLeft.isKeyDown(),
+                mc.gameSettings.keyBindRight.isKeyDown());
+
+            // Space bar fires the next ready tube — reuses PacketWeaponFire's server
+            // dispatch isn't appropriate here (no weapon list), so a dedicated fire
+            // action piggybacks on Tac Mode's fire key for simplicity: left-click.
+            boolean leftDown = Mouse.isButtonDown(0);
+            if (leftDown && !leftWasDown) {
+                ModNetwork.CHANNEL.sendToServer(new com.airarsenal.network.PacketFireMissileTube());
+            }
+            leftWasDown = leftDown;
+            return;
+        }
+
         // ── Normal flight / Tac Mode ──────────────────────────────────────────
         if (!(player.getRidingEntity() instanceof BasePlaneEntity)) {
             leftWasDown = false;
@@ -168,7 +196,45 @@ public class TacModeController {
 
         // Send steer packet every 2 ticks (rate-limited)
         if (steerTick % 2 == 0 && (rawDX != 0 || rawDY != 0)) {
-            ModNetwork.CHANNEL.sendToServer(new PacketMissileSteer(yawDelta, pitchDelta));
+            ModNetwork.CHANNEL.sendToServer(new PacketMissileSteer(yawDelta, pitchDelta, false));
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    //  Missile Truck guidance steering (Chunk 8) — shares PacketMissileSteer with
+    //  the Predator cam above, but has no camera swap: the gunner stays put and
+    //  steers via mouse look while a HUD readout shows signal state.
+    // ─────────────────────────────────────────────────────────────────────────
+
+    /** Set by {@link com.airarsenal.network.PacketGuidanceStart.Handler}; -1 = inactive. */
+    public static volatile int activeGuidanceMissileId = -1;
+
+    /** Set by {@link com.airarsenal.network.PacketGuidanceLost.Handler}. */
+    public static volatile boolean guidanceSignalLost = false;
+
+    private int guidanceSteerTick = 0;
+
+    /**
+     * Called from {@link #onClientTick} when {@link #activeGuidanceMissileId} is set.
+     * Reads mouse delta the same way as Predator cam, plus Shift to trigger top-attack.
+     */
+    private void handleTruckGuidanceTick(Minecraft mc) {
+        guidanceSteerTick++;
+
+        int rawDX = Mouse.getDX();
+        int rawDY = Mouse.getDY();
+        float sens = mc.gameSettings.mouseSensitivity * 0.6f + 0.2f;
+        float yawDelta   =  rawDX * sens * 0.15f;
+        float pitchDelta = -rawDY * sens * 0.15f;
+        yawDelta   = Math.max(-10f, Math.min(10f, yawDelta));
+        pitchDelta = Math.max(-8f,  Math.min(8f,  pitchDelta));
+
+        boolean topAttackPressed = org.lwjgl.input.Keyboard.isKeyDown(
+            org.lwjgl.input.Keyboard.KEY_LSHIFT);
+
+        if (guidanceSteerTick % 2 == 0) {
+            ModNetwork.CHANNEL.sendToServer(
+                new PacketMissileSteer(yawDelta, pitchDelta, topAttackPressed));
         }
     }
 

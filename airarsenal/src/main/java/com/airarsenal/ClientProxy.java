@@ -2,6 +2,7 @@ package com.airarsenal;
 
 import com.airarsenal.client.KeyBindings;
 import com.airarsenal.client.TacModeController;
+import com.airarsenal.client.gui.ManpadsHUD;
 import com.airarsenal.client.gui.TacModeHUD;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.world.World;
@@ -31,6 +32,7 @@ public class ClientProxy extends CommonProxy {
         tacModeController = new TacModeController();
         MinecraftForge.EVENT_BUS.register(tacModeController);
         MinecraftForge.EVENT_BUS.register(new TacModeHUD(tacModeController));
+        MinecraftForge.EVENT_BUS.register(new ManpadsHUD());
 
         // Register config-changed listener here (client only) — ConfigChangedEvent
         // is a client-only class and must NOT be referenced on a dedicated server.
