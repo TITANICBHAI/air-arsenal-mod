@@ -21,6 +21,16 @@ import net.minecraftforge.fml.relauncher.Side;
  *  9 → PacketGuidanceLost        (S→C)  Chunk 8
  * 10 → PacketGuidanceEnd         (S→C)  Chunk 8
  * 11 → PacketFireMissileTube     (C→S)  Chunk 8
+ * 12 → PacketDroneSteer           (C→S)  Chunk 9
+ * 13 → PacketDroneCameraStart     (S→C)  Chunk 9
+ * 14 → PacketDroneCameraEnd       (S→C)  Chunk 9
+ * 15 → PacketSpecialAction        (C→S)  Chunk 9
+ * 16 → PacketDroneExit            (C→S)  Chunk 9
+ * 17 → PacketHelicopterStrafe     (C→S)  Chunk 9
+ * 18 → PacketOrbitalFire          (C→S)  Chunk 11
+ * 19 → PacketOrbitalWarning       (S→C)  Chunk 11
+ * 20 → PacketOrbitalImpact        (S→C)  Chunk 11
+ * 21 → PacketScreenShake          (S→C)  Chunk 11
  * </pre>
  */
 public final class ModNetwork {
@@ -104,5 +114,22 @@ public final class ModNetwork {
         CHANNEL.registerMessage(
             PacketHelicopterStrafe.Handler.class,
             PacketHelicopterStrafe.class, 17, Side.SERVER);
+
+        // ── Chunk 11 — Orbital Cannon ─────────────────────────────────────────
+        CHANNEL.registerMessage(
+            PacketOrbitalFire.Handler.class,
+            PacketOrbitalFire.class, 18, Side.SERVER);
+
+        CHANNEL.registerMessage(
+            PacketOrbitalWarning.Handler.class,
+            PacketOrbitalWarning.class, 19, Side.CLIENT);
+
+        CHANNEL.registerMessage(
+            PacketOrbitalImpact.Handler.class,
+            PacketOrbitalImpact.class, 20, Side.CLIENT);
+
+        CHANNEL.registerMessage(
+            PacketScreenShake.Handler.class,
+            PacketScreenShake.class, 21, Side.CLIENT);
     }
 }

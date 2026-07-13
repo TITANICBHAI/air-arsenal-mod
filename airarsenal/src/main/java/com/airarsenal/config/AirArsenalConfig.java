@@ -29,5 +29,31 @@ public final class AirArsenalConfig {
     @Config.LangKey("config.airarsenal.allowFriendlyFire")
     public static boolean allowFriendlyFire = true;
 
+    // ── Chunk 11 — Orbital Cannon ────────────────────────────────────────────
+
+    @Config.Comment("Cooldown between orbital strikes in ticks (default 6000 = 5 minutes)")
+    @Config.LangKey("config.airarsenal.orbitalCooldownTicks")
+    public static int orbitalCooldownTicks = 6000;
+
+    @Config.Comment("Blast radius of orbital rod impact in blocks")
+    @Config.LangKey("config.airarsenal.orbitalBlastRadius")
+    public static int orbitalBlastRadius = 15;
+
+    @Config.Comment("Ticks of charging before rod fires (default 200 = 10s)")
+    @Config.LangKey("config.airarsenal.orbitalChargingTicks")
+    public static int orbitalChargingTicks = 200;
+
+    @Config.Comment("Ticks of warning before impact (default 100 = 5s)")
+    @Config.LangKey("config.airarsenal.orbitalWarningTicks")
+    public static int orbitalWarningTicks = 100;
+
+    @Config.Comment("If false, orbital strike does not destroy blocks (entity damage still applies)")
+    @Config.LangKey("config.airarsenal.orbitalBlockDestruction")
+    public static boolean orbitalBlockDestruction = true;
+
+    @Config.Comment("Max distance in blocks from cannon the designator can paint a target")
+    @Config.LangKey("config.airarsenal.orbitalMaxRange")
+    public static int orbitalMaxRange = 500;
+
     private AirArsenalConfig() {}
 }

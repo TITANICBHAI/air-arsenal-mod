@@ -1,5 +1,7 @@
 package com.airarsenal.registry;
 
+import com.airarsenal.block.OrbitalCannonCoreBlock;
+import com.airarsenal.block.OrbitalCannonFrameBlock;
 import com.airarsenal.block.artillery.AACannonBlock;
 import com.airarsenal.block.artillery.FlakBatteryBlock;
 import com.airarsenal.block.artillery.HowitzerBlock;
@@ -36,6 +38,13 @@ public class ModBlocks {
     @ObjectHolder("static_missile_battery")
     public static final Block STATIC_MISSILE_BATTERY = null;
 
+    // ── Chunk 11 — Orbital Cannon ───────────────────────────────────────────────
+    @ObjectHolder("orbital_cannon_core")
+    public static final Block ORBITAL_CANNON_CORE = null;
+
+    @ObjectHolder("orbital_cannon_frame")
+    public static final Block ORBITAL_CANNON_FRAME = null;
+
     @SubscribeEvent
     public static void register(RegistryEvent.Register<Block> event) {
         IForgeRegistry<Block> registry = event.getRegistry();
@@ -48,6 +57,8 @@ public class ModBlocks {
         registry.register(new MLRSBlock());
         registry.register(new StaticMissileBatteryBlock());
 
-        // CHUNK 9+: register further blocks here
+        // Chunk 11 — Orbital Cannon
+        registry.register(new OrbitalCannonCoreBlock());
+        registry.register(new OrbitalCannonFrameBlock());
     }
 }

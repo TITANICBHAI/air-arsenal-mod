@@ -44,6 +44,12 @@ public class ModSounds {
     public static final SoundEvent ARTILLERY_AAGUN_FIRE  = create("artillery.aagun.fire");
     public static final SoundEvent ARTILLERY_FLAK_BURST  = create("artillery.flak.burst");
 
+    // ── Orbital Cannon (Chunk 11) ──────────────────────────────────────────────
+    public static final SoundEvent WEAPON_ORBITAL_CHARGE  = create("weapon.orbital.charge");
+    public static final SoundEvent WEAPON_ORBITAL_FIRE    = create("weapon.orbital.fire");
+    public static final SoundEvent WEAPON_ORBITAL_IMPACT  = create("weapon.orbital.impact");
+    public static final SoundEvent WEAPON_ORBITAL_WARNING = create("weapon.orbital.warning");
+
     private static SoundEvent create(String path) {
         ResourceLocation id = new ResourceLocation(AirArsenal.MODID, path);
         return new SoundEvent(id).setRegistryName(id);
@@ -71,5 +77,10 @@ public class ModSounds {
 
         registry.register(ARTILLERY_AAGUN_FIRE);
         registry.register(ARTILLERY_FLAK_BURST);
+
+        registry.register(WEAPON_ORBITAL_CHARGE);
+        registry.register(WEAPON_ORBITAL_FIRE);
+        registry.register(WEAPON_ORBITAL_IMPACT);
+        registry.register(WEAPON_ORBITAL_WARNING);
     }
 }

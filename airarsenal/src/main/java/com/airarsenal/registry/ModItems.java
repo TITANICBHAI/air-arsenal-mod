@@ -57,6 +57,13 @@ public class ModItems {
     @ObjectHolder("drone_controller")
     public static final Item DRONE_CONTROLLER = null;
 
+    // ── Chunk 11 — Orbital Cannon ────────────────────────────────────────────
+    @ObjectHolder("orbital_designator")
+    public static final Item ORBITAL_DESIGNATOR = null;
+
+    @ObjectHolder("satellite_uplink_card")
+    public static final Item SATELLITE_UPLINK_CARD = null;
+
     @SubscribeEvent
     public static void register(RegistryEvent.Register<Item> event) {
         IForgeRegistry<Item> registry = event.getRegistry();
@@ -85,5 +92,9 @@ public class ModItems {
         // Chunk 9 — Fuel system & Predator Drone remote pilot
         registry.register(new ItemJetFuel());
         registry.register(new ItemDroneController());
+
+        // Chunk 11 — Orbital Cannon
+        registry.register(new ItemOrbitalDesignator());
+        registry.register(new ItemSatelliteUplinkCard());
     }
 }

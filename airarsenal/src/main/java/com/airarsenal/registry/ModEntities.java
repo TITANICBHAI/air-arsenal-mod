@@ -1,6 +1,7 @@
 package com.airarsenal.registry;
 
 import com.airarsenal.AirArsenal;
+import com.airarsenal.entity.OrbitalWarningMarkerEntity;
 import com.airarsenal.entity.plane.AttackHelicopterEntity;
 import com.airarsenal.entity.plane.FighterJetEntity;
 import com.airarsenal.entity.plane.IronMonoplaneEntity;
@@ -49,6 +50,8 @@ public class ModEntities {
      * 28  PredatorDroneEntity        Chunk 9
      * 29  StealthBomberEntity        Chunk 9
      * 30  AttackHelicopterEntity     Chunk 9
+ * 31  OrbitalRodEntity           Chunk 11
+ * 32  OrbitalWarningMarkerEntity Chunk 11
      * 31+ reserved for Chunk 10–11
      */
     public static void register() {
@@ -220,5 +223,16 @@ public class ModEntities {
             AttackHelicopterEntity.class, "attack_helicopter", 30,
             AirArsenal.instance, 80, 3, true,
             0x4B5320, 0x1A1A1A);
+
+        // ── Chunk 11 — Orbital Cannon ────────────────────────────────────────────
+        EntityRegistry.registerModEntity(
+            new ResourceLocation("airarsenal", "orbital_rod"),
+            OrbitalRodEntity.class, "orbital_rod", 31,
+            AirArsenal.instance, 256, 5, true);
+
+        EntityRegistry.registerModEntity(
+            new ResourceLocation("airarsenal", "orbital_warning_marker"),
+            OrbitalWarningMarkerEntity.class, "orbital_warning_marker", 32,
+            AirArsenal.instance, 256, 1, true);
     }
 }

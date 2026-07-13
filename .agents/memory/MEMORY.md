@@ -1,0 +1,2 @@
+- [Air Arsenal mod project scope](airarsenal-scope.md) — this repo's real project is a Forge 1.12.2 mod; the pnpm/artifacts scaffolding is unrelated and out of scope.
+- [Air Arsenal registry ID conventions](airarsenal-registry-ids.md) — packet/entity discriminator IDs and package placement conventions to follow when adding new chunks.

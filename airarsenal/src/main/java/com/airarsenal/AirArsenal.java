@@ -1,6 +1,7 @@
 package com.airarsenal;
 
 import com.airarsenal.network.ModNetwork;
+import com.airarsenal.registry.ModBlocks;
 import com.airarsenal.registry.ModEntities;
 import com.airarsenal.registry.ModItems;
 import net.minecraft.init.Blocks;
@@ -150,5 +151,64 @@ public class AirArsenal {
 
         // Fighter Jet, Predator Drone, Stealth Bomber, and Attack Helicopter are
         // elite non-craftable planes (creative tab / loot only, per Chunk 9 spec).
+
+        // ── Orbital Designator (Chunk 11) ────────────────────────────────────
+        // [ ]  [D]  [ ]
+        // [B]  [E]  [G]
+        // [ ]  [ ]  [ ]
+        // D = Diamond, B = Blaze Rod, E = Ender Pearl, G = Gold Ingot (cross pattern)
+        GameRegistry.addShapedRecipe(
+            new ResourceLocation(MODID, "orbital_designator"), null,
+            new ItemStack(ModItems.ORBITAL_DESIGNATOR),
+            " D ", "BEG", "   ",
+            'D', new ItemStack(Items.DIAMOND),
+            'B', new ItemStack(Items.BLAZE_ROD),
+            'E', new ItemStack(Items.ENDER_PEARL),
+            'G', new ItemStack(Items.GOLD_INGOT)
+        );
+
+        // ── Satellite Uplink Card (Chunk 11) ─────────────────────────────────
+        // [G]  [Y]  [G]
+        // [G]  [P]  [G]
+        // [G]  [R]  [G]
+        // G = Gold Ingot, Y = Ender Eye, P = Paper, R = Redstone Dust
+        GameRegistry.addShapedRecipe(
+            new ResourceLocation(MODID, "satellite_uplink_card"), null,
+            new ItemStack(ModItems.SATELLITE_UPLINK_CARD),
+            "GYG", "GPG", "GRG",
+            'G', new ItemStack(Items.GOLD_INGOT),
+            'Y', new ItemStack(Items.ENDER_EYE),
+            'P', new ItemStack(Items.PAPER),
+            'R', new ItemStack(Items.REDSTONE)
+        );
+
+        // ── Orbital Cannon Frame Block (Chunk 11) ────────────────────────────
+        // [I]  [R]  [G]
+        // [I]  [R]  [G]
+        // [I]  [R]  [G]
+        // I = Iron Block, R = Redstone Block, G = Gold Block
+        GameRegistry.addShapedRecipe(
+            new ResourceLocation(MODID, "orbital_cannon_frame"), null,
+            new ItemStack(ModBlocks.ORBITAL_CANNON_FRAME),
+            "IRG", "IRG", "IRG",
+            'I', new ItemStack(Blocks.IRON_BLOCK),
+            'R', new ItemStack(Blocks.REDSTONE_BLOCK),
+            'G', new ItemStack(Blocks.GOLD_BLOCK)
+        );
+
+        // ── Orbital Cannon Core Block (Chunk 11) ─────────────────────────────
+        // [D]  [N]  [D]
+        // [O]  [E]  [O]
+        // [D]  [E]  [D]
+        // D = Diamond Block, N = Nether Star, O = Obsidian, E = Emerald Block
+        GameRegistry.addShapedRecipe(
+            new ResourceLocation(MODID, "orbital_cannon_core"), null,
+            new ItemStack(ModBlocks.ORBITAL_CANNON_CORE),
+            "DND", "OEO", "DED",
+            'D', new ItemStack(Blocks.DIAMOND_BLOCK),
+            'N', new ItemStack(Items.NETHER_STAR),
+            'O', new ItemStack(Blocks.OBSIDIAN),
+            'E', new ItemStack(Blocks.EMERALD_BLOCK)
+        );
     }
 }

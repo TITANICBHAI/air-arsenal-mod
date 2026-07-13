@@ -1,8 +1,10 @@
 package com.airarsenal.registry;
 
+import com.airarsenal.block.OrbitalCannonTileEntity;
 import com.airarsenal.block.artillery.HowitzerTileEntity;
 import com.airarsenal.block.artillery.MortarTileEntity;
 import com.airarsenal.client.gui.ContainerArtilleryEmpty;
+import com.airarsenal.client.gui.OrbitalCannonContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -18,8 +20,9 @@ import javax.annotation.Nullable;
  */
 public class ModGuiHandler implements IGuiHandler {
 
-    public static final int GUI_MORTAR   = 0;
-    public static final int GUI_HOWITZER = 1;
+    public static final int GUI_MORTAR         = 0;
+    public static final int GUI_HOWITZER       = 1;
+    public static final int GUI_ORBITAL_CANNON = 2;
 
     @Override
     @Nullable
@@ -31,6 +34,11 @@ public class ModGuiHandler implements IGuiHandler {
                 return null;
             case GUI_HOWITZER:
                 if (te instanceof HowitzerTileEntity) return new ContainerArtilleryEmpty();
+                return null;
+            case GUI_ORBITAL_CANNON:
+                if (te instanceof OrbitalCannonTileEntity) {
+                    return new OrbitalCannonContainer((OrbitalCannonTileEntity) te);
+                }
                 return null;
             default:
                 return null;
@@ -50,6 +58,12 @@ public class ModGuiHandler implements IGuiHandler {
             case GUI_HOWITZER:
                 if (te instanceof HowitzerTileEntity) {
                     return new com.airarsenal.client.gui.GuiHowitzer((HowitzerTileEntity) te, new BlockPos(x, y, z));
+                }
+                return null;
+            case GUI_ORBITAL_CANNON:
+                if (te instanceof OrbitalCannonTileEntity) {
+                    return new com.airarsenal.client.gui.OrbitalCannonGui(
+                        new OrbitalCannonContainer((OrbitalCannonTileEntity) te), new BlockPos(x, y, z));
                 }
                 return null;
             default:

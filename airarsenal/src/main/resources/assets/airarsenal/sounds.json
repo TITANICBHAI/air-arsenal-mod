@@ -103,5 +103,33 @@
     "sounds": [
       { "name": "entity.firework.blast", "volume": 1.0, "pitch": 1.2, "replace": false }
     ]
+  },
+  "weapon.orbital.charge": {
+    "category": "players",
+    "subtitle": "subtitles.airarsenal.weapon.orbital.charge",
+    "sounds": [
+      { "name": "block.beacon.power_select", "volume": 1.0, "pitch": 0.6, "replace": false }
+    ]
+  },
+  "weapon.orbital.fire": {
+    "category": "players",
+    "subtitle": "subtitles.airarsenal.weapon.orbital.fire",
+    "sounds": [
+      { "name": "entity.wither.shoot", "volume": 1.0, "pitch": 0.5, "replace": false }
+    ]
+  },
+  "weapon.orbital.impact": {
+    "category": "ambient",
+    "subtitle": "subtitles.airarsenal.weapon.orbital.impact",
+    "sounds": [
+      { "name": "entity.generic.explode", "volume": 1.0, "pitch": 0.4, "replace": false }
+    ]
+  },
+  "weapon.orbital.warning": {
+    "category": "players",
+    "subtitle": "subtitles.airarsenal.weapon.orbital.warning",
+    "sounds": [
+      { "name": "block.beacon.ambient", "volume": 1.0, "pitch": 0.5, "replace": false }
+    ]
   }
 }

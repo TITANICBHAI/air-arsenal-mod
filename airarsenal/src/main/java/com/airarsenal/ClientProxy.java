@@ -1,11 +1,18 @@
 package com.airarsenal;
 
+import com.airarsenal.block.OrbitalCannonTileEntity;
 import com.airarsenal.client.KeyBindings;
+import com.airarsenal.client.ScreenShakeHandler;
 import com.airarsenal.client.TacModeController;
 import com.airarsenal.client.gui.ManpadsHUD;
 import com.airarsenal.client.gui.TacModeHUD;
+import com.airarsenal.client.renderer.entity.OrbitalRodRenderer;
+import com.airarsenal.client.renderer.tileentity.OrbitalCannonTESR;
+import com.airarsenal.entity.projectile.OrbitalRodEntity;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.world.World;
+import net.minecraftforge.client.registry.ClientRegistry;
+import net.minecraftforge.client.registry.RenderingRegistry;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
@@ -37,6 +44,11 @@ public class ClientProxy extends CommonProxy {
         // Register config-changed listener here (client only) — ConfigChangedEvent
         // is a client-only class and must NOT be referenced on a dedicated server.
         MinecraftForge.EVENT_BUS.register(this);
+
+        // ── Chunk 11 — Orbital Cannon ────────────────────────────────────────
+        MinecraftForge.EVENT_BUS.register(new ScreenShakeHandler());
+        ClientRegistry.bindTileEntitySpecialRenderer(OrbitalCannonTileEntity.class, new OrbitalCannonTESR());
+        RenderingRegistry.registerEntityRenderingHandler(OrbitalRodEntity.class, OrbitalRodRenderer::new);
     }
 
     @Override
