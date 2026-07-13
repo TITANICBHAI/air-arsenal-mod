@@ -8,6 +8,11 @@ import net.minecraft.inventory.Container;
  * network handshake has something to open — the actual UI (sliders, text fields)
  * lives entirely in the paired {@link net.minecraft.client.gui.GuiScreen}, which reads
  * and writes the TileEntity's state directly via network packets rather than slots.
+ *
+ * <p>Not annotated {@code @SideOnly} — unlike the GUI screens, a {@link Container}
+ * is instantiated on both sides by {@code NetworkRegistry}'s gui handler contract
+ * (see {@code ModGuiHandler#getServerGuiElement}), so it must remain loadable on
+ * a dedicated server.</p>
  */
 public class ContainerArtilleryEmpty extends Container {
 

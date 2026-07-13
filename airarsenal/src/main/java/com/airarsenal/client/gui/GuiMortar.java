@@ -7,12 +7,15 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiSlider;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * Mortar elevation-angle GUI — a single slider from 45° (flattest, longest range)
  * to 85° (steepest, shortest range). Slider changes are sent live to the server
  * via {@link PacketSetMortarAngle}; "Done" simply closes the screen.
  */
+@SideOnly(Side.CLIENT)
 public class GuiMortar extends GuiScreen {
 
     private final MortarTileEntity te;

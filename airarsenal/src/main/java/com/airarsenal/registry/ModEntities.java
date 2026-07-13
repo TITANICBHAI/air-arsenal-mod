@@ -164,25 +164,30 @@ public class ModEntities {
             MLRSRocketEntity.class, "mlrs_rocket", 21,
             AirArsenal.instance, 128, 3, true);
 
+        // Non-craftable vehicle — spawn egg registered (Chunk 10).
         EntityRegistry.registerModEntity(
             new ResourceLocation("airarsenal", "missile_truck"),
             MissileTruckEntity.class, "missile_truck", 22,
-            AirArsenal.instance, 80, 3, true);
+            AirArsenal.instance, 80, 3, true,
+            0x4A4A4A, 0x2E2E2E);
 
         EntityRegistry.registerModEntity(
             new ResourceLocation("airarsenal", "truck_guided_missile"),
             TruckGuidedMissileEntity.class, "truck_guided_missile", 23,
             AirArsenal.instance, 160, 1, true);  // freq=1 for guidance responsiveness
 
+        // Non-craftable vehicles — spawn eggs registered (Chunk 10).
         EntityRegistry.registerModEntity(
             new ResourceLocation("airarsenal", "armored_truck"),
             ArmoredTruckEntity.class, "armored_truck", 24,
-            AirArsenal.instance, 80, 3, true);
+            AirArsenal.instance, 80, 3, true,
+            0x808080, 0xC0C0C0);
 
         EntityRegistry.registerModEntity(
             new ResourceLocation("airarsenal", "tank"),
             TankEntity.class, "tank", 25,
-            AirArsenal.instance, 80, 3, true);
+            AirArsenal.instance, 80, 3, true,
+            0x4B5320, 0x2F3D1A);
 
         EntityRegistry.registerModEntity(
             new ResourceLocation("airarsenal", "tank_shell"),
@@ -190,24 +195,30 @@ public class ModEntities {
             AirArsenal.instance, 128, 3, true);
 
         // ── Chunk 9 — Advanced Planes & Fuel System ─────────────────────────────
+        // All four are non-craftable (creative tab / loot only) — spawn eggs
+        // registered for every one, per the Chunk 10 final checklist.
         EntityRegistry.registerModEntity(
             new ResourceLocation("airarsenal", "fighter_jet"),
             FighterJetEntity.class, "fighter_jet", 27,
-            AirArsenal.instance, 80, 3, true);
+            AirArsenal.instance, 80, 3, true,
+            0x2B2B2B, 0x5A9BD4);
 
         EntityRegistry.registerModEntity(
             new ResourceLocation("airarsenal", "predator_drone"),
             PredatorDroneEntity.class, "predator_drone", 28,
-            AirArsenal.instance, 80, 3, true);
+            AirArsenal.instance, 80, 3, true,
+            0x3C3C3C, 0x8A8A8A);
 
         EntityRegistry.registerModEntity(
             new ResourceLocation("airarsenal", "stealth_bomber"),
             StealthBomberEntity.class, "stealth_bomber", 29,
-            AirArsenal.instance, 80, 3, true);
+            AirArsenal.instance, 80, 3, true,
+            0x1A1A1A, 0x444444);
 
         EntityRegistry.registerModEntity(
             new ResourceLocation("airarsenal", "attack_helicopter"),
             AttackHelicopterEntity.class, "attack_helicopter", 30,
-            AirArsenal.instance, 80, 3, true);
+            AirArsenal.instance, 80, 3, true,
+            0x4B5320, 0x1A1A1A);
     }
 }

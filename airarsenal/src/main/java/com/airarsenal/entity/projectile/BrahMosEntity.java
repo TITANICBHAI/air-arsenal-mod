@@ -94,6 +94,14 @@ public class BrahMosEntity extends Entity {
         moveEntity(motionX, motionY, motionZ);
         Vec3d end   = new Vec3d(posX, posY, posZ);
 
+        // ── Trail particles (Chunk 10 polish, client-only) ──────────────────────
+        if (world.isRemote) {
+            AirArsenal.proxy.spawnMissileTrail(world, posX, posY, posZ);
+            if (ticksExisted % 5 == 0) {
+                AirArsenal.proxy.spawnBrahMosTrailBurst(world, posX, posY, posZ);
+            }
+        }
+
         // ── Block collision ───────────────────────────────────────────────────
         if (!world.isRemote) {
             RayTraceResult hit = world.rayTraceBlocks(start, end, false, true, false);

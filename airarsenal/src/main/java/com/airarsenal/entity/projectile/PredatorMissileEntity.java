@@ -1,5 +1,6 @@
 package com.airarsenal.entity.projectile;
 
+import com.airarsenal.AirArsenal;
 import com.airarsenal.config.AirArsenalConfig;
 import com.airarsenal.network.ModNetwork;
 import com.airarsenal.network.PacketPredatorCameraEnd;
@@ -110,6 +111,11 @@ public class PredatorMissileEntity extends Entity {
         Vec3d start = new Vec3d(posX, posY, posZ);
         moveEntity(motionX, motionY, motionZ);
         Vec3d end = new Vec3d(posX, posY, posZ);
+
+        // ── Trail particles (Chunk 10 polish, client-only) ──────────────────────
+        if (world.isRemote) {
+            AirArsenal.proxy.spawnMissileTrail(world, posX, posY, posZ);
+        }
 
         // ── Block collision ───────────────────────────────────────────────────
         if (!world.isRemote) {

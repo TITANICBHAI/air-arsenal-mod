@@ -7,6 +7,8 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * Howitzer manual-targeting GUI — three text fields for X/Y/Z target coordinates,
@@ -14,6 +16,7 @@ import net.minecraft.util.math.BlockPos;
  * "Set Target" sends {@link PacketSetHowitzerTarget}; the server enforces the
  * 20–150 block range and replies via chat message.
  */
+@SideOnly(Side.CLIENT)
 public class GuiHowitzer extends GuiScreen {
 
     private final HowitzerTileEntity te;

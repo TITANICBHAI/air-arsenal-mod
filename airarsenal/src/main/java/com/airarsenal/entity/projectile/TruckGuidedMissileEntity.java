@@ -1,5 +1,6 @@
 package com.airarsenal.entity.projectile;
 
+import com.airarsenal.AirArsenal;
 import com.airarsenal.combat.AirArsenalDamageSource;
 import com.airarsenal.config.AirArsenalConfig;
 import com.airarsenal.network.ModNetwork;
@@ -164,6 +165,11 @@ public class TruckGuidedMissileEntity extends Entity {
         Vec3d start = new Vec3d(posX, posY, posZ);
         moveEntity(motionX, motionY, motionZ);
         Vec3d end = new Vec3d(posX, posY, posZ);
+
+        // ── Trail particles (Chunk 10 polish, client-only) ──────────────────────
+        if (world.isRemote) {
+            AirArsenal.proxy.spawnMissileTrail(world, posX, posY, posZ);
+        }
 
         if (!world.isRemote) {
             RayTraceResult hit = world.rayTraceBlocks(start, end, false, true, false);
