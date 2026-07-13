@@ -2,6 +2,7 @@ package com.airarsenal.entity.plane;
 
 import com.airarsenal.combat.weapon.LightMachineGun;
 import com.airarsenal.entity.plane.component.PropellerComponent;
+import com.airarsenal.registry.ModSounds;
 import net.minecraft.world.World;
 
 /**
@@ -40,6 +41,7 @@ public class IronMonoplaneEntity extends BasePlaneEntity {
     public void onUpdate() {
         super.onUpdate(); // propeller contact check + particles
         applyFlightPhysics();
+        playEngineLoopSound(ModSounds.PLANE_ENGINE_MONOPLANE);
         // Weapon firing is now handled server-side by PacketWeaponFire.Handler
     }
 }

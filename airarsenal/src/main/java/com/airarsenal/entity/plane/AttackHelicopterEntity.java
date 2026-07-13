@@ -1,8 +1,10 @@
 package com.airarsenal.entity.plane;
 
+import com.airarsenal.AirArsenal;
 import com.airarsenal.combat.weapon.Minigun;
 import com.airarsenal.combat.weapon.RocketPodLauncher;
 import com.airarsenal.entity.plane.component.PropellerComponent;
+import com.airarsenal.registry.ModSounds;
 import net.minecraft.world.World;
 
 /**
@@ -53,6 +55,10 @@ public class AttackHelicopterEntity extends BasePlaneEntity {
     public void onUpdate() {
         super.onUpdate(); // rotor contact check + fuel tick + particles
         applyFlightPhysics();
+        playEngineLoopSound(ModSounds.PLANE_ENGINE_HELICOPTER);
+        if (world.isRemote && speed <= 0.01f && !propeller.isDestroyed()) {
+            AirArsenal.proxy.spawnRotorDownwash(world, posX, posY, posZ);
+        }
     }
 
     /**

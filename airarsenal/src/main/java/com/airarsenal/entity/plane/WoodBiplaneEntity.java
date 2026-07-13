@@ -1,5 +1,6 @@
 package com.airarsenal.entity.plane;
 
+import com.airarsenal.registry.ModSounds;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
@@ -39,5 +40,6 @@ public class WoodBiplaneEntity extends BasePlaneEntity {
         // Full input handling via packets is wired in Chunk 5.
         // For now, physics run every tick so mounting and fall-under-gravity work correctly.
         applyFlightPhysics();
+        playEngineLoopSound(ModSounds.PLANE_ENGINE_BIPLANE);
     }
 }

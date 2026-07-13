@@ -51,4 +51,31 @@ public class CommonProxy {
      * {@link ClientProxy}.
      */
     public void spawnJetEngineFire(World world, double x, double y, double z) {}
+
+    // ── Chunk 10 particle polish stubs (no-op on server) ──────────────────────
+
+    /**
+     * Spawns flame + smoke from a jet's exhaust position each tick while moving
+     * (Fighter Jet, Stealth Bomber). No-op on the server side; overridden in
+     * {@link ClientProxy}.
+     */
+    public void spawnJetExhaust(World world, double x, double y, double z) {}
+
+    /**
+     * Spawns a disk of downwash cloud particles below a hovering helicopter's
+     * rotor. No-op on the server side; overridden in {@link ClientProxy}.
+     */
+    public void spawnRotorDownwash(World world, double x, double y, double z) {}
+
+    /**
+     * Spawns smoke + flame at a missile's previous tick position, forming a
+     * trail. No-op on the server side; overridden in {@link ClientProxy}.
+     */
+    public void spawnMissileTrail(World world, double x, double y, double z) {}
+
+    /**
+     * BrahMos-specific: spawns an explosion-particle arc along the trail every
+     * 5 ticks. No-op on the server side; overridden in {@link ClientProxy}.
+     */
+    public void spawnBrahMosTrailBurst(World world, double x, double y, double z) {}
 }

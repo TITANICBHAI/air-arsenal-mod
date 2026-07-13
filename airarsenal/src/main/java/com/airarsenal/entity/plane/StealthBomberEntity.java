@@ -4,6 +4,7 @@ import com.airarsenal.AirArsenal;
 import com.airarsenal.entity.plane.component.IEngineComponent;
 import com.airarsenal.entity.plane.component.PropellerComponent;
 import com.airarsenal.entity.plane.component.PropellerState;
+import com.airarsenal.registry.ModSounds;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.World;
@@ -56,6 +57,10 @@ public class StealthBomberEntity extends BasePlaneEntity {
     public void onUpdate() {
         super.onUpdate(); // fuel tick + particles
         applyFlightPhysics();
+        playEngineLoopSound(ModSounds.PLANE_ENGINE_JET);
+        if (world.isRemote && speed > 0.5f) {
+            AirArsenal.proxy.spawnJetExhaust(world, posX, posY, posZ);
+        }
 
         if (!world.isRemote && isStealthActive) {
             // Stealth costs an extra 1x fuel per tick (2x total) on top of the

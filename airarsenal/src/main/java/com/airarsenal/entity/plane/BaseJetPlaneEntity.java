@@ -1,10 +1,12 @@
 package com.airarsenal.entity.plane;
 
 import com.airarsenal.AirArsenal;
+import com.airarsenal.registry.ModSounds;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.potion.MobEffects;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.world.World;
 
 /**
@@ -27,6 +29,8 @@ public abstract class BaseJetPlaneEntity extends BasePlaneEntity {
     protected void onEngineDestroyed() {
         if (world.isRemote) return;
 
+        world.playSound(null, posX, posY, posZ,
+            ModSounds.PLANE_PROPELLER_DESTROYED, SoundCategory.NEUTRAL, 1.0f, 1.0f);
         AirArsenal.proxy.spawnJetEngineFire(world, posX, posY, posZ);
 
         EntityLivingBase pilot = resolvePilot();

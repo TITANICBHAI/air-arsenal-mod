@@ -1,0 +1,107 @@
+{
+  "plane.engine.biplane": {
+    "category": "neutral",
+    "subtitle": "subtitles.airarsenal.plane.engine.biplane",
+    "sounds": [
+      { "name": "entity.bat.loop", "volume": 0.6, "pitch": 0.8, "replace": false }
+    ]
+  },
+  "plane.engine.monoplane": {
+    "category": "neutral",
+    "subtitle": "subtitles.airarsenal.plane.engine.monoplane",
+    "sounds": [
+      { "name": "entity.enderdragon.flap", "volume": 0.5, "pitch": 1.1, "replace": false }
+    ]
+  },
+  "plane.engine.jet": {
+    "category": "neutral",
+    "subtitle": "subtitles.airarsenal.plane.engine.jet",
+    "sounds": [
+      { "name": "entity.blaze.burn", "volume": 0.8, "pitch": 0.7, "replace": false }
+    ]
+  },
+  "plane.engine.helicopter": {
+    "category": "neutral",
+    "subtitle": "subtitles.airarsenal.plane.engine.helicopter",
+    "sounds": [
+      { "name": "block.piston.extend", "volume": 0.7, "pitch": 1.6, "replace": false }
+    ]
+  },
+  "plane.propeller.damage": {
+    "category": "neutral",
+    "subtitle": "subtitles.airarsenal.plane.propeller.damage",
+    "sounds": [
+      { "name": "block.anvil.land", "volume": 0.6, "pitch": 1.3, "replace": false }
+    ]
+  },
+  "plane.propeller.destroyed": {
+    "category": "neutral",
+    "subtitle": "subtitles.airarsenal.plane.propeller.destroyed",
+    "sounds": [
+      { "name": "entity.generic.explode", "volume": 0.8, "pitch": 1.4, "replace": false }
+    ]
+  },
+  "weapon.machinegun.fire": {
+    "category": "players",
+    "subtitle": "subtitles.airarsenal.weapon.machinegun.fire",
+    "sounds": [
+      { "name": "entity.arrow.shoot", "volume": 1.0, "pitch": 0.6, "replace": false }
+    ]
+  },
+  "weapon.cannon.fire": {
+    "category": "players",
+    "subtitle": "subtitles.airarsenal.weapon.cannon.fire",
+    "sounds": [
+      { "name": "entity.firework.blast", "volume": 1.0, "pitch": 0.5, "replace": false }
+    ]
+  },
+  "weapon.missile.launch": {
+    "category": "players",
+    "subtitle": "subtitles.airarsenal.weapon.missile.launch",
+    "sounds": [
+      { "name": "entity.firework.launch", "volume": 1.0, "pitch": 0.8, "replace": false }
+    ]
+  },
+  "weapon.missile.guidance": {
+    "category": "neutral",
+    "subtitle": "subtitles.airarsenal.weapon.missile.guidance",
+    "sounds": [
+      { "name": "block.beacon.ambient", "volume": 0.4, "pitch": 1.5, "replace": false }
+    ]
+  },
+  "weapon.bomb.drop": {
+    "category": "players",
+    "subtitle": "subtitles.airarsenal.weapon.bomb.drop",
+    "sounds": [
+      { "name": "block.piston.contract", "volume": 0.8, "pitch": 0.8, "replace": false }
+    ]
+  },
+  "weapon.bomb.napalm": {
+    "category": "players",
+    "subtitle": "subtitles.airarsenal.weapon.bomb.napalm",
+    "sounds": [
+      { "name": "entity.generic.burn", "volume": 1.0, "pitch": 0.9, "replace": false }
+    ]
+  },
+  "weapon.bomb.emp": {
+    "category": "players",
+    "subtitle": "subtitles.airarsenal.weapon.bomb.emp",
+    "sounds": [
+      { "name": "entity.lightning.thunder", "volume": 0.7, "pitch": 1.6, "replace": false }
+    ]
+  },
+  "artillery.aagun.fire": {
+    "category": "players",
+    "subtitle": "subtitles.airarsenal.artillery.aagun.fire",
+    "sounds": [
+      { "name": "entity.firework.blast_far", "volume": 1.0, "pitch": 0.6, "replace": false }
+    ]
+  },
+  "artillery.flak.burst": {
+    "category": "players",
+    "subtitle": "subtitles.airarsenal.artillery.flak.burst",
+    "sounds": [
+      { "name": "entity.firework.blast", "volume": 1.0, "pitch": 1.2, "replace": false }
+    ]
+  }
+}

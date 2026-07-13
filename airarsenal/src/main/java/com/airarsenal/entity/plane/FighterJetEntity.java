@@ -5,6 +5,7 @@ import com.airarsenal.combat.weapon.BrahMosLauncher;
 import com.airarsenal.combat.weapon.HeavyRoundGun;
 import com.airarsenal.combat.weapon.HellfireLauncher;
 import com.airarsenal.entity.plane.component.JetEngineComponent;
+import com.airarsenal.registry.ModSounds;
 import net.minecraft.world.World;
 
 /**
@@ -60,6 +61,10 @@ public class FighterJetEntity extends BaseJetPlaneEntity {
         super.onUpdate(); // fuel tick + particles
         tickAfterburner();
         applyFlightPhysics();
+        playEngineLoopSound(ModSounds.PLANE_ENGINE_JET);
+        if (world.isRemote && speed > 0.5f) {
+            AirArsenal.proxy.spawnJetExhaust(world, posX, posY, posZ);
+        }
         if (!world.isRemote) tickSonicBoom();
     }
 

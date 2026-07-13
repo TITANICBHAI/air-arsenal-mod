@@ -7,10 +7,13 @@ import com.airarsenal.entity.plane.component.IEngineComponent;
 import com.airarsenal.entity.plane.component.PropellerComponent;
 import com.airarsenal.entity.plane.component.PropellerState;
 import com.airarsenal.entity.projectile.PropellerShardEntity;
+import com.airarsenal.registry.ModSounds;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 
@@ -173,14 +176,43 @@ public abstract class BasePlaneEntity extends Entity {
             damage
         );
         boolean justDestroyed = propeller.takeDamage(2f);
+        world.playSound(null, posX, posY, posZ,
+            ModSounds.PLANE_PROPELLER_DAMAGE, SoundCategory.NEUTRAL, 1.0f, 1.0f);
         if (justDestroyed) onEngineDestroyed();
     }
 
     protected void ejectPropellerShard() {
         if (!world.isRemote) {
+            world.playSound(null, posX, posY, posZ,
+                ModSounds.PLANE_PROPELLER_DESTROYED, SoundCategory.NEUTRAL, 1.0f, 1.0f);
             PropellerShardEntity shard = new PropellerShardEntity(world, this);
             world.spawnEntity(shard);
             AirArsenal.LOGGER.info("{} propeller destroyed — shard ejected", getPlaneType());
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    //  Sound dispatching (Chunk 10)
+    // ─────────────────────────────────────────────────────────────────────────
+
+    private int engineSoundTicks = 0;
+
+    /**
+     * Plays a plane's looping engine sound periodically (client side only) while
+     * it is moving. Called by each concrete plane's {@code onUpdate()} after
+     * flight physics has updated {@link #speed} for the current tick.
+     */
+    protected void playEngineLoopSound(SoundEvent engineSound) {
+        if (!world.isRemote) return;
+        if (speed <= 0.5f) {
+            engineSoundTicks = 0;
+            return;
+        }
+        engineSoundTicks++;
+        if (engineSoundTicks >= 20) {
+            engineSoundTicks = 0;
+            world.playSound(posX, posY, posZ,
+                engineSound, SoundCategory.NEUTRAL, 1.0f, 1.0f, false);
         }
     }
 
