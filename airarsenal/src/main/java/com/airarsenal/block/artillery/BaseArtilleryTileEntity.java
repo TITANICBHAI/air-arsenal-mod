@@ -1,6 +1,7 @@
 package com.airarsenal.block.artillery;
 
 import com.airarsenal.entity.plane.BasePlaneEntity;
+import com.airarsenal.entity.plane.StealthBomberEntity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -77,6 +78,10 @@ public abstract class BaseArtilleryTileEntity extends TileEntity implements ITic
         BasePlaneEntity best = null;
         double bestDistSq = Double.MAX_VALUE;
         for (BasePlaneEntity plane : planes) {
+            // Chunk 9: a Stealth Bomber with stealth active is invisible to AA/Flak auto-targeting.
+            if (plane instanceof StealthBomberEntity && ((StealthBomberEntity) plane).isStealthActive()) {
+                continue;
+            }
             double dx = plane.posX - (pos.getX() + 0.5);
             double dy = plane.posY - (pos.getY() + 1.0);
             double dz = plane.posZ - (pos.getZ() + 0.5);

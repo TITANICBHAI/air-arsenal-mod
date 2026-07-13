@@ -79,5 +79,30 @@ public final class ModNetwork {
         CHANNEL.registerMessage(
             PacketFireMissileTube.Handler.class,
             PacketFireMissileTube.class, 11, Side.SERVER);
+
+        // ── Chunk 9 ───────────────────────────────────────────────────────────
+        CHANNEL.registerMessage(
+            PacketDroneSteer.Handler.class,
+            PacketDroneSteer.class, 12, Side.SERVER);
+
+        CHANNEL.registerMessage(
+            PacketDroneCameraStart.Handler.class,
+            PacketDroneCameraStart.class, 13, Side.CLIENT);
+
+        CHANNEL.registerMessage(
+            PacketDroneCameraEnd.Handler.class,
+            PacketDroneCameraEnd.class, 14, Side.CLIENT);
+
+        CHANNEL.registerMessage(
+            PacketSpecialAction.Handler.class,
+            PacketSpecialAction.class, 15, Side.SERVER);
+
+        CHANNEL.registerMessage(
+            PacketDroneExit.Handler.class,
+            PacketDroneExit.class, 16, Side.SERVER);
+
+        CHANNEL.registerMessage(
+            PacketHelicopterStrafe.Handler.class,
+            PacketHelicopterStrafe.class, 17, Side.SERVER);
     }
 }

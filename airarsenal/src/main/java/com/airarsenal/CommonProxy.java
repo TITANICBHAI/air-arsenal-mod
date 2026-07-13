@@ -36,4 +36,19 @@ public class CommonProxy {
      * No-op on the server side; overridden in {@link ClientProxy}.
      */
     public void spawnPropellerFire(World world, double x, double y, double z) {}
+
+    // ── Chunk 9 particle stubs (no-op on server) ──────────────────────────────
+
+    /**
+     * Spawns a ring of sonic-boom particles around a Fighter Jet exceeding 160 b/s.
+     * No-op on the server side; overridden in {@link ClientProxy}.
+     */
+    public void spawnSonicBoomRing(World world, double x, double y, double z) {}
+
+    /**
+     * Spawns fire and a large explosion particle at a destroyed jet engine
+     * (Fighter Jet / Predator Drone). No-op on the server side; overridden in
+     * {@link ClientProxy}.
+     */
+    public void spawnJetEngineFire(World world, double x, double y, double z) {}
 }

@@ -50,6 +50,13 @@ public class ModItems {
     @ObjectHolder("heavy_round")
     public static final Item HEAVY_ROUND = null;
 
+    // ── Chunk 9 ───────────────────────────────────────────────────────────────
+    @ObjectHolder("jet_fuel")
+    public static final Item JET_FUEL = null;
+
+    @ObjectHolder("drone_controller")
+    public static final Item DRONE_CONTROLLER = null;
+
     @SubscribeEvent
     public static void register(RegistryEvent.Register<Item> event) {
         IForgeRegistry<Item> registry = event.getRegistry();
@@ -75,6 +82,8 @@ public class ModItems {
         registry.register(new ItemRocketPod());
         registry.register(new ItemHeavyRound());
 
-        // CHUNK 9+: PropellerFighter, FighterJet, StealthBomber spawn items
+        // Chunk 9 — Fuel system & Predator Drone remote pilot
+        registry.register(new ItemJetFuel());
+        registry.register(new ItemDroneController());
     }
 }

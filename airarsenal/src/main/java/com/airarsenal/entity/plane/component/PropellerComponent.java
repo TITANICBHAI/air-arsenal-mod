@@ -12,7 +12,7 @@ import java.util.Random;
  * is responsible for spawning {@link com.airarsenal.entity.projectile.PropellerShardEntity}
  * when this component reaches {@link PropellerState#DESTROYED}.</p>
  */
-public class PropellerComponent {
+public class PropellerComponent implements IEngineComponent {
 
     private final float maxHealth;
     private float currentHealth;
@@ -38,6 +38,7 @@ public class PropellerComponent {
      *   <li>  = 0% → DESTROYED</li>
      * </ul>
      */
+    @Override
     public PropellerState getDamageState() {
         if (currentHealth <= 0f)                         return PropellerState.DESTROYED;
         float pct = currentHealth / maxHealth;
@@ -50,6 +51,7 @@ public class PropellerComponent {
     /**
      * Speed multiplier the parent plane should apply this tick.
      */
+    @Override
     public float getSpeedMultiplier() {
         switch (getDamageState()) {
             case INTACT:       return 1.00f;
@@ -65,6 +67,7 @@ public class PropellerComponent {
      * Random yaw drift (degrees) to add this tick. Zero when intact or destroyed.
      * Called once per tick; each call produces an independent random value.
      */
+    @Override
     public float getYawDrift() {
         switch (getDamageState()) {
             case HEAVY_DAMAGE:
@@ -88,6 +91,7 @@ public class PropellerComponent {
      * @param amount positive damage value
      * @return {@code true} if the propeller just transitioned to DESTROYED
      */
+    @Override
     public boolean takeDamage(float amount) {
         boolean wasAlive = currentHealth > 0f;
         currentHealth = Math.max(0f, currentHealth - amount);
@@ -96,17 +100,19 @@ public class PropellerComponent {
 
     // ── Getters ───────────────────────────────────────────────────────────────
 
-    public float getCurrentHealth() { return currentHealth; }
-    public float getMaxHealth()     { return maxHealth;      }
-    public boolean isDestroyed()    { return currentHealth <= 0f; }
+    @Override public float getCurrentHealth() { return currentHealth; }
+    @Override public float getMaxHealth()     { return maxHealth;      }
+    @Override public boolean isDestroyed()    { return currentHealth <= 0f; }
 
     // ── NBT persistence ───────────────────────────────────────────────────────
 
+    @Override
     public void writeToNBT(NBTTagCompound compound) {
         compound.setFloat("PropellerHealth",    currentHealth);
         compound.setFloat("PropellerMaxHealth", maxHealth);
     }
 
+    @Override
     public void readFromNBT(NBTTagCompound compound) {
         // maxHealth is final — only restore currentHealth
         currentHealth = compound.getFloat("PropellerHealth");

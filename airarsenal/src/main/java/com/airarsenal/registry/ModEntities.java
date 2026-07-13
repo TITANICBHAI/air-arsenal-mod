@@ -1,7 +1,11 @@
 package com.airarsenal.registry;
 
 import com.airarsenal.AirArsenal;
+import com.airarsenal.entity.plane.AttackHelicopterEntity;
+import com.airarsenal.entity.plane.FighterJetEntity;
 import com.airarsenal.entity.plane.IronMonoplaneEntity;
+import com.airarsenal.entity.plane.PredatorDroneEntity;
+import com.airarsenal.entity.plane.StealthBomberEntity;
 import com.airarsenal.entity.plane.WoodBiplaneEntity;
 import com.airarsenal.entity.projectile.*;
 import com.airarsenal.entity.vehicle.ArmoredTruckEntity;
@@ -41,7 +45,11 @@ public class ModEntities {
      * 24  ArmoredTruckEntity         Chunk 8
      * 25  TankEntity                 Chunk 8
      * 26  TankShellEntity            Chunk 8
-     * 27+ reserved for Chunk 9–11
+     * 27  FighterJetEntity           Chunk 9
+     * 28  PredatorDroneEntity        Chunk 9
+     * 29  StealthBomberEntity        Chunk 9
+     * 30  AttackHelicopterEntity     Chunk 9
+     * 31+ reserved for Chunk 10–11
      */
     public static void register() {
 
@@ -180,5 +188,26 @@ public class ModEntities {
             new ResourceLocation("airarsenal", "tank_shell"),
             TankShellEntity.class, "tank_shell", 26,
             AirArsenal.instance, 128, 3, true);
+
+        // ── Chunk 9 — Advanced Planes & Fuel System ─────────────────────────────
+        EntityRegistry.registerModEntity(
+            new ResourceLocation("airarsenal", "fighter_jet"),
+            FighterJetEntity.class, "fighter_jet", 27,
+            AirArsenal.instance, 80, 3, true);
+
+        EntityRegistry.registerModEntity(
+            new ResourceLocation("airarsenal", "predator_drone"),
+            PredatorDroneEntity.class, "predator_drone", 28,
+            AirArsenal.instance, 80, 3, true);
+
+        EntityRegistry.registerModEntity(
+            new ResourceLocation("airarsenal", "stealth_bomber"),
+            StealthBomberEntity.class, "stealth_bomber", 29,
+            AirArsenal.instance, 80, 3, true);
+
+        EntityRegistry.registerModEntity(
+            new ResourceLocation("airarsenal", "attack_helicopter"),
+            AttackHelicopterEntity.class, "attack_helicopter", 30,
+            AirArsenal.instance, 80, 3, true);
     }
 }

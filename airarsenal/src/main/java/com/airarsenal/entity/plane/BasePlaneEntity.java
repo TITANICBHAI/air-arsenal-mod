@@ -2,6 +2,8 @@ package com.airarsenal.entity.plane;
 
 import com.airarsenal.AirArsenal;
 import com.airarsenal.combat.weapon.IPlaneWeapon;
+import com.airarsenal.entity.plane.component.FuelSystem;
+import com.airarsenal.entity.plane.component.IEngineComponent;
 import com.airarsenal.entity.plane.component.PropellerComponent;
 import com.airarsenal.entity.plane.component.PropellerState;
 import com.airarsenal.entity.projectile.PropellerShardEntity;
@@ -37,8 +39,21 @@ public abstract class BasePlaneEntity extends Entity {
     protected float planeHealth    = 40f;
     protected float maxPlaneHealth = 40f;
 
-    // ── Propeller ─────────────────────────────────────────────────────────────
-    protected PropellerComponent propeller;
+    // ── Propeller / jet engine ────────────────────────────────────────────────
+    protected IEngineComponent propeller;
+
+    /**
+     * {@code false} for jet-driven planes (Chunk 9) — they have no exposed
+     * spinning blade, so {@link #checkPropellerContact()} is skipped entirely.
+     */
+    protected boolean hasSpinningPropeller = true;
+
+    // ── Fuel (Chunk 9) ────────────────────────────────────────────────────────
+    /** Every plane carries a tank; {@link #fuelConsumption} of 0 means it never depletes. */
+    protected FuelSystem fuelSystem = new FuelSystem();
+
+    /** Fuel units consumed per tick while airborne. Set by subclass constructor; 0 = unlimited. */
+    protected float fuelConsumption = 0f;
 
     // ── Weapons ───────────────────────────────────────────────────────────────
     protected List<IPlaneWeapon> weapons = new ArrayList<>();
@@ -84,13 +99,48 @@ public abstract class BasePlaneEntity extends Entity {
     public void onUpdate() {
         super.onUpdate();
 
-        if (!world.isRemote && speed > 5f && !propeller.isDestroyed()) {
+        if (!world.isRemote && hasSpinningPropeller && speed > 5f && !propeller.isDestroyed()) {
             checkPropellerContact();
+        }
+
+        if (!world.isRemote) {
+            tickFuel();
         }
 
         if (world.isRemote) {
             spawnPropellerParticles();
         }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    //  Fuel system (Chunk 9)
+    // ─────────────────────────────────────────────────────────────────────────
+
+    /**
+     * Consumes fuel each tick while the engine is otherwise healthy. When the tank
+     * runs dry the engine is forced to DESTROYED (same behavior as a propeller/jet
+     * engine destroyed by combat damage) by draining the engine component's
+     * remaining health in one call.
+     */
+    private void tickFuel() {
+        if (fuelConsumption <= 0f) return;      // this plane doesn't use fuel
+        if (propeller.isDestroyed()) return;    // already dead — nothing to drain
+
+        boolean stillHasFuel = fuelSystem.consumeFuel(fuelConsumption);
+        if (!stillHasFuel) {
+            boolean justDestroyed = propeller.takeDamage(propeller.getCurrentHealth());
+            if (justDestroyed) onEngineDestroyed();
+        }
+    }
+
+    /**
+     * Called once, server-side, the instant the engine component transitions to
+     * DESTROYED — whether from combat damage or fuel exhaustion. Default behavior
+     * (prop planes) ejects a propeller shard; jet-engined planes override this to
+     * spawn fire and apply Wither to the pilot instead.
+     */
+    protected void onEngineDestroyed() {
+        ejectPropellerShard();
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -123,10 +173,10 @@ public abstract class BasePlaneEntity extends Entity {
             damage
         );
         boolean justDestroyed = propeller.takeDamage(2f);
-        if (justDestroyed) ejectPropellerShard();
+        if (justDestroyed) onEngineDestroyed();
     }
 
-    private void ejectPropellerShard() {
+    protected void ejectPropellerShard() {
         if (!world.isRemote) {
             PropellerShardEntity shard = new PropellerShardEntity(world, this);
             world.spawnEntity(shard);
@@ -297,6 +347,9 @@ public abstract class BasePlaneEntity extends Entity {
         NBTTagCompound propNBT = new NBTTagCompound();
         propeller.writeToNBT(propNBT);
         compound.setTag("Propeller", propNBT);
+        NBTTagCompound fuelNBT = new NBTTagCompound();
+        fuelSystem.writeToNBT(fuelNBT);
+        compound.setTag("FuelSystem", fuelNBT);
     }
 
     @Override
@@ -309,6 +362,9 @@ public abstract class BasePlaneEntity extends Entity {
         isTacModeActive     = compound.getBoolean("TacModeActive");
         if (compound.hasKey("Propeller")) {
             propeller.readFromNBT(compound.getCompoundTag("Propeller"));
+        }
+        if (compound.hasKey("FuelSystem")) {
+            fuelSystem.readFromNBT(compound.getCompoundTag("FuelSystem"));
         }
     }
 
@@ -329,6 +385,7 @@ public abstract class BasePlaneEntity extends Entity {
     public float getPlaneYaw()               { return yaw;                  }
     public boolean isTacModeActive()         { return isTacModeActive;      }
     public List<IPlaneWeapon> getWeapons()   { return weapons;              }
-    public PropellerComponent getPropeller() { return propeller;            }
+    public IEngineComponent getPropeller()   { return propeller;            }
     public int getSelectedWeaponIndex()      { return selectedWeaponIndex;  }
+    public FuelSystem getFuelSystem()        { return fuelSystem;           }
 }

@@ -54,6 +54,19 @@ entity.airarsenal.armored_truck.name=Armored Truck
 entity.airarsenal.tank.name=Tank
 entity.airarsenal.tank_shell.name=Tank Shell
 
+# Chunk 9 — Advanced Planes & Fuel System
+item.airarsenal.jet_fuel.name=Jet Fuel
+item.airarsenal.drone_controller.name=Drone Controller
+
+entity.airarsenal.fighter_jet.name=Fighter Jet
+entity.airarsenal.predator_drone.name=Predator Drone
+entity.airarsenal.stealth_bomber.name=Stealth Bomber
+entity.airarsenal.attack_helicopter.name=Attack Helicopter
+
+key.airarsenal.special_action=Afterburner / Stealth Toggle
+key.airarsenal.strafe_left=Strafe Left
+key.airarsenal.strafe_right=Strafe Right
+
 # Config keys
 config.airarsenal.allowBlockDestruction=Allow Block Destruction
 config.airarsenal.allowFriendlyFire=Allow Friendly Fire

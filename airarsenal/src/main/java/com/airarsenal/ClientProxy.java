@@ -93,4 +93,32 @@ public class ClientProxy extends CommonProxy {
             }
         }
     }
+
+    // ── Chunk 9 particle effects ───────────────────────────────────────────────
+
+    @Override
+    public void spawnSonicBoomRing(World world, double x, double y, double z) {
+        if (!world.isRemote) return;
+        int count = 16;
+        double radius = 2.5;
+        for (int i = 0; i < count; i++) {
+            double angle = (2 * Math.PI / count) * i;
+            double ox = Math.cos(angle) * radius;
+            double oz = Math.sin(angle) * radius;
+            world.spawnParticle(EnumParticleTypes.EXPLOSION_NORMAL,
+                x + ox, y, z + oz, 0, 0, 0);
+        }
+    }
+
+    @Override
+    public void spawnJetEngineFire(World world, double x, double y, double z) {
+        if (!world.isRemote) return;
+        world.spawnParticle(EnumParticleTypes.EXPLOSION_LARGE, x, y, z, 0, 0, 0);
+        for (int i = 0; i < 6; i++) {
+            double ox = (world.rand.nextDouble() - 0.5) * 0.6;
+            double oz = (world.rand.nextDouble() - 0.5) * 0.6;
+            world.spawnParticle(EnumParticleTypes.FLAME,
+                x + ox, y + 0.2, z + oz, 0, 0.05, 0);
+        }
+    }
 }

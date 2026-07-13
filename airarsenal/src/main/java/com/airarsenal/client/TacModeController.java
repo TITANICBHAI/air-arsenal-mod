@@ -1,8 +1,13 @@
 package com.airarsenal.client;
 
+import com.airarsenal.entity.plane.AttackHelicopterEntity;
 import com.airarsenal.entity.plane.BasePlaneEntity;
 import com.airarsenal.network.ModNetwork;
+import com.airarsenal.network.PacketDroneExit;
+import com.airarsenal.network.PacketDroneSteer;
+import com.airarsenal.network.PacketHelicopterStrafe;
 import com.airarsenal.network.PacketMissileSteer;
+import com.airarsenal.network.PacketSpecialAction;
 import com.airarsenal.network.PacketTacModeToggle;
 import com.airarsenal.network.PacketWeaponFire;
 import net.minecraft.client.Minecraft;
@@ -13,6 +18,7 @@ import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 /**
@@ -53,6 +59,11 @@ public class TacModeController {
 
     /** Remaining retry ticks before abandoning a pending predator cam activation. */
     public static volatile int predatorCamPendingTicks = 0;
+
+    /** Set by {@code PacketDroneCameraStart.Handler} / cleared by {@code PacketDroneCameraEnd.Handler}. */
+    public static volatile boolean droneCamActive = false;
+
+    private int droneSteerTick = 0;
 
     // ── Per-instance state ────────────────────────────────────────────────────
     /** Client-tracked weapon selection index, synced to server via PacketWeaponFire. */
@@ -95,6 +106,12 @@ public class TacModeController {
             return; // skip normal flight input during nose-cam control
         }
 
+        // ── Predator Drone remote-pilot mode (Chunk 9) ───────────────────────
+        if (droneCamActive) {
+            handleDroneCamTick(mc);
+            return; // skip normal flight input while remote-piloting the drone
+        }
+
         // ── Missile Truck / Static Battery guidance mode ─────────────────────
         if (activeGuidanceMissileId >= 0) {
             handleTruckGuidanceTick(mc);
@@ -134,6 +151,20 @@ public class TacModeController {
         // F key — toggle Tac Mode
         if (KeyBindings.KEY_TAC_MODE.isPressed()) {
             ModNetwork.CHANNEL.sendToServer(new PacketTacModeToggle());
+        }
+
+        // G key — shared special action (Fighter Jet afterburner / Stealth Bomber toggle)
+        if (KeyBindings.KEY_SPECIAL_ACTION.isPressed()) {
+            ModNetwork.CHANNEL.sendToServer(new PacketSpecialAction());
+        }
+
+        // Q/E — Attack Helicopter strafe (Chunk 9)
+        if (plane instanceof AttackHelicopterEntity) {
+            boolean strafeLeft  = KeyBindings.KEY_STRAFE_LEFT.isKeyDown();
+            boolean strafeRight = KeyBindings.KEY_STRAFE_RIGHT.isKeyDown();
+            if (strafeLeft || strafeRight) {
+                ModNetwork.CHANNEL.sendToServer(new PacketHelicopterStrafe(strafeLeft, strafeRight));
+            }
         }
 
         if (!plane.isTacModeActive()) {
@@ -197,6 +228,46 @@ public class TacModeController {
         // Send steer packet every 2 ticks (rate-limited)
         if (steerTick % 2 == 0 && (rawDX != 0 || rawDY != 0)) {
             ModNetwork.CHANNEL.sendToServer(new PacketMissileSteer(yawDelta, pitchDelta, false));
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    //  Predator Drone remote-pilot steering (Chunk 9)
+    // ─────────────────────────────────────────────────────────────────────────
+
+    /**
+     * Called every client tick while {@link #droneCamActive} is true. WASD drives
+     * throttle (forward = speed up, back = slow down/hover), mouse drives yaw/pitch
+     * exactly like Predator cam, and Shift exits remote-pilot mode.
+     */
+    private void handleDroneCamTick(Minecraft mc) {
+        droneSteerTick++;
+
+        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            ModNetwork.CHANNEL.sendToServer(new PacketDroneExit());
+            droneCamActive = false;
+            return;
+        }
+
+        int rawDX = Mouse.getDX();
+        int rawDY = Mouse.getDY();
+        float sens = mc.gameSettings.mouseSensitivity * 0.6f + 0.2f;
+        float yawDelta   =  rawDX * sens * 0.15f;
+        float pitchDelta = -rawDY * sens * 0.15f;
+        yawDelta   = Math.max(-10f, Math.min(10f, yawDelta));
+        pitchDelta = Math.max(-8f,  Math.min(8f,  pitchDelta));
+
+        boolean throttleUp   = mc.gameSettings.keyBindForward.isKeyDown();
+        boolean throttleDown = mc.gameSettings.keyBindBack.isKeyDown();
+
+        if (mc.player != null) {
+            mc.player.rotationYaw   -= yawDelta;
+            mc.player.rotationPitch -= pitchDelta;
+        }
+
+        if (droneSteerTick % 2 == 0) {
+            ModNetwork.CHANNEL.sendToServer(
+                new PacketDroneSteer(yawDelta, pitchDelta, throttleUp, throttleDown));
         }
     }
 

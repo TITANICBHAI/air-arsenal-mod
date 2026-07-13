@@ -134,6 +134,21 @@ public class AirArsenal {
             'I', new ItemStack(Items.IRON_INGOT)
         );
 
-        // CHUNK 9+: PropellerFighter, FighterJet, StealthBomber recipes here
+        // ── Jet Fuel (Chunk 9) ────────────────────────────────────────────────
+        // [B]
+        // [L]
+        // [C]
+        // B = Blaze Rod, L = Lava Bucket, C = Coal Block
+        GameRegistry.addShapedRecipe(
+            new ResourceLocation(MODID, "jet_fuel"), null,
+            new ItemStack(ModItems.JET_FUEL),
+            "B", "L", "C",
+            'B', new ItemStack(Items.BLAZE_ROD),
+            'L', new ItemStack(Items.LAVA_BUCKET),
+            'C', new ItemStack(Blocks.COAL_BLOCK)
+        );
+
+        // Fighter Jet, Predator Drone, Stealth Bomber, and Attack Helicopter are
+        // elite non-craftable planes (creative tab / loot only, per Chunk 9 spec).
     }
 }

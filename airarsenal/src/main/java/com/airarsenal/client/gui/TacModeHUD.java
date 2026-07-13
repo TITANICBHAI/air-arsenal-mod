@@ -212,13 +212,29 @@ public class TacModeHUD {
         drawBar(barX, barY, hpFrac, 0x00CC00); // green
         barY += BAR_H + 6;
 
-        // Propeller HP bar
+        // Propeller / engine HP bar
         mc.fontRenderer.drawStringWithShadow("PROPELLER", barX, barY, 0xAAAAAA);
         barY += 9;
         float propFrac = plane.getPropeller().getCurrentHealth()
                        / plane.getPropeller().getMaxHealth();
         int propColor = propellerColor(plane.getPropeller().getDamageState());
         drawBar(barX, barY, Math.max(0f, propFrac), propColor);
+        barY += BAR_H + 6;
+
+        // Fuel bar (Chunk 9) — read directly off the entity, same simplification
+        // as the propeller bar above: no dedicated sync packet, since the plane
+        // entity itself is already visible to the client that's riding it.
+        float fuelFrac = plane.getFuelSystem().getFuelPercent(); // 0.0–1.0
+        int fuelPct = Math.round(fuelFrac * 100f);
+        mc.fontRenderer.drawStringWithShadow("FUEL: " + fuelPct + "%", barX, barY, 0xAAAAAA);
+        barY += 9;
+        drawBar(barX, barY, Math.max(0f, fuelFrac), fuelColor(fuelFrac));
+    }
+
+    private static int fuelColor(float frac) {
+        if (frac > 0.5f) return 0x00CC00; // green
+        if (frac > 0.2f) return 0xFFFF00; // yellow
+        return 0xFF2200;                  // red
     }
 
     /**
