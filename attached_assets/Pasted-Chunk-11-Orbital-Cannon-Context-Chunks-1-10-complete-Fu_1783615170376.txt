@@ -1,0 +1,261 @@
+Chunk 11 — Orbital Cannon
+
+### Context
+Chunks 1–10 complete. Full air combat system, artillery, missiles, advanced planes, and all polish pass done.
+
+This chunk adds the **Orbital Cannon** — the mod's most powerful and most expensive weapon. It is a placeable multiblock structure that communicates with a fictional satellite and drops a kinetic tungsten rod from y=300 onto a player-designated target. It has a 5-minute cooldown, requires a craftable uplink card per shot, and broadcasts a visible warning to all nearby players before impact.
+
+It is inspired by the GDI Ion Cannon (Command & Conquer), the Rods from God concept, and the call-in killstreak feeling of COD.
+
+#### Component inventory — every distinct thing this chunk creates:
+
+| Layer | Component | Count |
+|---|---|---|
+| Items | `ItemOrbitalDesignator`, `ItemSatelliteUplinkCard` | 2 |
+| Blocks | `OrbitalCannonCoreBlock`, `OrbitalCannonFrameBlock` | 2 |
+| TileEntity | `OrbitalCannonTileEntity` | 1 |
+| Entities | `OrbitalRodEntity`, `OrbitalWarningMarkerEntity` | 2 |
+| Renderers | `OrbitalCannonTESR`, `OrbitalRodRenderer` | 2 |
+| GUI | `OrbitalCannonGui` + `OrbitalCannonContainer` | 1 GUI pair |
+| Packets | `PacketOrbitalFire`, `PacketOrbitalWarning`, `PacketOrbitalImpact`, `PacketScreenShake` | 4 |
+| Config | 6 new fields in `AirArsenalConfig` | 6 |
+| Sounds | 4 new sound events | 4 |
+| Recipes | 4 crafting recipes | 4 |
+
+#### Multiblock structure layout (top-down view, F = Frame, C = Core):
+```
+  F
+F C F
+  F
+```
+Core is placed first. Frame blocks placed in the 4 cardinal adjacent positions (same Y level). The cannon only activates when all 4 frame blocks are present.
+
+#### Charge state machine:
+```
+IDLE → (player presses FIRE in GUI, uplink card consumed) → CHARGING (200 ticks)
+     → WARNING (100 ticks, warning marker spawned at targetPos)
+     → FIRING (OrbitalRodEntity spawned at targetPos x/z, y=300)
+     → COOLDOWN (6000 ticks = 5 minutes)
+     → IDLE
+```
+
+### Your Task
+
+#### Create `ItemOrbitalDesignator.java` at `com.airarsenal.item`
+- Right-click on any block or the ground: saves the clicked `BlockPos` to the item's NBT (`tag.setLong("targetPos", pos.toLong())`)
+- In item tooltip: display saved coordinates as `"TARGET: x, y, z"` (or `"NO TARGET SET"` if empty)
+- In hand: right-clicking in air clears the saved target
+- Range check: if saved target is > 500 blocks from player when GUI is opened, display `"OUT OF RANGE"` warning in tooltip
+- Craftable: Diamond + Blaze Rod + Ender Pearl + Gold Ingot (shaped, cross pattern)
+
+#### Create `ItemSatelliteUplinkCard.java` at `com.airarsenal.item`
+- Single-use item consumed on firing (stack size 1)
+- Tooltip: `"Authorises one orbital strike. Handle with care."`
+- Craftable: Paper (centre) surrounded by 4 Gold Ingots, 1 Ender Eye (top), 1 Redstone Dust (bottom), shaped recipe
+- Stackable to 16
+
+#### Create `OrbitalCannonFrameBlock.java` at `com.airarsenal.block`
+- Extends `Block`. Full-size 1×1 block.
+- `MapColor.IRON` — visually distinct from Core
+- No TileEntity; purely structural
+- Craftable: `3 Iron Blocks + 3 Redstone Blocks + 3 Gold Blocks` in 3×3 grid (3 columns)
+
+#### Create `OrbitalCannonCoreBlock.java` at `com.airarsenal.block`
+- Extends `Block` (do NOT extend `BlockContainer` — it is deprecated in modern 1.12.2 Forge usage and creates rendering issues with TESR)
+- Override `hasTileEntity(IBlockState state)` → returns `true`
+- Override `createTileEntity(World world, IBlockState state)` → returns `new OrbitalCannonTileEntity()`
+- `onBlockActivated()`: open `OrbitalCannonGui` if server side; check player has `ItemOrbitalDesignator` in inventory and carry its `targetPos` into the GUI
+- `breakBlock()`: drop contents of the container slot (uplink card) before removal
+- Craftable: `4 Diamond Blocks + 2 Emerald Blocks + 1 Nether Star + 2 Obsidian` (shaped)
+
+#### Create `OrbitalCannonTileEntity.java` at `com.airarsenal.block`
+Extends `TileEntity` + implements `IInventory` (single slot for `ItemSatelliteUplinkCard`).
+
+Fields:
+- `targetPos` (BlockPos) — set when GUI confirms fire
+- `chargeState` (enum: IDLE, CHARGING, WARNING, FIRING, COOLDOWN)
+- `stateTicks` (int) — ticks elapsed in current state
+- `cooldownTicks` (int) — counts down from 6000
+
+`update()` (server side only — `if (world.isRemote) return;`):
+1. **IDLE**: do nothing — wait for `PacketOrbitalFire` to arrive
+2. **CHARGING**: increment `stateTicks`; at 200 ticks → transition to WARNING; play `weapon.orbital.charge` sound on transition
+3. **WARNING**: spawn `OrbitalWarningMarkerEntity` at `targetPos` on first tick; send `PacketOrbitalWarning(targetPos, 100)` to all players within 200 blocks; at 100 ticks → transition to FIRING
+4. **FIRING**: spawn `OrbitalRodEntity` at (`targetPos.x + 0.5`, `300`, `targetPos.z + 0.5`); play `weapon.orbital.fire` sound; transition to COOLDOWN
+5. **COOLDOWN**: decrement `cooldownTicks`; at 0 → transition to IDLE
+
+Structure validation (called every 40 ticks while IDLE or COOLDOWN):
+```java
+private boolean validateStructure() {
+    BlockPos[] required = { pos.north(), pos.south(), pos.east(), pos.west() };
+    for (BlockPos p : required) {
+        if (!(world.getBlockState(p).getBlock() instanceof OrbitalCannonFrameBlock)) return false;
+    }
+    return true;
+}
+```
+If structure invalid: remain IDLE and cannot accept fire command.
+
+NBT: read/write `targetPos`, `chargeState` (as int ordinal), `stateTicks`, `cooldownTicks`.
+
+#### Create `OrbitalCannonContainer.java` at `com.airarsenal.gui`
+Extends `Container`.
+- Single slot: accepts only `ItemSatelliteUplinkCard`
+- Syncs `cooldownTicks` and `chargeState` ordinal to client via two `addIntToSend` fields (override `detectAndSendChanges`)
+
+#### Create `OrbitalCannonGui.java` at `com.airarsenal.client.gui`
+Extends `GuiContainer`. Draws on a plain dark background (`drawRect`).
+
+Layout:
+- Top: `"ORBITAL CANNON"` title in white
+- Left panel: `"TARGET"` label + 3 lines for X / Y / Z from designator's saved `targetPos` (read from player inventory scan for `ItemOrbitalDesignator`)
+- Centre: uplink card slot (render the slot background)
+- Right panel: cooldown bar (`stateTicks / 6000`, red→green gradient), state label (`IDLE / CHARGING / WARNING / READY / NO STRUCTURE`)
+- Bottom: `FIRE` button — greyed out unless state is IDLE + structure valid + uplink card in slot + target set; clicking sends `PacketOrbitalFire`
+
+Register GUI handler in `ModGuis.java`:
+```java
+NetworkRegistry.INSTANCE.registerGuiHandler(AirArsenal.instance, new ModGuiHandler());
+```
+`ModGuiHandler.getServerGuiElement()` returns `OrbitalCannonContainer`; `getClientGuiElement()` returns `OrbitalCannonGui`.
+
+#### Create network packets — register in `ModNetwork.java` with IDs 9, 10, 11, 12:
+```java
+INSTANCE.registerMessage(PacketOrbitalFire.Handler.class,    PacketOrbitalFire.class,    9,  Side.SERVER);
+INSTANCE.registerMessage(PacketOrbitalWarning.Handler.class, PacketOrbitalWarning.class, 10, Side.CLIENT);
+INSTANCE.registerMessage(PacketOrbitalImpact.Handler.class,  PacketOrbitalImpact.class,  11, Side.CLIENT);
+INSTANCE.registerMessage(PacketScreenShake.Handler.class,    PacketScreenShake.class,    12, Side.CLIENT);
+```
+
+Packet definitions:
+- `PacketOrbitalFire(BlockPos cannonPos)` — client → server
+  - Server handler: look up `OrbitalCannonTileEntity` at `cannonPos`; if IDLE + structure valid + uplink card present + target set: consume uplink card, set state to CHARGING
+- `PacketOrbitalWarning(BlockPos targetPos, int ticksToImpact)` — server → client, sent to all players within 200 blocks
+  - Client handler: store `warningTargetPos` + start 100-tick warning sound loop (`weapon.orbital.warning`); optionally render a red X at `targetPos` in world space via `RenderWorldLastEvent`
+- `PacketOrbitalImpact(BlockPos targetPos)` — server → client, sent to all players within 300 blocks on impact
+  - Client handler: trigger 30-tick screen shake + 1-tick full-white screen flash; play `weapon.orbital.impact` sound
+- `PacketScreenShake(float intensity, int durationTicks)` — server → client (general purpose)
+  - Client handler: store in `ScreenShakeHandler` singleton; `EntityViewRenderEvent.CameraSetup` listener applies random pitch/yaw offset scaled by `intensity * (remaining / duration)`, decaying linearly
+
+#### Create `OrbitalRodEntity.java` at `com.airarsenal.entity.projectile`
+Extends `Entity`. Spawned at (`targetX`, `300`, `targetZ`).
+
+Fields:
+- `targetX`, `targetZ` (double) — ground target; rod falls straight down, no horizontal drift
+- `lifetimeTicks` (int)
+
+`onUpdate()` (server-side):
+- Move: `motionY = -8.0` (constant fall, 8 blocks/tick)
+- Apply motion: `posY += motionY`
+- Collision check: if `world.getBlockState(new BlockPos(posX, posY, posZ)).getMaterial() != Material.AIR` OR `posY <= targetY`:
+  - Call `onImpact()`
+- Failsafe: if `lifetimeTicks > 80` (fell 640 blocks) and still no collision: self-destruct at current pos
+
+`onImpact()`:
+1. Crater generation — sphere radius from config (`orbitalBlastRadius`, default 15): iterate and remove non-bedrock blocks; place Obsidian ring at outermost shell (8-block radius ring, 1-block thick)
+2. `world.createExplosion(null, posX, posY, posZ, orbitalBlastRadius, AirArsenalConfig.orbitalBlockDestruction)` — entity/block damage
+3. Spawn fire at crater rim: iterate 20 random positions within 20 blocks, `world.setBlockState(pos, Blocks.FIRE.getDefaultState())`
+4. Send `PacketOrbitalImpact(new BlockPos(posX, posY, posZ))` to all players within 300 blocks via `PacketScreenShake(1.5f, 30)`
+5. `setDead()`
+
+#### Create `OrbitalWarningMarkerEntity.java` at `com.airarsenal.entity`
+Extends `Entity`. Invisible (no renderer). Lives 100 ticks exactly.
+
+`onUpdate()` (server-side, `!world.isRemote`):
+- Every tick: spawn red particle ring using `WorldServer#spawnParticle` (which propagates to nearby clients automatically; `World#spawnParticle` is client-only and silently does nothing on a dedicated server):
+  ```java
+  if (world instanceof WorldServer) {
+      WorldServer ws = (WorldServer) world;
+      for (int i = 0; i < 16; i++) {
+          double angle = (2 * Math.PI / 16) * i;
+          double px = posX + 10 * Math.cos(angle);
+          double pz = posZ + 10 * Math.sin(angle);
+          ws.spawnParticle(EnumParticleTypes.REDSTONE, px, posY + 1, pz, 1, 0, 0, 0, 0);
+          ws.spawnParticle(EnumParticleTypes.FLAME,    px, posY + 1, pz, 1, 0, 0, 0, 0);
+      }
+  }
+  ```
+- At tick 100: `setDead()`
+
+#### Create `OrbitalCannonTESR.java` at `com.airarsenal.client.renderer.tileentity`
+Extends `TileEntitySpecialRenderer<OrbitalCannonTileEntity>`.
+- Renders a simple vertical cylinder/rod above the core block (a scaled `GL11` box, 0.3×1.5×0.3)
+- When state is CHARGING or WARNING: add a slow rotation (`rotationAngle += 2f/tick`) and render a pulsing glow (modulate alpha with `MathHelper.sin`)
+- Register: `ClientRegistry.bindTileEntitySpecialRenderer(OrbitalCannonTileEntity.class, new OrbitalCannonTESR())`
+
+#### Create `OrbitalRodRenderer.java` at `com.airarsenal.client.renderer.entity`
+Implements `Render<OrbitalRodEntity>`.
+- Renders a tall thin box (0.2 × 2.0 × 0.2) using `GL11` with emissive white colour (`GlStateManager.color(1f, 1f, 1f, 1f)`, `GL11.GL_EMISSION`)
+- Register: `RenderingRegistry.registerEntityRenderingHandler(OrbitalRodEntity.class, manager -> new OrbitalRodRenderer(manager))`
+
+#### Create `ScreenShakeHandler.java` at `com.airarsenal.client`
+Plain singleton class, registered on `MinecraftForge.EVENT_BUS` in `ClientProxy.init()`.
+- Stores: `float intensity`, `int durationTicks`, `int remainingTicks`
+- `@SubscribeEvent` on `EntityViewRenderEvent.CameraSetup`:
+  ```java
+  if (remainingTicks > 0) {
+      float t = (float) remainingTicks / durationTicks;
+      float offset = intensity * t * (world.rand.nextFloat() - 0.5f) * 2f;
+      event.setPitch(event.getPitch() + offset);
+      event.setYaw(event.getYaw()   + offset * 0.5f);
+      remainingTicks--;
+  }
+  ```
+
+#### Add to `AirArsenalConfig.java`:
+```java
+@Config.Comment("Cooldown between orbital strikes in ticks (default 6000 = 5 minutes)")
+public static int orbitalCooldownTicks = 6000;
+
+@Config.Comment("Blast radius of orbital rod impact in blocks")
+public static int orbitalBlastRadius = 15;
+
+@Config.Comment("Ticks of charging before rod fires (default 200 = 10s)")
+public static int orbitalChargingTicks = 200;
+
+@Config.Comment("Ticks of warning before impact (default 100 = 5s)")
+public static int orbitalWarningTicks = 100;
+
+@Config.Comment("If false, orbital strike does not destroy blocks (entity damage still applies)")
+public static boolean orbitalBlockDestruction = true;
+
+@Config.Comment("Max distance in blocks from cannon the designator can paint a target")
+public static int orbitalMaxRange = 500;
+```
+
+#### Add to `sounds.json`:
+```json
+"weapon.orbital.charge": { "sounds": [{"name": "airarsenal:weapon/orbital/charge"}], "subtitle": "Orbital Cannon Charging" },
+"weapon.orbital.fire":   { "sounds": [{"name": "airarsenal:weapon/orbital/fire"}],   "subtitle": "Orbital Strike Launched" },
+"weapon.orbital.impact": { "sounds": [{"name": "airarsenal:weapon/orbital/impact"}], "subtitle": "Orbital Impact",  "category": "ambient" },
+"weapon.orbital.warning":{ "sounds": [{"name": "airarsenal:weapon/orbital/warning"}],"subtitle": "Incoming Strike Warning" }
+```
+
+#### Register everything:
+- `ModBlocks`: `ORBITAL_CANNON_CORE`, `ORBITAL_CANNON_FRAME`
+- `ModItems`: `ORBITAL_DESIGNATOR`, `SATELLITE_UPLINK_CARD`
+- `ModEntities`: `OrbitalRodEntity`, `OrbitalWarningMarkerEntity`
+- `ModNetwork`: IDs 9–12
+- `ModGuis`: GUI ID for orbital cannon
+- `en_us.lang`: all block/item/GUI strings
+
+### Acceptance Criteria
+- [ ] Multiblock validation: cannon fires only when all 4 frame blocks are present; removing one mid-cooldown does not crash
+- [ ] Uplink card consumed on fire — not returned if structure breaks mid-charge
+- [ ] `ItemOrbitalDesignator` tooltip shows saved coordinates and `OUT OF RANGE` if > 500 blocks from player
+- [ ] GUI FIRE button greyed correctly in all invalid states (no card, no target, wrong state, no structure)
+- [ ] `OrbitalWarningMarkerEntity` spawns red particle ring at target for 100 ticks then disappears
+- [ ] `OrbitalRodEntity` spawns at y=300, falls 8 blocks/tick, triggers `onImpact()` on ground collision
+- [ ] Crater radius matches `orbitalBlastRadius` config — obsidian ring visible at outer edge
+- [ ] Screen shake applies to all clients within 300 blocks (not just the firing player)
+- [ ] Screen shake does NOT apply on server side — `@SideOnly(Side.CLIENT)` on `ScreenShakeHandler`
+- [ ] Cooldown persists through chunk unload/reload (NBT saved correctly)
+- [ ] Packet IDs 9–12 registered without collision (cumulative: 1–2 Chunk 5, 3–5 Chunk 7, 6–8 Chunk 8, 9–12 this chunk)
+- [ ] `OrbitalWarningMarkerEntity.onUpdate()` uses `WorldServer#spawnParticle(...)` (not `World#spawnParticle`) — the latter is client-only and silently does nothing on a dedicated server
+
+### ⚠️ STOP AFTER THIS CHUNK
+The next chunk (Chunk 12) adds the Loitering Munition — an autonomous flying weapon that ascends, circles an area, detects targets, and dive-bombs them.
+Do NOT add any autonomous entity AI, loitering munition item, or related rendering yet.
+Wait for the next prompt.
+
+---

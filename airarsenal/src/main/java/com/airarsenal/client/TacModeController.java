@@ -2,10 +2,12 @@ package com.airarsenal.client;
 
 import com.airarsenal.entity.plane.BasePlaneEntity;
 import com.airarsenal.network.ModNetwork;
+import com.airarsenal.network.PacketMissileSteer;
 import com.airarsenal.network.PacketTacModeToggle;
 import com.airarsenal.network.PacketWeaponFire;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -15,27 +17,53 @@ import org.lwjgl.input.Mouse;
 
 /**
  * Client-side controller: captures keyboard and mouse input while the player
- * is mounted in a {@link BasePlaneEntity} with Tac Mode active.
+ * is mounted in a {@link BasePlaneEntity} (normal flight + Tac Mode), and also
+ * handles Predator Strike nose-cam steering.
  *
- * <p>Registered as a Forge event listener in {@link com.airarsenal.ClientProxy#init}.</p>
- *
- * <h3>Responsibilities:</h3>
+ * <h3>Modes</h3>
  * <ul>
- *   <li>F key → send {@link PacketTacModeToggle}</li>
- *   <li>Left click while Tac Mode active → send {@link PacketWeaponFire}</li>
- *   <li>Scroll wheel while Tac Mode active → cycle weapon index client-side</li>
+ *   <li><b>Normal / Tac Mode</b>: F → toggle, scroll → cycle weapon, LMB → fire</li>
+ *   <li><b>Predator cam</b>: mouse delta → {@link PacketMissileSteer} every 2 ticks;
+ *       normal look input is suppressed during this mode.</li>
  * </ul>
+ *
+ * Registered as a Forge event listener via {@link com.airarsenal.ClientProxy#init}.
+ *
+ * <p>{@link #predatorCamActive} and {@link #steerTick} are {@code public static} so
+ * {@link com.airarsenal.network.PacketPredatorCameraStart.Handler} and
+ * {@link com.airarsenal.network.PacketPredatorCameraEnd.Handler} can set them
+ * without holding a reference to this instance.</p>
  */
 @SideOnly(Side.CLIENT)
 public class TacModeController {
 
-    /** Client-tracked weapon selection (synced to server via PacketWeaponFire). */
+    // ── Shared state (written by packet handlers, read each tick) ─────────────
+    /** Set by {@code PacketPredatorCameraStart.Handler} on the client thread. */
+    public static volatile boolean predatorCamActive = false;
+
+    /** Incremented each tick while predator cam active; used for 2-tick rate limit. */
+    public static volatile int steerTick = 0;
+
+    /**
+     * Entity ID of the Predator missile when the camera-start packet arrived but the
+     * entity wasn't loaded yet. -1 = no pending activation. Retried each tick for up
+     * to {@link #predatorCamPendingTicks} ticks, then abandoned.
+     */
+    public static volatile int pendingPredatorEntityId = -1;
+
+    /** Remaining retry ticks before abandoning a pending predator cam activation. */
+    public static volatile int predatorCamPendingTicks = 0;
+
+    // ── Per-instance state ────────────────────────────────────────────────────
+    /** Client-tracked weapon selection index, synced to server via PacketWeaponFire. */
     private int selectedWeaponIndex = 0;
 
-    /** Debounce flag — prevents holding left-click from sending fire packets every tick. */
+    /** Debounce: prevents firing every tick while LMB is held. */
     private boolean leftWasDown = false;
 
-    // ── Keybinding polling ────────────────────────────────────────────────────
+    // ─────────────────────────────────────────────────────────────────────────
+    //  Client tick
+    // ─────────────────────────────────────────────────────────────────────────
 
     @SubscribeEvent
     public void onClientTick(TickEvent.ClientTickEvent event) {
@@ -45,7 +73,29 @@ public class TacModeController {
         EntityPlayer player = mc.player;
         if (player == null) return;
 
-        // Guard: only act when riding a plane
+        // ── Retry pending predator-cam activation (entity not loaded yet) ──────
+        if (pendingPredatorEntityId >= 0 && predatorCamPendingTicks > 0) {
+            net.minecraft.entity.Entity missile =
+                mc.world != null ? mc.world.getEntityByID(pendingPredatorEntityId) : null;
+            if (missile != null) {
+                com.airarsenal.network.PacketPredatorCameraStart.Handler
+                    .activatePredatorCam(mc, missile);
+            } else {
+                predatorCamPendingTicks--;
+                if (predatorCamPendingTicks <= 0) {
+                    // Give up — entity never arrived (missile likely already exploded)
+                    pendingPredatorEntityId = -1;
+                }
+            }
+        }
+
+        // ── Predator cam mode ─────────────────────────────────────────────────
+        if (predatorCamActive) {
+            handlePredatorCamTick(mc);
+            return; // skip normal flight input during nose-cam control
+        }
+
+        // ── Normal flight / Tac Mode ──────────────────────────────────────────
         if (!(player.getRidingEntity() instanceof BasePlaneEntity)) {
             leftWasDown = false;
             return;
@@ -53,40 +103,83 @@ public class TacModeController {
 
         BasePlaneEntity plane = (BasePlaneEntity) player.getRidingEntity();
 
-        // ── Tac Mode toggle (F key) ───────────────────────────────────────────
+        // F key — toggle Tac Mode
         if (KeyBindings.KEY_TAC_MODE.isPressed()) {
             ModNetwork.CHANNEL.sendToServer(new PacketTacModeToggle());
         }
 
-        if (!plane.isTacModeActive()) return;
+        if (!plane.isTacModeActive()) {
+            leftWasDown = false;
+            return;
+        }
 
         // ── Scroll-wheel weapon cycling ───────────────────────────────────────
         int scroll = Mouse.getDWheel();
         if (scroll != 0 && !plane.getWeapons().isEmpty()) {
             int count = plane.getWeapons().size();
-            if (scroll > 0) {
-                selectedWeaponIndex = (selectedWeaponIndex + 1) % count;
-            } else {
-                selectedWeaponIndex = (selectedWeaponIndex - 1 + count) % count;
-            }
+            selectedWeaponIndex = scroll > 0
+                ? (selectedWeaponIndex + 1) % count
+                : (selectedWeaponIndex - 1 + count) % count;
         }
 
-        // ── Left-click fire (debounced — one packet per press, not per tick) ──
+        // ── Left-click fire (debounced — one packet per press) ────────────────
         boolean leftDown = Mouse.isButtonDown(0);
         if (leftDown && !leftWasDown) {
-            Vec3dCompat dir = getLookVec(player);
-            ModNetwork.CHANNEL.sendToServer(new PacketWeaponFire(
-                new net.minecraft.util.math.Vec3d(dir.x, dir.y, dir.z),
-                selectedWeaponIndex
-            ));
+            Vec3d look = player.getLookVec();
+            ModNetwork.CHANNEL.sendToServer(
+                new PacketWeaponFire(look, selectedWeaponIndex));
         }
         leftWasDown = leftDown;
     }
 
-    // ── Key input event (catches key presses even when MC ignores them) ───────
+    // ─────────────────────────────────────────────────────────────────────────
+    //  Predator cam steering
+    // ─────────────────────────────────────────────────────────────────────────
+
+    /**
+     * Called every client tick while {@link #predatorCamActive} is true.
+     * Reads raw mouse delta, converts to yaw/pitch deltas, and sends
+     * {@link PacketMissileSteer} to the server every 2 ticks.
+     *
+     * Normal Minecraft look input is suppressed by resetting the player's
+     * rotation back to its previous value after the engine processes it.
+     */
+    private void handlePredatorCamTick(Minecraft mc) {
+        steerTick++;
+
+        // Read raw mouse delta this tick (consumed from OS queue)
+        int rawDX = Mouse.getDX();
+        int rawDY = Mouse.getDY();
+
+        // Sensitivity scaling — approximates Minecraft's own mouse sensitivity curve
+        float sens = mc.gameSettings.mouseSensitivity * 0.6f + 0.2f;
+        float yawDelta   =  rawDX * sens * 0.15f;
+        float pitchDelta = -rawDY * sens * 0.15f;   // inverted: up = negative pitch
+
+        // Clamp individual deltas to avoid overshooting on fast mouse moves
+        yawDelta   = Math.max(-10f, Math.min(10f, yawDelta));
+        pitchDelta = Math.max(-8f,  Math.min(8f,  pitchDelta));
+
+        // Suppress the player's camera from rotating (we've consumed the delta)
+        if (mc.player != null) {
+            mc.player.rotationYaw   -= yawDelta;   // counter the movement Minecraft applies
+            mc.player.rotationPitch -= pitchDelta;
+        }
+
+        // Send steer packet every 2 ticks (rate-limited)
+        if (steerTick % 2 == 0 && (rawDX != 0 || rawDY != 0)) {
+            ModNetwork.CHANNEL.sendToServer(new PacketMissileSteer(yawDelta, pitchDelta));
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    //  Key input event (fallback for menus / focus loss)
+    // ─────────────────────────────────────────────────────────────────────────
 
     @SubscribeEvent
     public void onKeyInput(InputEvent.KeyInputEvent event) {
+        if (predatorCamActive) return; // key input suppressed during nose-cam
+
         Minecraft mc = Minecraft.getMinecraft();
         EntityPlayer player = mc.player;
         if (player == null) return;
@@ -97,20 +190,9 @@ public class TacModeController {
         }
     }
 
-    // ── Helpers ───────────────────────────────────────────────────────────────
+    // ─────────────────────────────────────────────────────────────────────────
+    //  Getters
+    // ─────────────────────────────────────────────────────────────────────────
 
-    public int getSelectedWeaponIndex() {
-        return selectedWeaponIndex;
-    }
-
-    /** Wraps getLookVec so it can be inlined without a separate import. */
-    private static class Vec3dCompat {
-        final double x, y, z;
-        Vec3dCompat(double x, double y, double z) { this.x = x; this.y = y; this.z = z; }
-    }
-
-    private static Vec3dCompat getLookVec(EntityPlayer player) {
-        net.minecraft.util.math.Vec3d v = player.getLookVec();
-        return new Vec3dCompat(v.x, v.y, v.z);
-    }
+    public int getSelectedWeaponIndex() { return selectedWeaponIndex; }
 }

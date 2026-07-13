@@ -12,7 +12,7 @@ item.airarsenal.iron_bomb=Iron Bomb
 item.airarsenal.heavy_bomb=Heavy Bomb
 item.airarsenal.napalm_canister=Napalm Canister
 
-# Chunk 6 — Loot-only bomb entities (display names)
+# Chunk 6 — Loot-only bomb entities
 entity.airarsenal.iron_bomb=Iron Bomb
 entity.airarsenal.heavy_bomb=Heavy Bomb
 entity.airarsenal.napalm_bomb=Napalm Bomb
@@ -21,6 +21,12 @@ entity.airarsenal.emp_bomb=EMP Bomb
 entity.airarsenal.smoke_bomb=Smoke Bomb
 entity.airarsenal.depth_charge=Depth Charge
 entity.airarsenal.fuel_air_bomb=Fuel-Air Bomb
+
+# Chunk 7 — Guided missiles
+item.airarsenal.brahmos_targeter=BrahMos Targeter
+entity.airarsenal.hellfire=Hellfire Missile
+entity.airarsenal.brahmos=BrahMos Cruise Missile
+entity.airarsenal.predator_missile=Predator Strike Missile
 
 # Config keys
 config.airarsenal.allowBlockDestruction=Allow Block Destruction

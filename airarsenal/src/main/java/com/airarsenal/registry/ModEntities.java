@@ -10,15 +10,24 @@ import net.minecraftforge.fml.common.registry.EntityRegistry;
 public class ModEntities {
 
     /**
-     * Register all mod entities with Forge.
-     * Called during FMLPreInitializationEvent in AirArsenal.java.
+     * Entity ID registry — must never change once released (chunk roadmap):
      *
-     * CHUNK 2:  WoodBiplaneEntity          ID 1
-     * CHUNK 3:  PropellerShardEntity        ID 2
-     * CHUNK 4:  IronMonoplaneEntity, BulletEntity   IDs 3–4
-     * CHUNK 6:  8 × bomb entities           IDs 5–12
-     * CHUNK 7:  HellfireEntity, PredatorStrikeEntity
-     * CHUNK 9:  FighterJetEntity, PredatorDroneEntity, StealthBomberEntity
+     *  1  WoodBiplaneEntity          Chunk 2
+     *  2  PropellerShardEntity       Chunk 3
+     *  3  IronMonoplaneEntity        Chunk 4
+     *  4  BulletEntity               Chunk 4
+     *  5  IronBombEntity             Chunk 6
+     *  6  HeavyBombEntity            Chunk 6
+     *  7  NapalmBombEntity           Chunk 6
+     *  8  ClusterBombEntity          Chunk 6
+     *  9  EMPBombEntity              Chunk 6
+     * 10  SmokeBombEntity            Chunk 6
+     * 11  DepthChargeEntity          Chunk 6
+     * 12  FuelAirBombEntity          Chunk 6
+     * 13  HellfireEntity             Chunk 7
+     * 14  BrahMosEntity              Chunk 7
+     * 15  PredatorMissileEntity      Chunk 7
+     * 16+ reserved for Chunk 8–10
      */
     public static void register() {
 
@@ -85,5 +94,21 @@ public class ModEntities {
             new ResourceLocation("airarsenal", "fuel_air_bomb"),
             FuelAirBombEntity.class, "fuel_air_bomb", 12,
             AirArsenal.instance, 64, 3, true);
+
+        // ── Chunk 7 — Guided Missiles ─────────────────────────────────────────
+        EntityRegistry.registerModEntity(
+            new ResourceLocation("airarsenal", "hellfire"),
+            HellfireEntity.class, "hellfire", 13,
+            AirArsenal.instance, 128, 2, true);
+
+        EntityRegistry.registerModEntity(
+            new ResourceLocation("airarsenal", "brahmos"),
+            BrahMosEntity.class, "brahmos", 14,
+            AirArsenal.instance, 256, 2, true);  // long range — high tracking range
+
+        EntityRegistry.registerModEntity(
+            new ResourceLocation("airarsenal", "predator_missile"),
+            PredatorMissileEntity.class, "predator_missile", 15,
+            AirArsenal.instance, 128, 1, true);  // freq=1 for responsive steering
     }
 }

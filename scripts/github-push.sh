@@ -7,6 +7,14 @@
 
 set -euo pipefail
 
+# ── Ensure a commit identity is always present (workflow runs may have a bare env) ──
+if [ -z "$(git config user.email || true)" ]; then
+  git config user.email "agent@replit-airarsenal.dev"
+fi
+if [ -z "$(git config user.name || true)" ]; then
+  git config user.name "Air Arsenal Agent"
+fi
+
 # ── Safety checks ─────────────────────────────────────────────────────────────
 if [ -z "${GITHUB_PERSONAL_ACCESS_TOKEN:-}" ]; then
   echo "❌  GITHUB_PERSONAL_ACCESS_TOKEN is not set."

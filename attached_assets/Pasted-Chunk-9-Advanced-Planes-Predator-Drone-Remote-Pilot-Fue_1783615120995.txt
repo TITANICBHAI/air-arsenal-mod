@@ -1,0 +1,110 @@
+Chunk 9 — Advanced Planes, Predator Drone Remote Pilot & Fuel System
+
+### Context
+Chunks 1–8 complete. Full combat system, bombs, guided missiles, and ground artillery all working.
+
+This chunk adds the **elite non-craftable planes** and the **fuel system** that applies retroactively to all planes.
+
+#### Plane specs:
+| Plane | Speed | Health | Propeller HP | Hardpoints | Special |
+|---|---|---|---|---|---|
+| Fighter Jet | 180 b/s | 100 HP | N/A (jet engine) | 4 | Afterburner (+40 b/s, 5-sec burst), sonic boom |
+| Predator Drone | 55 b/s | 60 HP | 25 HP | 2 | Remote pilot mode — player not physically on board |
+| Stealth Bomber | 70 b/s | 120 HP | 40 HP (×4 engines) | 3 + bomb bay | Radar-invisible (doesn't trigger AA auto-target) |
+| Attack Helicopter | 40 b/s (hover) | 80 HP | 60 HP (main rotor) | 2 | Can hover (speed 0 without falling) |
+
+#### Fuel system (applies to all existing planes):
+- Each plane has `fuelLevel` (float, 0.0–100.0)
+- Fuel consumption: `fuelConsumption` blocks/tick (varies per plane)
+- When fuel = 0: engine stops, plane behaves as if propeller is DESTROYED
+- Fuel item: `ItemJetFuel` (bucket-like) — right-click while mounted to refuel (+25 fuel)
+- Craftable: `ItemJetFuel` = Blaze Rod + Lava Bucket + Coal Block
+- Fuel HUD element added to Tac Mode display (Chunk 5 HUD extended)
+
+#### Predator Drone remote pilot:
+- Player right-clicks drone with `ItemDroneController` (creative/loot only)
+- This starts remote pilot mode — player does NOT physically mount the drone
+- Player stays on ground but their view switches to drone camera
+- Controls same as Tac Mode (WASD for drone movement, mouse for camera/aim)
+- Drone can fly autonomously to a set waypoint or be manually piloted
+- Exit: press Shift — player view returns, drone continues flying at last heading until it hits something or fuel runs out
+
+#### Jet engine vs propeller:
+Fighter Jet and Predator Drone use **jet engines** — not propellers.
+- No `PropellerComponent` for jets
+- Instead: `JetEngineComponent` with health 60 HP
+- Damage states: same % thresholds but different visual (smoke from exhaust, not front)
+- No `PropellerShardEntity` on destroy — instead spawn fire and `EnumParticleTypes.EXPLOSION_LARGE`
+
+### Your Task
+
+#### Create `JetEngineComponent.java` at `com.airarsenal.entity.plane.component`
+Mirror of `PropellerComponent` but:
+- No contact hazard (no front-mounted spinning blade)
+- Destruction spawns fire entities behind the plane and applies `MobEffects.WITHER` to the pilot
+
+#### Create `FuelSystem.java` at `com.airarsenal.entity.plane.component`
+- `fuelLevel` (float 0–100), `fuelConsumption` (float, set by plane)
+- `consumeFuel(float tickConsumption)` — returns `false` if fuel ran out
+- `refuel(float amount)` — adds fuel, caps at 100
+- NBT read/write
+
+#### Modify `BasePlaneEntity.java`:
+- Add `FuelSystem fuelSystem`
+- Add `fuelConsumption` abstract float (set by each plane subclass)
+- Each tick: if `fuelSystem.consumeFuel(fuelConsumption)` returns false → treat as engine failure (same as propeller DESTROYED state)
+- Extend HUD update packet to include fuel level
+
+#### Create `FighterJetEntity.java`:
+- Uses `JetEngineComponent`
+- `maxSpeed` = 180, `fuelConsumption` = 0.15/tick
+- Hardpoints: 4 (pre-loaded with: 2× `HeavyRoundGun`, 1× `HellfireLauncher`, 1× `BrahMosLauncher`)
+- Afterburner: key binding `G` — boosts speed to 220 for 100 ticks, then 30-tick cooldown, consumes 3× fuel during boost
+- Sonic boom: when speed > 160, spawn `EXPLOSION_NORMAL` particle ring at plane position every 20 ticks
+
+#### Create `PredatorDroneEntity.java`:
+- Uses `JetEngineComponent`
+- `maxSpeed` = 55, `fuelConsumption` = 0.05/tick
+- Hardpoints: 2 (pre-loaded with 2× `HellfireLauncher`)
+- Remote pilot: `controllingPlayer` (EntityPlayerMP, can be null)
+- When `controllingPlayer != null` and not physically mounted: receives `PacketDroneSteer` (same as `PacketMissileSteer`) for movement
+
+#### Create `StealthBomberEntity.java`:
+- Uses `PropellerComponent` × 4 (one per engine — each tracked separately)
+- `maxSpeed` = 70, `fuelConsumption` = 0.08/tick
+- Hardpoints: 3 + bomb bay (can carry up to 4 bombs)
+- Stealth: override a flag `isStealthActive` — when true, not added to AA targeting scans
+- Toggle stealth with `G` key (costs 2× fuel while active)
+
+#### Create `AttackHelicopterEntity.java`:
+- Uses `PropellerComponent` (main rotor, health 60 HP, hitbox radius 3.5 blocks)
+- `maxSpeed` = 40, hover speed = 0 (no gravity when speed = 0 and engine running)
+- Hardpoints: 2 (pre-loaded with `Minigun` + `RocketPod`)
+- Can strafe (lateral movement key `Q`/`E`)
+
+#### Create `ItemDroneController.java`:
+- Right-click on `PredatorDroneEntity`: starts remote pilot mode
+- Client-side: switches view to drone camera entity
+- Server-side: sets `controllingPlayer` on drone
+
+#### Register all 4 new plane entities in `ModEntities.java`
+#### Create `ItemJetFuel.java`, register in `ModItems.java`, add crafting recipe
+#### Add fuel bar to Tac Mode HUD (extend `TacModeHUD.java` — add `"FUEL: 73%"` bar below PROPELLER bar)
+
+### Acceptance Criteria
+- [ ] Fighter Jet flies at 180 b/s, afterburner boosts to 220 for 100 ticks, then cooldown
+- [ ] Sonic boom particle ring fires when speed > 160
+- [ ] Predator Drone can be remote-piloted from ground — player view switches without mounting
+- [ ] Stealth Bomber not auto-targeted by AA Cannon/Flak Battery when `isStealthActive = true`
+- [ ] Attack Helicopter hovers at speed 0 without falling (gravity disabled when `speed == 0 && fuel > 0`)
+- [ ] Fuel depletes over time — engine failure matches propeller DESTROYED behaviour
+- [ ] `ItemJetFuel` adds 25 fuel, capped at 100
+- [ ] Fuel bar renders in Tac Mode HUD
+- [ ] All 4 new planes coexist with no entity ID conflicts
+
+### ⚠️ STOP AFTER THIS CHUNK
+The next chunk (Chunk 10 — the final chunk) adds: sounds, particle polish, loot table spawns for non-craftable planes and weapons, multi-version port notes, and a full README for compiling the mod locally.
+Do NOT add any sounds, loot tables, README, or port layer yet.
+Wait for the next prompt.
+
+---

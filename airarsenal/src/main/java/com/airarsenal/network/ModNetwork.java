@@ -6,13 +6,16 @@ import net.minecraftforge.fml.relauncher.Side;
 
 /**
  * Registers all Air Arsenal network packets via Forge's {@link SimpleNetworkWrapper}.
+ * Call {@link #register()} once in {@code FMLPreInitializationEvent}.
  *
- * Call {@link #register()} once during {@code FMLPreInitializationEvent} (before init,
- * so packets are available when the world loads).
- *
- * Discriminator IDs must be unique per channel:
- *   1 → {@link PacketTacModeToggle}
- *   2 → {@link PacketWeaponFire}
+ * Discriminator map:
+ * <pre>
+ *  1 → PacketTacModeToggle      (C→S)   Chunk 5
+ *  2 → PacketWeaponFire         (C→S)   Chunk 5
+ *  3 → PacketPredatorCameraStart (S→C)  Chunk 7
+ *  4 → PacketPredatorCameraEnd   (S→C)  Chunk 7
+ *  5 → PacketMissileSteer        (C→S)  Chunk 7
+ * </pre>
  */
 public final class ModNetwork {
 
@@ -24,18 +27,26 @@ public final class ModNetwork {
     public static void register() {
         CHANNEL = NetworkRegistry.INSTANCE.newSimpleChannel(CHANNEL_NAME);
 
-        // Client → Server packets
+        // ── Chunk 5 ───────────────────────────────────────────────────────────
         CHANNEL.registerMessage(
             PacketTacModeToggle.Handler.class,
-            PacketTacModeToggle.class,
-            1,
-            Side.SERVER
-        );
+            PacketTacModeToggle.class, 1, Side.SERVER);
+
         CHANNEL.registerMessage(
             PacketWeaponFire.Handler.class,
-            PacketWeaponFire.class,
-            2,
-            Side.SERVER
-        );
+            PacketWeaponFire.class, 2, Side.SERVER);
+
+        // ── Chunk 7 ───────────────────────────────────────────────────────────
+        CHANNEL.registerMessage(
+            PacketPredatorCameraStart.Handler.class,
+            PacketPredatorCameraStart.class, 3, Side.CLIENT);
+
+        CHANNEL.registerMessage(
+            PacketPredatorCameraEnd.Handler.class,
+            PacketPredatorCameraEnd.class, 4, Side.CLIENT);
+
+        CHANNEL.registerMessage(
+            PacketMissileSteer.Handler.class,
+            PacketMissileSteer.class, 5, Side.SERVER);
     }
 }

@@ -1,0 +1,125 @@
+Chunk 10 — Polish, Sounds, Loot Tables & Compile Guide (FINAL)
+
+### Context
+Chunks 1–9 complete. All planes, weapons, bombs, artillery, and missiles functional.
+This is the finishing pass: sound design, loot distribution, particle polish, and the guide for compiling everything.
+
+### Your Task
+
+#### Sound events — register in `sounds.json` and `ModSounds.java`:
+| Sound key | Used for |
+|---|---|
+| `airarsenal:plane.engine.biplane` | Wood Biplane engine loop |
+| `airarsenal:plane.engine.monoplane` | Iron Monoplane engine loop |
+| `airarsenal:plane.engine.jet` | Fighter Jet + Stealth Bomber loop |
+| `airarsenal:plane.engine.helicopter` | Attack Helicopter rotor loop |
+| `airarsenal:plane.propeller.damage` | Propeller hit |
+| `airarsenal:plane.propeller.destroyed` | Propeller shard launch |
+| `airarsenal:weapon.machinegun.fire` | Light Machine Gun shot |
+| `airarsenal:weapon.cannon.fire` | Heavy/AP round shot |
+| `airarsenal:weapon.missile.launch` | Any missile launch |
+| `airarsenal:weapon.missile.guidance` | Predator Strike steering hum |
+| `airarsenal:weapon.bomb.drop` | Bomb bay release |
+| `airarsenal:weapon.bomb.napalm` | Napalm impact crackle |
+| `airarsenal:weapon.bomb.emp` | EMP pulse discharge |
+| `airarsenal:artillery.aagun.fire` | AA Cannon shot |
+| `airarsenal:artillery.flak.burst` | Flak proximity detonation |
+
+All sound files are placeholders (`sounds.json` entries pointing to `sounds/` folder).
+If no `.ogg` files are available: use `"replace": false` so vanilla sounds fill the gaps gracefully.
+
+#### Particle polish pass:
+- Jet engine: spawn `FLAME` + `SMOKE_NORMAL` from exhaust position (behind plane) each tick when moving
+- Helicopter rotor: spawn downwash `CLOUD` particles directly below rotor in a disk pattern while hovering
+- Missile trail: all missile entities spawn `SMOKE_LARGE` + `FLAME` at their previous position each tick
+- BrahMos specifically: spawn `EXPLOSION_NORMAL` particles along trail every 5 ticks (visible arc)
+
+#### Loot tables for non-craftable items:
+In Forge 1.12.2 custom loot table injection is done by subscribing to `LootTableLoadEvent` — NOT via `data/` folder (that is 1.16+ datapack format). Create `LootTableHandler.java` at `com.airarsenal.event` and register it on the Forge event bus. In the event handler, call `event.getTable().addPool(...)` to inject a new `LootPool` containing a `LootEntryItem` (no kill condition needed — weight alone controls rarity). Use the `LootTables.*` constants for table names. **Do NOT use `LootConditionKilled`** — that class doesn't exist in 1.12.2; use conditions-free pools:
+
+```java
+@SubscribeEvent
+public void onLootTableLoad(LootTableLoadEvent event) {
+    if (event.getName().equals(LootTables.CHESTS_END_CITY_TREASURE)) {
+        event.getTable().addPool(buildPool(ModItems.SPAWN_EGG_FIGHTER_JET, 1));
+    }
+    // ... etc.
+}
+
+private LootPool buildPool(Item item, int weight) {
+    return new LootPool(new LootEntry[]{ new LootEntryItem(item, weight, 0, new LootFunction[0], new LootCondition[0], "airarsenal_inject") }, new LootCondition[0], new RandomValueRange(1), new RandomValueRange(0), "airarsenal_pool");
+}
+```
+
+Valid 1.12.2 loot table constants (all under `net.minecraft.world.storage.loot.LootTables`):
+- `CHESTS_END_CITY_TREASURE`, `CHESTS_WOODLAND_MANSION`, `CHESTS_STRONGHOLD_LIBRARY`, `CHESTS_STRONGHOLD_CORRIDOR`, `CHESTS_DESERT_PYRAMID`, `CHESTS_NETHER_BRIDGE`, `CHESTS_ABANDONED_MINESHAFT`, `CHESTS_VILLAGE_BLACKSMITH`
+
+Injection targets:
+- Fighter Jet spawn egg → `CHESTS_END_CITY_TREASURE` (weight 1, very rare)
+- Predator Drone spawn egg → `CHESTS_WOODLAND_MANSION` (weight 2)
+- Stealth Bomber spawn egg → `CHESTS_STRONGHOLD_LIBRARY` (weight 1)
+- `ItemMANPADS` → `CHESTS_DESERT_PYRAMID` (weight 3)
+- `ItemBrahMosTargeter` → `CHESTS_END_CITY_TREASURE` (weight 2)
+- `ItemDroneController` → `CHESTS_WOODLAND_MANSION` (weight 1)
+- `ArmoredTruckEntity` spawn egg → `CHESTS_ABANDONED_MINESHAFT` (weight 3) and `CHESTS_VILLAGE_BLACKSMITH` (weight 2) *(Pillager Outpost does not exist in 1.12.2)*
+- `TankEntity` spawn egg → `CHESTS_STRONGHOLD_CORRIDOR` (weight 1, very rare) and `CHESTS_NETHER_BRIDGE` (weight 2)
+
+#### Create `README.md` at project root with:
+
+```markdown
+# Air Arsenal — Minecraft 1.12.2 Forge Mod
+
+## Prerequisites
+- JDK 8 (NOT Java 9+ — Forge 1.12.2 requires Java 8)
+- Gradle (bundled via wrapper — no install needed)
+- Internet connection for first build (downloads Forge dependencies)
+
+## Compile
+\`\`\`bash
+./gradlew setupDecompWorkspace   # First time only — takes 5–10 minutes
+./gradlew build
+\`\`\`
+Output JAR: `build/libs/airarsenal-1.0.0.jar`
+
+## Install
+Copy JAR to your `.minecraft/mods/` folder.
+Requires: Forge 1.12.2-14.23.5.2860 or higher.
+
+## Testing on a local server
+\`\`\`bash
+./gradlew runServer
+\`\`\`
+Connect from Minecraft client at `localhost:25565`.
+
+## Version branches
+- `main` — 1.12.2 (this branch, most complete)
+- `legacy-1.14` — 1.14.4 port (in progress)
+- `modern-1.20` — 1.20.1 NeoForge port (planned)
+
+## Adding sounds
+Place `.ogg` files in `src/main/resources/assets/airarsenal/sounds/`
+matching the keys in `sounds.json`.
+```
+
+#### Final checklist pass — fix any of the following if found:
+- Any `System.out.println` → replace with `AirArsenal.logger.info()`
+- Any hardcoded `"minecraft"` domain where `"airarsenal"` should be used
+- Any entity registered without a spawn egg (add `EntityRegistry.registerEgg` for all non-craftable planes)
+- Any TileEntity updating on wrong side (add `if (world.isRemote) return;` guards)
+- Any missing `@SideOnly(Side.CLIENT)` on rendering/HUD classes
+
+### Acceptance Criteria
+- [ ] `sounds.json` valid — no missing required fields
+- [ ] Engine sounds loop while plane is moving (client only, `playSound` in `onUpdate` with `SoundCategory.NEUTRAL`)
+- [ ] All particle effects are client-only (no server-side particle spawning)
+- [ ] Loot table JSON valid — test with `/loot` command in test world
+- [ ] `README.md` present with correct Forge version string, `./gradlew setupDecompWorkspace && ./gradlew build` sequence, and JDK 8 prerequisite warning
+- [ ] Zero `System.out.println` in entire codebase
+- [ ] All non-craftable planes have spawn eggs registered
+
+### ⚠️ STOP AFTER THIS CHUNK
+The next chunk (Chunk 11) adds the Orbital Cannon — a multiblock structure that fires a kinetic rod from y=300 at a player-designated target, with warning particles, screen shake, and a GUI.
+Do NOT add any orbital cannon blocks, GUI, or strike entities yet.
+Wait for the next prompt.
+
+---
