@@ -1,7 +1,10 @@
 buildscript {
     repositories {
-        jcenter()
-        maven { url = "http://files.minecraftforge.net/maven" }
+        // jcenter() was shut down in 2024 — ForgeGradle 2.3 is now resolved from
+        // Forge's own maven, which mirrors it, plus Maven Central as a fallback.
+        maven { url = "https://maven.minecraftforge.net" }
+        maven { url = "https://files.minecraftforge.net/maven" }
+        mavenCentral()
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
@@ -21,6 +24,12 @@ minecraft {
     version = "1.12.2-14.23.5.2860"
     runDir = "run"
     mappings = "stable_39"
+}
+
+repositories {
+    maven { url = "https://maven.minecraftforge.net" }
+    maven { url = "https://files.minecraftforge.net/maven" }
+    mavenCentral()
 }
 
 dependencies {

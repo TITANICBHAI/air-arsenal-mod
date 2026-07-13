@@ -47,3 +47,10 @@ Thumbs.db
 # Replit
 .cache/
 .local/
+
+# Air Arsenal (Forge/Gradle mod build output)
+airarsenal/build/
+airarsenal/.gradle/
+airarsenal/run/
+airarsenal/eclipse/
+airarsenal/out/

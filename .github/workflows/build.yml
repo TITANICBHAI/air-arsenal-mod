@@ -1,0 +1,74 @@
+name: Build Air Arsenal (Forge 1.12.2)
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'airarsenal/**'
+      - '.github/workflows/build.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'airarsenal/**'
+      - '.github/workflows/build.yml'
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    name: Gradle build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: airarsenal
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # ForgeGradle 2.3 (targeting Minecraft 1.12.2) requires Java 8.
+      - name: Set up JDK 8
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '8'
+
+      # The repo's gradle wrapper jar isn't committed, so install Gradle 4.9
+      # directly (the version this project's wrapper properties pin) and
+      # invoke `gradle` rather than `./gradlew`.
+      - name: Set up Gradle 4.9
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '4.9'
+
+      - name: Cache Forge/Gradle artifacts
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            airarsenal/build/unpacked
+            airarsenal/build/fmllibs
+          key: ${{ runner.os }}-forge112-${{ hashFiles('airarsenal/build.gradle') }}
+          restore-keys: |
+            ${{ runner.os }}-forge112-
+
+      - name: Build mod jar
+        run: gradle build --no-daemon --stacktrace
+
+      - name: Upload mod jar artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: airarsenal-mod-jar
+          path: airarsenal/build/libs/*.jar
+          if-no-files-found: warn
+
+      - name: Upload build logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gradle-build-logs
+          path: |
+            airarsenal/build/reports
+            airarsenal/build.log
+          if-no-files-found: ignore
