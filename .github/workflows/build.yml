@@ -40,17 +40,16 @@ jobs:
         with:
           gradle-version: '4.9'
 
-      - name: Cache Forge/Gradle artifacts
+      # Only cache the shared Gradle module cache, keyed exactly to build.gradle.
+      # No restore-keys fallback: a partial match here would restore
+      # version-specific intermediate Forge patch/unpack artifacts from a
+      # different minecraft{} version and silently corrupt the build.
+      - name: Cache Gradle module cache
         uses: actions/cache@v4
         with:
           path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-            airarsenal/build/unpacked
-            airarsenal/build/fmllibs
-          key: ${{ runner.os }}-forge112-${{ hashFiles('airarsenal/build.gradle') }}
-          restore-keys: |
-            ${{ runner.os }}-forge112-
+            ~/.gradle/caches/modules-2
+          key: ${{ runner.os }}-forge112-modules-${{ hashFiles('airarsenal/build.gradle') }}
 
       - name: Build mod jar
         run: gradle build --no-daemon --stacktrace
