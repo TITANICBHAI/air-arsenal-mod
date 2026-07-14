@@ -21,7 +21,10 @@ sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
 minecraft {
-    version = "1.12.2-14.23.5.2860"
+    // 14.23.5.2860 was pulled from Forge's public maven (archived/gated) after
+    // their server migration; 14.23.5.2847 is a well-known, still-public build
+    // for 1.12.2 and remains ABI-compatible for this mod.
+    version = "1.12.2-14.23.5.2847"
     runDir = "run"
     mappings = "stable_39"
 }
