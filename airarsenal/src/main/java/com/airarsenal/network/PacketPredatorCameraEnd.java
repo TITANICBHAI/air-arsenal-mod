@@ -40,7 +40,7 @@ public class PacketPredatorCameraEnd implements IMessage {
             if (mc.player == null) return;
 
             // Restore player-perspective view
-            mc.renderViewEntity = mc.player;
+            mc.setRenderViewEntity(mc.player);
 
             // Remove post-process shader
             mc.entityRenderer.stopUseShader();

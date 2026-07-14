@@ -270,7 +270,7 @@ public abstract class BasePlaneEntity extends Entity {
         this.rotationYaw   = yaw;
         this.rotationPitch = pitch;
 
-        moveEntity(motionX, motionY, motionZ);
+        move(net.minecraft.entity.MoverType.SELF, motionX, motionY, motionZ);
     }
 
     // ─────────────────────────────────────────────────────────────────────────

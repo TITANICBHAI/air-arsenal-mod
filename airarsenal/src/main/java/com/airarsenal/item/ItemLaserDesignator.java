@@ -80,18 +80,18 @@ public class ItemLaserDesignator extends Item {
         tag.setInteger("X", pos.getX());
         tag.setInteger("Y", pos.getY());
         tag.setInteger("Z", pos.getZ());
-        player.getPersistentData().setTag(NBT_TARGET_KEY, tag);
+        player.getEntityData().setTag(NBT_TARGET_KEY, tag);
     }
 
     @Nullable
     public static BlockPos getTarget(EntityPlayer player) {
-        NBTTagCompound data = player.getPersistentData();
+        NBTTagCompound data = player.getEntityData();
         if (!data.hasKey(NBT_TARGET_KEY)) return null;
         NBTTagCompound tag = data.getCompoundTag(NBT_TARGET_KEY);
         return new BlockPos(tag.getInteger("X"), tag.getInteger("Y"), tag.getInteger("Z"));
     }
 
     public static void clearTarget(EntityPlayer player) {
-        player.getPersistentData().removeTag(NBT_TARGET_KEY);
+        player.getEntityData().removeTag(NBT_TARGET_KEY);
     }
 }

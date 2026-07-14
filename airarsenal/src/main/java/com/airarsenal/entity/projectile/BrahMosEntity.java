@@ -73,7 +73,7 @@ public class BrahMosEntity extends Entity {
                 posX - (targetPos.getX() + 0.5),
                 posY - (targetPos.getY() + 0.5),
                 posZ - (targetPos.getZ() + 0.5)
-            ).lengthVector();
+            ).length();
 
             if (distToTarget <= ARRIVAL_DISTANCE) {
                 AirArsenal.LOGGER.debug("BrahMos arrived at waypoint {}", targetPos);
@@ -91,7 +91,7 @@ public class BrahMosEntity extends Entity {
 
         // ── Move ──────────────────────────────────────────────────────────────
         Vec3d start = new Vec3d(posX, posY, posZ);
-        moveEntity(motionX, motionY, motionZ);
+        move(net.minecraft.entity.MoverType.SELF, motionX, motionY, motionZ);
         Vec3d end   = new Vec3d(posX, posY, posZ);
 
         // ── Trail particles (Chunk 10 polish, client-only) ──────────────────────
@@ -129,7 +129,7 @@ public class BrahMosEntity extends Entity {
             targetPos.getY() + 0.5 - posY,
             targetPos.getZ() + 0.5 - posZ
         );
-        double len = toTarget.lengthVector();
+        double len = toTarget.length();
         return len < 0.001 ? Vec3d.ZERO : toTarget.scale(1.0 / len);
     }
 

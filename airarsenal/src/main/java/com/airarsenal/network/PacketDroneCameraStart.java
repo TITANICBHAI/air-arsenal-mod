@@ -45,7 +45,7 @@ public class PacketDroneCameraStart implements IMessage {
                 if (mc.world == null) return;
                 Entity drone = mc.world.getEntityByID(message.droneEntityId);
                 if (drone == null) return;
-                mc.renderViewEntity = drone;
+                mc.setRenderViewEntity(drone);
                 TacModeController.droneCamActive = true;
             });
             return null;

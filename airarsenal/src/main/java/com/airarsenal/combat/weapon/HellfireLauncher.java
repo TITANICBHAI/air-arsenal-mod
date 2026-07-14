@@ -68,7 +68,7 @@ public class HellfireLauncher implements IPlaneWeapon {
                 e.posY + e.height * 0.5 - shooter.posY,
                 e.posZ - shooter.posZ
             );
-            double dist = toEntity.lengthVector();
+            double dist = toEntity.length();
             if (dist > LOCK_RANGE || dist < 0.001) continue;
 
             Vec3d toEntityNorm = toEntity.scale(1.0 / dist);

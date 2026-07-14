@@ -102,7 +102,7 @@ public class HellfireEntity extends Entity {
 
         // ── Move ──────────────────────────────────────────────────────────────
         Vec3d start = new Vec3d(posX, posY, posZ);
-        moveEntity(motionX, motionY, motionZ);
+        move(net.minecraft.entity.MoverType.SELF, motionX, motionY, motionZ);
         Vec3d end = new Vec3d(posX, posY, posZ);
 
         // ── Trail particles (Chunk 10 polish, client-only) ──────────────────────

@@ -4,6 +4,7 @@ import com.airarsenal.creativetab.AirArsenalTab;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -40,7 +41,7 @@ public abstract class BaseArtilleryBlock extends BlockHorizontal {
     @Override
     public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing,
                                             float hitX, float hitY, float hitZ,
-                                            int meta, EntityPlayer placer) {
+                                            int meta, EntityLivingBase placer) {
         return getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite());
     }
 
@@ -80,7 +81,7 @@ public abstract class BaseArtilleryBlock extends BlockHorizontal {
 
     @Override
     public IBlockState getStateFromMeta(int meta) {
-        return getDefaultState().withProperty(FACING, EnumFacing.getFront(meta));
+        return getDefaultState().withProperty(FACING, EnumFacing.byIndex(meta));
     }
 
     @Override

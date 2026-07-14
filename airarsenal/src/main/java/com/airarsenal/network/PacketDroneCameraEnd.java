@@ -31,7 +31,7 @@ public class PacketDroneCameraEnd implements IMessage {
             Minecraft mc = Minecraft.getMinecraft();
             mc.addScheduledTask(() -> {
                 if (mc.player == null) return;
-                mc.renderViewEntity = mc.player;
+                mc.setRenderViewEntity(mc.player);
                 TacModeController.droneCamActive = false;
             });
             return null;

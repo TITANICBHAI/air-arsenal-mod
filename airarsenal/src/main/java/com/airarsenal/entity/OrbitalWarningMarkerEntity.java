@@ -45,8 +45,8 @@ public class OrbitalWarningMarkerEntity extends Entity {
                     double angle = (2 * Math.PI / RING_POINTS) * i;
                     double px = posX + RING_RADIUS * Math.cos(angle);
                     double pz = posZ + RING_RADIUS * Math.sin(angle);
-                    ws.spawnParticle(EnumParticleTypes.REDSTONE, px, posY + 1, pz, 1, 0, 0, 0, 0);
-                    ws.spawnParticle(EnumParticleTypes.FLAME, px, posY + 1, pz, 1, 0, 0, 0, 0);
+                    ws.spawnParticle(EnumParticleTypes.REDSTONE, px, posY + 1, pz, 1, 0.0, 0.0, 0.0, 0.0);
+                    ws.spawnParticle(EnumParticleTypes.FLAME, px, posY + 1, pz, 1, 0.0, 0.0, 0.0, 0.0);
                 }
             }
 

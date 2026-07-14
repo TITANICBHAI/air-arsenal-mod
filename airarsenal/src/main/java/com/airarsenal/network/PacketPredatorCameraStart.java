@@ -66,9 +66,9 @@ public class PacketPredatorCameraStart implements IMessage {
         }
 
         @SideOnly(Side.CLIENT)
-        static void activatePredatorCam(Minecraft mc, Entity missile) {
+        public static void activatePredatorCam(Minecraft mc, Entity missile) {
             // Switch render view to the missile nose
-            mc.renderViewEntity = missile;
+            mc.setRenderViewEntity(missile);
 
             // Apply drone-cam post-process shader (grayscale + slight blur)
             try {

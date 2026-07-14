@@ -48,7 +48,7 @@ public class PropellerShardEntity extends EntityThrowable {
      * @param thrower   The plane entity (used for position and heading).
      */
     public PropellerShardEntity(World world, Entity thrower) {
-        super(world, thrower.posX, thrower.posY + 0.5, thrower.posZ, null);
+        super(world, thrower.posX, thrower.posY + 0.5, thrower.posZ);
 
         // Plane's forward unit vector (yaw only — ignore pitch for cone origin)
         double yawRad = Math.toRadians(thrower.rotationYaw);

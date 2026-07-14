@@ -23,9 +23,8 @@ public class TankShellEntity extends EntityThrowable {
     }
 
     public TankShellEntity(World world, Entity firer) {
-        super(world);
+        super(world, firer instanceof EntityLivingBase ? (EntityLivingBase) firer : null);
         setSize(0.35f, 0.35f);
-        this.shootingEntity = firer instanceof EntityLivingBase ? (EntityLivingBase) firer : null;
     }
 
     @Override

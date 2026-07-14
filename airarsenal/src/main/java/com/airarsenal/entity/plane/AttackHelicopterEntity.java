@@ -75,7 +75,7 @@ public class AttackHelicopterEntity extends BasePlaneEntity {
             motionZ = 0;
             this.rotationYaw   = yaw;
             this.rotationPitch = pitch;
-            moveEntity(motionX, motionY, motionZ);
+            move(net.minecraft.entity.MoverType.SELF, motionX, motionY, motionZ);
             return;
         }
         super.applyFlightPhysics();
@@ -92,6 +92,6 @@ public class AttackHelicopterEntity extends BasePlaneEntity {
         double strafeZ = -Math.sin(yawRad) * STRAFE_SPEED;
         float dir = left ? -1f : 1f;
 
-        moveEntity(strafeX * dir, 0, strafeZ * dir);
+        move(net.minecraft.entity.MoverType.SELF, strafeX * dir, 0, strafeZ * dir);
     }
 }

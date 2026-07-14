@@ -104,7 +104,7 @@ public abstract class BaseBombEntity extends Entity {
 
         // ── Move ──────────────────────────────────────────────────────────────
         Vec3d startVec = new Vec3d(posX, posY, posZ);
-        moveEntity(motionX, motionY, motionZ);
+        move(net.minecraft.entity.MoverType.SELF, motionX, motionY, motionZ);
         Vec3d endVec = new Vec3d(posX, posY, posZ);
 
         // ── Block collision check (ray from old → new position) ───────────────

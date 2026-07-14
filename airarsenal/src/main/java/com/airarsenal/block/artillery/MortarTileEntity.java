@@ -55,7 +55,7 @@ public class MortarTileEntity extends BaseArtilleryTileEntity {
         double horizSpeed = MUZZLE_VELOCITY * Math.cos(thetaRad);
         double vertSpeed   = MUZZLE_VELOCITY * Math.sin(thetaRad);
 
-        Vec3d horizDir = new Vec3d(facing.getFrontOffsetX(), 0, facing.getFrontOffsetZ());
+        Vec3d horizDir = new Vec3d(facing.getXOffset(), 0, facing.getZOffset());
 
         MortarShellEntity shell = new MortarShellEntity(world, player);
         shell.setPosition(pos.getX() + 0.5, pos.getY() + 1.3, pos.getZ() + 0.5);

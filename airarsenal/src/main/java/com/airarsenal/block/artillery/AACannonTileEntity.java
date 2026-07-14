@@ -66,8 +66,7 @@ public class AACannonTileEntity extends BaseArtilleryTileEntity {
 
         AAShellEntity shell = new AAShellEntity(world);
         shell.setPosition(pos.getX() + 0.5, pos.getY() + 1.2, pos.getZ() + 0.5);
-        shell.shootingEntity = null;
-        shell.setThrowableHeading(dir.x, dir.y, dir.z, 2.0f, 0f); // 2 blocks/tick, no inaccuracy
+        shell.launchToward(dir.x, dir.y, dir.z, 2.0f, 0f); // 2 blocks/tick, no inaccuracy
         world.spawnEntity(shell);
     }
 }

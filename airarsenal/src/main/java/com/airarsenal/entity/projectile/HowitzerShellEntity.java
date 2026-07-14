@@ -61,7 +61,7 @@ public class HowitzerShellEntity extends Entity {
             }
             if (lifetimeTicks >= MAX_LIFETIME) { detonate(); return; }
         }
-        moveEntity(motionX, motionY, motionZ);
+        move(net.minecraft.entity.MoverType.SELF, motionX, motionY, motionZ);
     }
 
     private void detonate() {

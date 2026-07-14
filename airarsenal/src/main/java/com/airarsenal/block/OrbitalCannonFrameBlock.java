@@ -14,7 +14,7 @@ import net.minecraft.block.state.IBlockState;
 public class OrbitalCannonFrameBlock extends Block {
 
     public OrbitalCannonFrameBlock() {
-        super(Material.IRON, MapColor.IRON_BLOCK_COLOR);
+        super(Material.IRON, MapColor.IRON);
         setHardness(10.0f);
         setResistance(20.0f);
         setCreativeTab(AirArsenalTab.INSTANCE);
@@ -24,6 +24,6 @@ public class OrbitalCannonFrameBlock extends Block {
 
     @Override
     public MapColor getMapColor(IBlockState state, net.minecraft.world.IBlockAccess worldIn, net.minecraft.util.math.BlockPos pos) {
-        return MapColor.IRON_BLOCK_COLOR;
+        return MapColor.IRON;
     }
 }

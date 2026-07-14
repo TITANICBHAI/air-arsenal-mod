@@ -13,7 +13,7 @@ public class AirArsenalTab extends CreativeTabs {
     }
 
     @Override
-    public ItemStack getTabIconItem() {
+    public ItemStack createIcon() {
         // Placeholder icon — will be replaced with a plane spawn egg or item later
         return new ItemStack(Items.IRON_INGOT);
     }

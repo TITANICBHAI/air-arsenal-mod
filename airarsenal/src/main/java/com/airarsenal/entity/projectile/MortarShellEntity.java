@@ -22,10 +22,9 @@ public class MortarShellEntity extends EntityThrowable {
     }
 
     public MortarShellEntity(World world, Entity firer) {
-        super(world);
+        super(world, firer instanceof net.minecraft.entity.EntityLivingBase
+            ? (net.minecraft.entity.EntityLivingBase) firer : null);
         setSize(0.35f, 0.35f);
-        this.shootingEntity = firer instanceof net.minecraft.entity.EntityLivingBase
-            ? (net.minecraft.entity.EntityLivingBase) firer : null;
     }
 
     @Override

@@ -105,7 +105,7 @@ public class ItemBrahMosTargeter extends Item {
      * The persistent tag survives dimension changes and reconnects.
      */
     public static void saveTarget(EntityPlayer player, BlockPos pos) {
-        NBTTagCompound data = player.getPersistentData();
+        NBTTagCompound data = player.getEntityData();
         NBTTagCompound tag = new NBTTagCompound();
         tag.setInteger("X", pos.getX());
         tag.setInteger("Y", pos.getY());
@@ -118,7 +118,7 @@ public class ItemBrahMosTargeter extends Item {
      */
     @Nullable
     public static BlockPos getTarget(EntityPlayer player) {
-        NBTTagCompound data = player.getPersistentData();
+        NBTTagCompound data = player.getEntityData();
         if (!data.hasKey(NBT_TARGET_KEY)) return null;
         NBTTagCompound tag = data.getCompoundTag(NBT_TARGET_KEY);
         return new BlockPos(
@@ -130,6 +130,6 @@ public class ItemBrahMosTargeter extends Item {
 
     /** Removes the stored waypoint. */
     public static void clearTarget(EntityPlayer player) {
-        player.getPersistentData().removeTag(NBT_TARGET_KEY);
+        player.getEntityData().removeTag(NBT_TARGET_KEY);
     }
 }

@@ -27,6 +27,11 @@ public class AAShellEntity extends EntityThrowable {
         setSize(0.3f, 0.3f);
     }
 
+    /** Public wrapper around the protected {@link EntityThrowable#setThrowableHeading} for callers in other packages. */
+    public void launchToward(double x, double y, double z, float velocity, float inaccuracy) {
+        setThrowableHeading(x, y, z, velocity, inaccuracy);
+    }
+
     @Override
     protected void onImpact(RayTraceResult result) {
         if (result.typeOfHit == RayTraceResult.Type.ENTITY
