@@ -4,7 +4,7 @@ import com.airarsenal.AirArsenal;
 import com.airarsenal.registry.ModSounds;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.potion.MobEffects;
+import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.world.World;

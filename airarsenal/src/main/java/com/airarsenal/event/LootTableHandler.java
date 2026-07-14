@@ -11,7 +11,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraft.world.storage.loot.LootEntry;
 import net.minecraft.world.storage.loot.LootEntryItem;
 import net.minecraft.world.storage.loot.LootPool;
-import net.minecraft.world.storage.loot.LootTables;
+import net.minecraft.world.storage.loot.LootTableList;
 import net.minecraft.world.storage.loot.conditions.LootCondition;
 import net.minecraft.world.storage.loot.functions.LootFunction;
 import net.minecraft.world.storage.loot.functions.SetNBT;
@@ -32,23 +32,23 @@ public class LootTableHandler {
     public static void onLootTableLoad(LootTableLoadEvent event) {
         String name = event.getName().toString();
 
-        if (name.equals(LootTables.CHESTS_END_CITY_TREASURE.toString())) {
+        if (name.equals(LootTableList.CHESTS_END_CITY_TREASURE.toString())) {
             event.getTable().addPool(buildEggPool("fighter_jet", 1));
             event.getTable().addPool(buildItemPool(ModItems.BRAHMOS_TARGETER, 2, "brahmos_targeter"));
-        } else if (name.equals(LootTables.CHESTS_WOODLAND_MANSION.toString())) {
+        } else if (name.equals(LootTableList.CHESTS_WOODLAND_MANSION.toString())) {
             event.getTable().addPool(buildEggPool("predator_drone", 2));
             event.getTable().addPool(buildItemPool(ModItems.DRONE_CONTROLLER, 1, "drone_controller"));
-        } else if (name.equals(LootTables.CHESTS_STRONGHOLD_LIBRARY.toString())) {
+        } else if (name.equals(LootTableList.CHESTS_STRONGHOLD_LIBRARY.toString())) {
             event.getTable().addPool(buildEggPool("stealth_bomber", 1));
-        } else if (name.equals(LootTables.CHESTS_DESERT_PYRAMID.toString())) {
+        } else if (name.equals(LootTableList.CHESTS_DESERT_PYRAMID.toString())) {
             event.getTable().addPool(buildItemPool(ModItems.MANPADS, 3, "manpads"));
-        } else if (name.equals(LootTables.CHESTS_ABANDONED_MINESHAFT.toString())) {
+        } else if (name.equals(LootTableList.CHESTS_ABANDONED_MINESHAFT.toString())) {
             event.getTable().addPool(buildEggPool("armored_truck", 3));
-        } else if (name.equals(LootTables.CHESTS_VILLAGE_BLACKSMITH.toString())) {
+        } else if (name.equals(LootTableList.CHESTS_VILLAGE_BLACKSMITH.toString())) {
             event.getTable().addPool(buildEggPool("armored_truck", 2));
-        } else if (name.equals(LootTables.CHESTS_STRONGHOLD_CORRIDOR.toString())) {
+        } else if (name.equals(LootTableList.CHESTS_STRONGHOLD_CORRIDOR.toString())) {
             event.getTable().addPool(buildEggPool("tank", 1));
-        } else if (name.equals(LootTables.CHESTS_NETHER_BRIDGE.toString())) {
+        } else if (name.equals(LootTableList.CHESTS_NETHER_BRIDGE.toString())) {
             event.getTable().addPool(buildEggPool("tank", 2));
         }
     }

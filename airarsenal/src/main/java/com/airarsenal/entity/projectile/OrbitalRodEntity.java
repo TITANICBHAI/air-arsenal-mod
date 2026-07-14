@@ -4,7 +4,7 @@ import com.airarsenal.config.AirArsenalConfig;
 import com.airarsenal.network.ModNetwork;
 import com.airarsenal.network.PacketOrbitalImpact;
 import com.airarsenal.network.PacketScreenShake;
-import net.minecraft.block.Blocks;
+import net.minecraft.init.Blocks;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
