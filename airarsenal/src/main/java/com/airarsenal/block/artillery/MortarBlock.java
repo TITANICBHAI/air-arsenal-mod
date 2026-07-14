@@ -2,6 +2,7 @@ package com.airarsenal.block.artillery;
 
 import com.airarsenal.item.ItemMortarShell;
 import com.airarsenal.registry.ModGuiHandler;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -21,7 +22,7 @@ public class MortarBlock extends BaseArtilleryBlock {
     }
 
     @Override
-    public TileEntity createNewTileEntity(World world, int meta) {
+    public TileEntity createTileEntity(World world, IBlockState state) {
         return new MortarTileEntity();
     }
 

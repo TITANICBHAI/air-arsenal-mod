@@ -23,10 +23,9 @@ public class MLRSRocketEntity extends EntityThrowable {
     }
 
     public MLRSRocketEntity(World world, Entity firer) {
-        super(world);
+        super(world, firer instanceof net.minecraft.entity.EntityLivingBase
+            ? (net.minecraft.entity.EntityLivingBase) firer : null);
         setSize(0.3f, 0.3f);
-        this.shootingEntity = firer instanceof net.minecraft.entity.EntityLivingBase
-            ? (net.minecraft.entity.EntityLivingBase) firer : null;
     }
 
     @Override

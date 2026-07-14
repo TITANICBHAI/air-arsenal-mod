@@ -17,7 +17,7 @@ import net.minecraft.world.World;
  *
  * <ul>
  *   <li>Extends {@link BlockHorizontal} — placed facing the player (N/S/E/W).</li>
- *   <li>Always has a paired TileEntity (see {@link #createNewTileEntity}).</li>
+ *   <li>Always has a paired TileEntity (see {@code createTileEntity} in subclasses).</li>
  *   <li>Sneak + right-click (empty hand) → toggle auto/manual mode.</li>
  *   <li>Normal right-click is dispatched to {@link #onArtilleryActivated} for
  *       subclasses to implement item-based interactions (load ammo, fire, etc).</li>

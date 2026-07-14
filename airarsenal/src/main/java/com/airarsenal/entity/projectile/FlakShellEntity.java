@@ -84,7 +84,7 @@ public class FlakShellEntity extends Entity {
             }
         }
 
-        moveEntity(motionX, motionY, motionZ);
+        move(net.minecraft.entity.MoverType.SELF, motionX, motionY, motionZ);
     }
 
     private void detonate() {

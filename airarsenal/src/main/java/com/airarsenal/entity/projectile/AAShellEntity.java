@@ -27,9 +27,9 @@ public class AAShellEntity extends EntityThrowable {
         setSize(0.3f, 0.3f);
     }
 
-    /** Public wrapper around the protected {@link EntityThrowable#setThrowableHeading} for callers in other packages. */
+    /** Public wrapper around {@link net.minecraft.entity.IProjectile#shoot} for callers in other packages. */
     public void launchToward(double x, double y, double z, float velocity, float inaccuracy) {
-        setThrowableHeading(x, y, z, velocity, inaccuracy);
+        shoot(x, y, z, velocity, inaccuracy);
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.airarsenal.block.artillery;
 
 import com.airarsenal.item.ItemLaserDesignator;
 import com.airarsenal.registry.ModGuiHandler;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumHand;
@@ -19,7 +20,7 @@ public class HowitzerBlock extends BaseArtilleryBlock {
     }
 
     @Override
-    public TileEntity createNewTileEntity(World world, int meta) {
+    public TileEntity createTileEntity(World world, IBlockState state) {
         return new HowitzerTileEntity();
     }
 

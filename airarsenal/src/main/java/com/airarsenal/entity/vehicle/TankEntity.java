@@ -103,5 +103,5 @@ public class TankEntity extends EntityCreature {
     }
 
     @Override
-    public boolean canBeLeashed(EntityPlayer player) { return false; }
+    public boolean canBeLeashedTo(EntityPlayer player) { return false; }
 }

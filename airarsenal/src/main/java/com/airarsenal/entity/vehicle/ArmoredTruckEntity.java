@@ -66,5 +66,5 @@ public class ArmoredTruckEntity extends EntityCreature {
     }
 
     @Override
-    public boolean canBeLeashed(net.minecraft.entity.player.EntityPlayer player) { return false; }
+    public boolean canBeLeashedTo(net.minecraft.entity.player.EntityPlayer player) { return false; }
 }
