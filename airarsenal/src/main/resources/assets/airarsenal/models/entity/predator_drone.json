@@ -1,0 +1,103 @@
+{
+  "__comment": "Model for PredatorDroneEntity — Medium-altitude long-endurance UAV with sensor turret and rear pusher engine",
+  "texture_width": 128,
+  "texture_height": 64,
+  "bones": [
+    {
+      "name": "fuselage",
+      "pivot": [0, 4, 0],
+      "cubes": [
+        {
+          "__comment": "Main fuselage body",
+          "origin": [-4, 2, -16],
+          "size": [8, 8, 36],
+          "uv": [0, 0]
+        },
+        {
+          "__comment": "Forward bulbous satellite fairing",
+          "origin": [-5, 4, 10],
+          "size": [10, 7, 12],
+          "uv": [52, 0]
+        },
+        {
+          "__comment": "Electro-optical targeting gimbal turret",
+          "origin": [-3, -1, 14],
+          "size": [6, 4, 6],
+          "uv": [52, 19]
+        }
+      ]
+    },
+    {
+      "name": "glider_wings",
+      "pivot": [0, 6, 2],
+      "cubes": [
+        {
+          "__comment": "Left high-aspect wing",
+          "origin": [4, 6, -1],
+          "size": [44, 2, 8],
+          "uv": [0, 44]
+        },
+        {
+          "__comment": "Right high-aspect wing",
+          "origin": [-48, 6, -1],
+          "size": [44, 2, 8],
+          "uv": [0, 44]
+        }
+      ]
+    },
+    {
+      "name": "inverted_v_tail",
+      "pivot": [0, 4, -16],
+      "cubes": [
+        {
+          "__comment": "Inverted V-tail left fin",
+          "origin": [2, -2, -22],
+          "size": [2, 10, 8],
+          "uv": [96, 0]
+        },
+        {
+          "__comment": "Inverted V-tail right fin",
+          "origin": [-4, -2, -22],
+          "size": [2, 10, 8],
+          "uv": [96, 0]
+        }
+      ]
+    },
+    {
+      "name": "pusher_propeller",
+      "pivot": [0, 6, -17],
+      "cubes": [
+        {
+          "__comment": "Rear pusher hub",
+          "origin": [-2, 4, -18],
+          "size": [4, 4, 2],
+          "uv": [116, 0]
+        },
+        {
+          "__comment": "Rear pusher blades",
+          "origin": [-10, 5, -19],
+          "size": [20, 2, 1],
+          "uv": [76, 20]
+        }
+      ]
+    },
+    {
+      "name": "missile_pylons",
+      "pivot": [0, 4, 2],
+      "cubes": [
+        {
+          "__comment": "Left wing Hellfire rack",
+          "origin": [16, 4, 0],
+          "size": [2, 2, 6],
+          "uv": [108, 20]
+        },
+        {
+          "__comment": "Right wing Hellfire rack",
+          "origin": [-18, 4, 0],
+          "size": [2, 2, 6],
+          "uv": [108, 20]
+        }
+      ]
+    }
+  ]
+}

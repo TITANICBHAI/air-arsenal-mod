@@ -1,0 +1,61 @@
+{
+  "__comment": "Model for BrahMosEntity — Supersonic ramjet long-range cruise missile",
+  "texture_width": 64,
+  "texture_height": 64,
+  "bones": [
+    {
+      "name": "body",
+      "pivot": [0, 0, 0],
+      "cubes": [
+        {
+          "__comment": "Central missile body",
+          "origin": [-2.5, -2.5, -16],
+          "size": [5, 5, 32],
+          "uv": [0, 0]
+        },
+        {
+          "__comment": "Nose supersonic air intake cone",
+          "origin": [-1.5, -1.5, 16],
+          "size": [3, 3, 5],
+          "uv": [42, 0]
+        },
+        {
+          "__comment": "Central intake shock spike",
+          "origin": [-0.5, -0.5, 21],
+          "size": [1, 1, 4],
+          "uv": [42, 8]
+        },
+        {
+          "__comment": "Solid rocket booster nozzle",
+          "origin": [-2, -2, -18],
+          "size": [4, 4, 2],
+          "uv": [42, 13]
+        }
+      ]
+    },
+    {
+      "name": "wings",
+      "pivot": [0, 0, 0],
+      "cubes": [
+        {
+          "__comment": "Mid-fuselage delta wings",
+          "origin": [-9, -0.5, -2],
+          "size": [18, 1, 8],
+          "uv": [0, 37]
+        },
+        {
+          "__comment": "Rear steering tailfins",
+          "origin": [-7, -0.5, -15],
+          "size": [14, 1, 5],
+          "uv": [0, 46]
+        },
+        {
+          "__comment": "Rear vertical steering rudder",
+          "origin": [-0.5, -7, -15],
+          "size": [1, 14, 5],
+          "uv": [0, 46]
+        }
+      ]
+    }
+  ]
+}

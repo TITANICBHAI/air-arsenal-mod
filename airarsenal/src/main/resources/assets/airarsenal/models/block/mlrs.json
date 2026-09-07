@@ -1,0 +1,37 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "particle": "blocks/anvil_base",
+    "base": "blocks/anvil_base",
+    "metal": "blocks/iron_block",
+    "pod": "blocks/dispenser_front_horizontal"
+  },
+  "elements": [
+    {
+      "__comment": "Traversing base turntable",
+      "from": [1, 0, 1],
+      "to": [15, 3, 15],
+      "faces": {
+        "down":  { "texture": "#base", "cullface": "down" },
+        "up":    { "texture": "#base" },
+        "north": { "texture": "#base" },
+        "south": { "texture": "#base" },
+        "west":  { "texture": "#base" },
+        "east":  { "texture": "#base" }
+      }
+    },
+    {
+      "__comment": "Elevating rocket pod mount",
+      "from": [2, 3, 2],
+      "to": [14, 13, 14],
+      "faces": {
+        "north": { "texture": "#pod" },
+        "south": { "texture": "#metal" },
+        "up":    { "texture": "#metal" },
+        "down":  { "texture": "#metal" },
+        "west":  { "texture": "#metal" },
+        "east":  { "texture": "#metal" }
+      }
+    }
+  ]
+}

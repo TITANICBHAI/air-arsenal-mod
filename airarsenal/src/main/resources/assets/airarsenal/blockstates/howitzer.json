@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "airarsenal:block/howitzer" },
+    "facing=south": { "model": "airarsenal:block/howitzer", "y": 180 },
+    "facing=west":  { "model": "airarsenal:block/howitzer", "y": 270 },
+    "facing=east":  { "model": "airarsenal:block/howitzer", "y": 90 }
+  }
+}

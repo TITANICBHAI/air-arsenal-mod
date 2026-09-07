@@ -1,16 +1,39 @@
 package com.airarsenal;
 
+import com.airarsenal.item.ItemFieldManual;
 import com.airarsenal.registry.ModGuiHandler;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 
 public class CommonProxy {
 
     public void preInit(FMLPreInitializationEvent event) {
         NetworkRegistry.INSTANCE.registerGuiHandler(AirArsenal.instance, new ModGuiHandler());
+        MinecraftForge.EVENT_BUS.register(this);
+    }
+
+    @SubscribeEvent
+    public void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
+        EntityPlayer player = event.player;
+        if (player != null && !player.world.isRemote) {
+            NBTTagCompound data = player.getEntityData();
+            if (!data.hasKey("airarsenal_given_manual")) {
+                data.setBoolean("airarsenal_given_manual", true);
+                ItemStack manual = ItemFieldManual.createSignedBook();
+                if (!player.inventory.addItemStackToInventory(manual)) {
+                    player.dropItem(manual, false);
+                }
+            }
+        }
     }
 
     public void init(FMLInitializationEvent event) {}

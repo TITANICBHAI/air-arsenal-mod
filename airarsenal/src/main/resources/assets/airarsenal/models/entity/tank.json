@@ -1,0 +1,67 @@
+{
+  "__comment": "Model for TankEntity — Heavy tracked armored combat vehicle with rotating turret and main cannon",
+  "texture_width": 128,
+  "texture_height": 128,
+  "bones": [
+    {
+      "name": "chassis",
+      "pivot": [0, 4, 0],
+      "cubes": [
+        {
+          "__comment": "Main armored hull",
+          "origin": [-12, 4, -20],
+          "size": [24, 8, 40],
+          "uv": [0, 0]
+        },
+        {
+          "__comment": "Left track assembly",
+          "origin": [12, 0, -22],
+          "size": [6, 10, 44],
+          "uv": [0, 48]
+        },
+        {
+          "__comment": "Right track assembly",
+          "origin": [-18, 0, -22],
+          "size": [6, 10, 44],
+          "uv": [0, 48]
+        }
+      ]
+    },
+    {
+      "name": "turret",
+      "pivot": [0, 12, 0],
+      "cubes": [
+        {
+          "__comment": "Armored turret body",
+          "origin": [-9, 12, -10],
+          "size": [18, 7, 22],
+          "uv": [56, 48]
+        },
+        {
+          "__comment": "Commander cupola hatch",
+          "origin": [-6, 19, -4],
+          "size": [6, 2, 6],
+          "uv": [56, 77]
+        },
+        {
+          "__comment": "Main 120mm smoothbore cannon gun mantlet",
+          "origin": [-4, 13, 12],
+          "size": [8, 5, 4],
+          "uv": [80, 77]
+        },
+        {
+          "__comment": "Long tank barrel",
+          "origin": [-2, 14, 16],
+          "size": [4, 4, 30],
+          "uv": [56, 86]
+        },
+        {
+          "__comment": "Coaxial machine gun",
+          "origin": [4, 15, 12],
+          "size": [1, 1, 10],
+          "uv": [104, 77]
+        }
+      ]
+    }
+  ]
+}

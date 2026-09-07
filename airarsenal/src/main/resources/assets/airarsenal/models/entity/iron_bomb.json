@@ -1,0 +1,55 @@
+{
+  "__comment": "Model for IronBombEntity — Standard 250lb general purpose aerial bomb with cruciform tail fins",
+  "texture_width": 48,
+  "texture_height": 32,
+  "bones": [
+    {
+      "name": "casing",
+      "pivot": [0, 0, 0],
+      "cubes": [
+        {
+          "__comment": "Cast steel bomb body",
+          "origin": [-3, -3, -6],
+          "size": [6, 6, 14],
+          "uv": [0, 0]
+        },
+        {
+          "__comment": "Nose impact fuze",
+          "origin": [-1.5, -1.5, 8],
+          "size": [3, 3, 3],
+          "uv": [26, 0]
+        },
+        {
+          "__comment": "Tapered tail cone",
+          "origin": [-2, -2, -10],
+          "size": [4, 4, 4],
+          "uv": [26, 6]
+        }
+      ]
+    },
+    {
+      "name": "tail_fins",
+      "pivot": [0, 0, -8],
+      "cubes": [
+        {
+          "__comment": "Horizontal tail fins",
+          "origin": [-5, -0.5, -11],
+          "size": [10, 1, 5],
+          "uv": [0, 20]
+        },
+        {
+          "__comment": "Vertical tail fins",
+          "origin": [-0.5, -5, -11],
+          "size": [1, 10, 5],
+          "uv": [0, 20]
+        },
+        {
+          "__comment": "Suspension lug",
+          "origin": [-0.5, 3, 0],
+          "size": [1, 2, 2],
+          "uv": [20, 20]
+        }
+      ]
+    }
+  ]
+}

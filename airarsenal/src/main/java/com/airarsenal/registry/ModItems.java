@@ -64,6 +64,9 @@ public class ModItems {
     @ObjectHolder("satellite_uplink_card")
     public static final Item SATELLITE_UPLINK_CARD = null;
 
+    @ObjectHolder("field_manual")
+    public static final Item FIELD_MANUAL = null;
+
     @SubscribeEvent
     public static void register(RegistryEvent.Register<Item> event) {
         IForgeRegistry<Item> registry = event.getRegistry();
@@ -96,5 +99,8 @@ public class ModItems {
         // Chunk 11 — Orbital Cannon
         registry.register(new ItemOrbitalDesignator());
         registry.register(new ItemSatelliteUplinkCard());
+
+        // Field Manual signed by TBTechs
+        registry.register(new ItemFieldManual());
     }
 }

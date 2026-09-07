@@ -1,0 +1,25 @@
+{
+  "__comment": "Model for BulletEntity — Aerodynamic high-velocity bullet with copper jacket",
+  "texture_width": 32,
+  "texture_height": 16,
+  "bones": [
+    {
+      "name": "bullet",
+      "pivot": [0, 0, 0],
+      "cubes": [
+        {
+          "__comment": "Bullet projectile body",
+          "origin": [-0.5, -0.5, -2],
+          "size": [1, 1, 4],
+          "uv": [0, 0]
+        },
+        {
+          "__comment": "Ogive pointed tip",
+          "origin": [-0.25, -0.25, 2],
+          "size": [0.5, 0.5, 1],
+          "uv": [6, 0]
+        }
+      ]
+    }
+  ]
+}

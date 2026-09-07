@@ -1,0 +1,49 @@
+{
+  "__comment": "Model for PredatorMissileEntity — Camera-guided precision strike missile",
+  "texture_width": 64,
+  "texture_height": 32,
+  "bones": [
+    {
+      "name": "body",
+      "pivot": [0, 0, 0],
+      "cubes": [
+        {
+          "__comment": "Missile body tube",
+          "origin": [-2, -2, -12],
+          "size": [4, 4, 24],
+          "uv": [0, 0]
+        },
+        {
+          "__comment": "Optical TV/IR camera dome head",
+          "origin": [-1.5, -1.5, 12],
+          "size": [3, 3, 2],
+          "uv": [32, 0]
+        }
+      ]
+    },
+    {
+      "name": "fins",
+      "pivot": [0, 0, 0],
+      "cubes": [
+        {
+          "__comment": "Mid-body guidance wings",
+          "origin": [-7, -0.5, 0],
+          "size": [14, 1, 6],
+          "uv": [0, 28]
+        },
+        {
+          "__comment": "Tail stabilizer cruciform fins",
+          "origin": [-5, -0.5, -11],
+          "size": [10, 1, 4],
+          "uv": [32, 5]
+        },
+        {
+          "__comment": "Tail vertical fins",
+          "origin": [-0.5, -5, -11],
+          "size": [1, 10, 4],
+          "uv": [32, 5]
+        }
+      ]
+    }
+  ]
+}

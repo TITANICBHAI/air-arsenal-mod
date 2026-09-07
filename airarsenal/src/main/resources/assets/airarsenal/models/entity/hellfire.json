@@ -1,0 +1,61 @@
+{
+  "__comment": "Model for HellfireEntity — AGM-114 Laser-guided anti-armor missile",
+  "texture_width": 64,
+  "texture_height": 32,
+  "bones": [
+    {
+      "name": "body",
+      "pivot": [0, 0, 0],
+      "cubes": [
+        {
+          "__comment": "Cylindrical rocket body",
+          "origin": [-2, -2, -10],
+          "size": [4, 4, 20],
+          "uv": [0, 0]
+        },
+        {
+          "__comment": "Optical seeker hemispherical nose",
+          "origin": [-1.5, -1.5, 10],
+          "size": [3, 3, 2],
+          "uv": [28, 0]
+        },
+        {
+          "__comment": "Rear rocket exhaust nozzle",
+          "origin": [-1.5, -1.5, -12],
+          "size": [3, 3, 2],
+          "uv": [28, 5]
+        }
+      ]
+    },
+    {
+      "name": "fins",
+      "pivot": [0, 0, 0],
+      "cubes": [
+        {
+          "__comment": "Rear vertical stabilizing fins",
+          "origin": [-0.5, -6, -10],
+          "size": [1, 12, 5],
+          "uv": [38, 0]
+        },
+        {
+          "__comment": "Rear horizontal stabilizing fins",
+          "origin": [-6, -0.5, -10],
+          "size": [12, 1, 5],
+          "uv": [38, 0]
+        },
+        {
+          "__comment": "Forward steerable control canards (vertical)",
+          "origin": [-0.5, -4, 6],
+          "size": [1, 8, 3],
+          "uv": [50, 0]
+        },
+        {
+          "__comment": "Forward steerable control canards (horizontal)",
+          "origin": [-4, -0.5, 6],
+          "size": [8, 1, 3],
+          "uv": [50, 0]
+        }
+      ]
+    }
+  ]
+}

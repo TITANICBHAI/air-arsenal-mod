@@ -1,0 +1,43 @@
+{
+  "__comment": "Model for TankShellEntity — APFSDS (Armor-Piercing Fin-Stabilized Discarding Sabot) kinetic dart",
+  "texture_width": 32,
+  "texture_height": 32,
+  "bones": [
+    {
+      "name": "dart",
+      "pivot": [0, 0, 0],
+      "cubes": [
+        {
+          "__comment": "Depleted uranium / tungsten heavy penetrator dart rod",
+          "origin": [-0.75, -0.75, -6],
+          "size": [1.5, 1.5, 14],
+          "uv": [0, 0]
+        },
+        {
+          "__comment": "Ballistic windshield sharp tip",
+          "origin": [-0.5, -0.5, 8],
+          "size": [1, 1, 3],
+          "uv": [18, 0]
+        }
+      ]
+    },
+    {
+      "name": "fins",
+      "pivot": [0, 0, -5],
+      "cubes": [
+        {
+          "__comment": "Dart stabilizing fins (horizontal)",
+          "origin": [-2.5, -0.5, -6],
+          "size": [5, 1, 3],
+          "uv": [0, 16]
+        },
+        {
+          "__comment": "Dart stabilizing fins (vertical)",
+          "origin": [-0.5, -2.5, -6],
+          "size": [1, 5, 3],
+          "uv": [0, 16]
+        }
+      ]
+    }
+  ]
+}

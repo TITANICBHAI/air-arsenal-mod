@@ -1,0 +1,43 @@
+{
+  "__comment": "Model for MLRSRocketEntity — Free-flight artillery rocket with wrap-around stabilizing fins",
+  "texture_width": 48,
+  "texture_height": 32,
+  "bones": [
+    {
+      "name": "body",
+      "pivot": [0, 0, 0],
+      "cubes": [
+        {
+          "__comment": "Solid rocket motor casing",
+          "origin": [-1.5, -1.5, -10],
+          "size": [3, 3, 20],
+          "uv": [0, 0]
+        },
+        {
+          "__comment": "High explosive ogive warhead tip",
+          "origin": [-1, -1, 10],
+          "size": [2, 2, 3],
+          "uv": [26, 0]
+        }
+      ]
+    },
+    {
+      "name": "fins",
+      "pivot": [0, 0, -9],
+      "cubes": [
+        {
+          "__comment": "Horizontal stabilizing fins",
+          "origin": [-4.5, -0.5, -9],
+          "size": [9, 1, 4],
+          "uv": [26, 5]
+        },
+        {
+          "__comment": "Vertical stabilizing fins",
+          "origin": [-0.5, -4.5, -9],
+          "size": [1, 9, 4],
+          "uv": [26, 5]
+        }
+      ]
+    }
+  ]
+}

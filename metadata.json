@@ -1,0 +1,6 @@
+{
+  "name": "Air Arsenal Mod 3D Arsenal & Docs",
+  "description": "Interactive 3D model viewer, technical documentation, and combat vehicle specifications for the Air Arsenal Minecraft Forge 1.12.2 mod.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

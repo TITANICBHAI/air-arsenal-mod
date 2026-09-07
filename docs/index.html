@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Air Arsenal Mod - Tactical 3D Model Showcase</title>
+  <meta property="og:title" content="Air Arsenal Mod - Tactical 3D Model Showcase">
+  <meta name="description" content="Minecraft Forge 1.12.2 military aviation and artillery suite featuring 32 in-game aircraft, guided missiles, artillery, combat vehicles, and an interactive 3D model inspector.">
+  <meta property="og:description" content="Minecraft Forge 1.12.2 military aviation and artillery suite featuring 32 in-game aircraft, guided missiles, artillery, combat vehicles, and an interactive 3D model inspector.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/docs/styles.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header>
+    <div class="brand-wrapper">
+      <div class="brand-badge">AA</div>
+      <div class="brand-text">
+        <h1>AIR ARSENAL <span class="brand-version">FORGE 1.12.2</span></h1>
+        <p>32 MILITARY VEHICLES & WEAPON MODELS REGISTERED IN-GAME</p>
+      </div>
+    </div>
+    <div class="header-badges">
+      <div class="badge-item">
+        <span class="live-dot"></span>
+        <span>MOD ENGINE ACTIVE</span>
+      </div>
+      <div class="badge-item">
+        <span>6 AIRCRAFT</span>
+      </div>
+      <div class="badge-item">
+        <span>3 COMBAT VEHICLES</span>
+      </div>
+      <div class="badge-item">
+        <span>14 MISSILES & BOMBS</span>
+      </div>
+      <div class="badge-item">
+        <span>7 ARTILLERY</span>
+      </div>
+      <button class="manual-nav-btn" id="btn-open-manual-nav" onclick="openManualModal()">
+        <span class="manual-icon">📖</span>
+        <span>TBTECHS FIELD MANUAL</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- App Main Content Layout -->
+  <main class="main-layout">
+    <!-- Left: Category & Model List -->
+    <section class="roster-panel">
+      <nav class="category-nav" id="category-nav">
+        <!-- Injected by app.js -->
+      </nav>
+      <div class="items-scroller" id="items-scroller">
+        <!-- Injected by app.js -->
+      </div>
+    </section>
+
+    <!-- Center: Interactive 3D Viewport -->
+    <section class="stage-panel">
+      <div class="stage-header-bar">
+        <div class="stage-title-card">
+          <div class="stage-title-text" id="stage-title-text">Wood Biplane</div>
+          <div class="stage-meta-text" id="stage-meta-text">AIRCRAFT // SCOUT / LIGHT TRAINER</div>
+        </div>
+        <div class="stage-actions">
+          <button class="stage-btn" id="btn-exploded" onclick="toggleExplodedView()">EXPLODED VIEW [OFF]</button>
+          <button class="stage-btn active" id="btn-tires" onclick="toggleTiresRoll()">TIRES: ROLL [ON]</button>
+          <button class="stage-btn" id="btn-wireframe" onclick="toggleWireframe()">WIREFRAME</button>
+          <button class="stage-btn active" id="btn-spin" onclick="toggleSpin()">ROTATE</button>
+          <button class="stage-btn" onclick="resetCamera()">RESET CAM</button>
+        </div>
+      </div>
+
+      <!-- Part Identification Hover Floating HUD -->
+      <div class="part-hud-box" id="part-hud-box">
+        <span class="part-hud-indicator"></span>
+        <span class="part-hud-text" id="part-hud-name">Hover or click parts to inspect</span>
+        <span class="part-hud-subtext" id="part-hud-subsystem">SYSTEM READY</span>
+      </div>
+
+      <div id="stage-canvas-container"></div>
+      <div class="stage-footer-bar">
+        <span>LEFT CLICK + DRAG: ORBIT // RIGHT CLICK: PAN // SCROLL: ZOOM</span>
+        <span>HOVER OVER 3D MODEL TO IDENTIFY INDIVIDUAL COMPONENTS</span>
+      </div>
+    </section>
+
+    <!-- Right: Specs, Anatomy, Crafting, & Controls Panel -->
+    <aside class="spec-panel" id="spec-panel">
+      <!-- Injected by app.js -->
+    </aside>
+  </main>
+
+  <!-- Code Inspection Modal -->
+  <div class="modal-overlay" id="code-modal" onclick="if(event.target===this)closeCodeModal()">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>In-Game Model Definition & Java Code</h3>
+        <button class="modal-close-btn" onclick="closeCodeModal()">&times;</button>
+      </div>
+      <div class="modal-tabs">
+        <button class="modal-tab-btn active" id="tab-json" onclick="switchModalTab('json')">Forge 1.12.2 JSON Model</button>
+        <button class="modal-tab-btn" id="tab-java" onclick="switchModalTab('java')">Java ModelBase Class</button>
+      </div>
+      <pre class="modal-code-body" id="modal-code-display"></pre>
+    </div>
+  </div>
+
+  <!-- TBTechs Signed Operator Field Manual Modal -->
+  <div class="modal-overlay" id="manual-modal" onclick="if(event.target===this)closeManualModal()">
+    <div class="manual-book-wrapper">
+      <!-- Leather Binding Header -->
+      <div class="manual-book-header">
+        <div class="manual-book-title-group">
+          <div class="manual-quill-icon">🪶</div>
+          <div>
+            <div class="manual-book-main-title">AIR ARSENAL // OPERATOR FIELD MANUAL</div>
+            <div class="manual-book-subtitle">SIGNED BY: <span class="manual-author-stamp">TBTechs</span> // CLASSIFIED TACTICAL DIRECTIVE</div>
+          </div>
+        </div>
+        <button class="modal-close-btn manual-close-btn" onclick="closeManualModal()">&times;</button>
+      </div>
+
+      <!-- Quick Chapter Navigation Tabs -->
+      <div class="manual-chapter-bar" id="manual-chapter-bar">
+        <!-- Generated by app.js -->
+      </div>
+
+      <!-- Parchment Book Interior -->
+      <div class="manual-parchment-sheet">
+        <div class="manual-parchment-content" id="manual-page-content">
+          <!-- Page text generated dynamically by app.js -->
+        </div>
+      </div>
+
+      <!-- Book Footer & Page Flip Controls -->
+      <div class="manual-book-footer">
+        <button class="manual-flip-btn" id="btn-manual-prev" onclick="manualPrevPage()">
+          <span>◀ PREVIOUS PAGE</span>
+        </button>
+        <div class="manual-page-counter" id="manual-page-counter">
+          PAGE 1 OF 9
+        </div>
+        <button class="manual-flip-btn" id="btn-manual-next" onclick="manualNextPage()">
+          <span>NEXT PAGE ▶</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/docs/model-munitions.js"></script>
+  <script src="/docs/model-vehicles.js"></script>
+  <script src="/docs/app.js"></script>
+</body>
+</html>

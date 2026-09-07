@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "airarsenal:block/mlrs" },
+    "facing=south": { "model": "airarsenal:block/mlrs", "y": 180 },
+    "facing=west":  { "model": "airarsenal:block/mlrs", "y": 270 },
+    "facing=east":  { "model": "airarsenal:block/mlrs", "y": 90 }
+  }
+}

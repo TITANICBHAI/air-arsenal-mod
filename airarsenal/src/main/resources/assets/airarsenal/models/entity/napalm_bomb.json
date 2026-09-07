@@ -1,0 +1,49 @@
+{
+  "__comment": "Model for NapalmBombEntity — Incendiary fuel gel canister with igniter fuze",
+  "texture_width": 48,
+  "texture_height": 32,
+  "bones": [
+    {
+      "name": "canister",
+      "pivot": [0, 0, 0],
+      "cubes": [
+        {
+          "__comment": "Cylindrical fuel tank body",
+          "origin": [-3.5, -3.5, -7],
+          "size": [7, 7, 16],
+          "uv": [0, 0]
+        },
+        {
+          "__comment": "Blunt rounded nose cap",
+          "origin": [-2.5, -2.5, 9],
+          "size": [5, 5, 2],
+          "uv": [30, 0]
+        },
+        {
+          "__comment": "Nose igniter burster charge",
+          "origin": [-1, -1, 11],
+          "size": [2, 2, 2],
+          "uv": [30, 7]
+        }
+      ]
+    },
+    {
+      "name": "tail_fins",
+      "pivot": [0, 0, -7],
+      "cubes": [
+        {
+          "__comment": "Horizontal stabilizing fins",
+          "origin": [-6, -0.5, -11],
+          "size": [12, 1, 4],
+          "uv": [0, 23]
+        },
+        {
+          "__comment": "Vertical stabilizing fins",
+          "origin": [-0.5, -6, -11],
+          "size": [1, 12, 4],
+          "uv": [0, 23]
+        }
+      ]
+    }
+  ]
+}

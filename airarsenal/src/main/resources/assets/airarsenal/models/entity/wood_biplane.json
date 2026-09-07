@@ -1,53 +1,95 @@
 {
-  "__comment": "Placeholder box model for WoodBiplaneEntity — 3x1x1 block footprint. Replace with proper OBJ/B3D model in Chunk 10.",
-  "texture_width": 64,
-  "texture_height": 32,
+  "__comment": "Model for WoodBiplaneEntity — Classic twin-wing biplane with wooden fuselage, forward propeller, and tail controls",
+  "texture_width": 128,
+  "texture_height": 64,
   "bones": [
     {
       "name": "fuselage",
-      "pivot": [0, 0, 0],
+      "pivot": [0, 4, 0],
       "cubes": [
         {
-          "__comment": "Main body: 3 blocks wide, 1 block tall, 1 block deep",
-          "origin": [-24, 0, -8],
-          "size": [48, 16, 16],
+          "__comment": "Main fuselage wooden body",
+          "origin": [-5, 0, -16],
+          "size": [10, 10, 32],
           "uv": [0, 0]
+        },
+        {
+          "__comment": "Open cockpit rim",
+          "origin": [-4, 10, -4],
+          "size": [8, 2, 8],
+          "uv": [52, 0]
+        },
+        {
+          "__comment": "Front radial engine cowl",
+          "origin": [-4, 1, 16],
+          "size": [8, 8, 4],
+          "uv": [52, 10]
         }
       ]
     },
     {
-      "name": "upper_wing",
-      "pivot": [0, 0, 0],
+      "name": "wings",
+      "pivot": [0, 4, 0],
       "cubes": [
         {
-          "__comment": "Upper biplane wing: spans full width, thin slab",
-          "origin": [-24, 14, -4],
-          "size": [48, 2, 8],
-          "uv": [0, 16]
-        }
-      ]
-    },
-    {
-      "name": "lower_wing",
-      "pivot": [0, 0, 0],
-      "cubes": [
+          "__comment": "Upper biplane wing",
+          "origin": [-36, 14, -6],
+          "size": [72, 2, 14],
+          "uv": [0, 42]
+        },
         {
-          "__comment": "Lower biplane wing: same span, sits at base of fuselage",
-          "origin": [-24, -2, -4],
-          "size": [48, 2, 8],
-          "uv": [0, 20]
+          "__comment": "Lower biplane wing",
+          "origin": [-36, 0, -6],
+          "size": [72, 2, 14],
+          "uv": [0, 42]
+        },
+        {
+          "__comment": "Left wing interplane struts",
+          "origin": [26, 2, -1],
+          "size": [2, 12, 2],
+          "uv": [76, 10]
+        },
+        {
+          "__comment": "Right wing interplane struts",
+          "origin": [-28, 2, -1],
+          "size": [2, 12, 2],
+          "uv": [76, 10]
         }
       ]
     },
     {
       "name": "tail",
-      "pivot": [0, 0, 0],
+      "pivot": [0, 4, -16],
       "cubes": [
         {
-          "__comment": "Tail fin — vertical stabiliser",
-          "origin": [-4, 0, -8],
-          "size": [8, 10, 2],
-          "uv": [32, 0]
+          "__comment": "Tail vertical stabilizer",
+          "origin": [-1, 6, -24],
+          "size": [2, 12, 8],
+          "uv": [84, 0]
+        },
+        {
+          "__comment": "Horizontal elevator plane",
+          "origin": [-12, 4, -24],
+          "size": [24, 2, 8],
+          "uv": [0, 32]
+        }
+      ]
+    },
+    {
+      "name": "propeller",
+      "pivot": [0, 5, 20],
+      "cubes": [
+        {
+          "__comment": "Propeller center hub",
+          "origin": [-2, 3, 20],
+          "size": [4, 4, 2],
+          "uv": [104, 0]
+        },
+        {
+          "__comment": "Two wooden propeller blades",
+          "origin": [-14, 4, 21],
+          "size": [28, 2, 1],
+          "uv": [64, 26]
         }
       ]
     }

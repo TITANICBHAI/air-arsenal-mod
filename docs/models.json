@@ -1,0 +1,485 @@
+{
+  "modName": "Air Arsenal",
+  "forgeVersion": "1.12.2",
+  "version": "1.0.0",
+  "description": "Complete military aviation and artillery suite for Minecraft Forge 1.12.2",
+  "categories": [
+    {
+      "id": "aircraft",
+      "name": "Aircraft",
+      "tagline": "6 Flyable Combat Aircraft & Drones",
+      "items": [
+        {
+          "id": "wood_biplane",
+          "name": "Wood Biplane",
+          "entityId": "airarsenal:wood_biplane",
+          "itemId": "airarsenal:wood_biplane",
+          "category": "aircraft",
+          "role": "Scout / Light Trainer",
+          "tier": "Early Game",
+          "topSpeed": "18 blocks/s",
+          "stallSpeed": "6 blocks/s",
+          "health": "40 HP",
+          "dr": "DR 15",
+          "fuelRate": "0.02 / tick",
+          "fuelType": "Standard Fuel / Coal",
+          "hardpoints": 2,
+          "weapons": ["Twin 7.62mm Synchronized MGs (Forward)"],
+          "desc": "Lightweight open-cockpit wooden biplane with responsive low-speed handling and dual forward machine guns. Ideal for reconnaissance, short-field bush landings, and early aerial scouting.",
+          "recipe": "Oak Planks (x6), Iron Ingot (x2), Stick (x4), String (x2), Propeller Blade (x2)",
+          "controls": "W/S: Throttle Up/Down | A/D: Roll (Bank) | Up/Down Arrows: Pitch | Space: Fire MGs | V: Tactical HUD | R: Cycle Weapon"
+        },
+        {
+          "id": "iron_monoplane",
+          "name": "Iron Monoplane",
+          "entityId": "airarsenal:iron_monoplane",
+          "itemId": "airarsenal:iron_monoplane",
+          "category": "aircraft",
+          "role": "Interceptor / Light Strike",
+          "tier": "Mid Game",
+          "topSpeed": "28 blocks/s",
+          "stallSpeed": "10 blocks/s",
+          "health": "60 HP",
+          "dr": "DR 35",
+          "fuelRate": "0.05 / tick",
+          "fuelType": "Refined Jet Fuel",
+          "hardpoints": 3,
+          "weapons": ["Nose-mounted Heavy LMG (AP-12)", "2x Underwing Bomb Hardpoints (Iron / Napalm)"],
+          "desc": "All-metal cantilever monoplane equipped with an enclosed cockpit windscreen, streamlined radial engine cowling, and dual bomb racks. Excellent climb rate and high-altitude dive capability.",
+          "recipe": "Iron Plates (x12), Iron Engine (x1), Glass Panes (x2), Iron Bomb Racks (x2)",
+          "controls": "W/S: Throttle | A/D: Roll | Arrows: Pitch | Space: Fire Selected Weapon | R: Cycle (Guns / Bombs)"
+        },
+        {
+          "id": "fighter_jet",
+          "name": "Fighter Jet",
+          "entityId": "airarsenal:fighter_jet",
+          "itemId": "airarsenal:fighter_jet",
+          "category": "aircraft",
+          "role": "Supersonic Air Superiority",
+          "tier": "Late Game",
+          "topSpeed": "45 blocks/s (Sonic Boom > 160 b/s)",
+          "stallSpeed": "16 blocks/s",
+          "health": "100 HP",
+          "dr": "DR 55",
+          "fuelRate": "0.15 / tick",
+          "fuelType": "Jet Fuel (Kerosene)",
+          "hardpoints": 6,
+          "weapons": ["20mm M61 Vulcan Rotary Cannon (AP-35)", "4x Guided Missile Rails (Hellfire / BrahMos)", "Internal Heavy Bomb Pylon"],
+          "desc": "Next-generation swept-wing air superiority fighter powered by dual afterburning turbofans. Emits a supersonic vapor cone and shockwave upon breaching 160 blocks/s. Features active radar lock HUD and flare countermeasures.",
+          "recipe": "Titanium Alloy (x16), Afterburning Jet Turbine (x2), Avionics Circuit (x1), Rotary Cannon Core (x1)",
+          "controls": "W/S: Throttle / Afterburner | Space: Fire Vulcan / Missiles | V: Radar HUD Lock | F: Deploy Flares"
+        },
+        {
+          "id": "stealth_bomber",
+          "name": "Stealth Bomber",
+          "entityId": "airarsenal:stealth_bomber",
+          "itemId": "airarsenal:stealth_bomber",
+          "category": "aircraft",
+          "role": "Deep Penetration Heavy Strike",
+          "tier": "Late Game",
+          "topSpeed": "25 blocks/s",
+          "stallSpeed": "12 blocks/s",
+          "health": "140 HP",
+          "dr": "DR 65 (Radar Invisible)",
+          "fuelRate": "0.18 / tick",
+          "fuelType": "High-Density Jet Fuel",
+          "hardpoints": 12,
+          "weapons": ["Internal Rotary Bomb Bay (12x Heavy, EMP, or Cluster Bombs)"],
+          "desc": "Matte radar-absorbent flying wing with serrated trailing edges and internal payload bays. Completely untargetable by radar-guided AA batteries, SAM sites, and heat-seeking MANPADS unless bomb bay doors are open.",
+          "recipe": "Radar Absorbent Composite (x24), Dual Quad Turbofans (x2), Heavy Rotary Bay Assembly (x1)",
+          "controls": "W/S: Cruise Throttle | Space: Salvo Bomb Drop | B: Open/Close Bomb Bay Doors | V: Thermal Bomb Sight"
+        },
+        {
+          "id": "predator_drone",
+          "name": "Predator Drone (UAV)",
+          "entityId": "airarsenal:predator_drone",
+          "itemId": "airarsenal:drone_controller",
+          "category": "aircraft",
+          "role": "Unmanned Aerial Surveillance & Strike",
+          "tier": "Mid Game",
+          "topSpeed": "22 blocks/s",
+          "stallSpeed": "8 blocks/s",
+          "health": "45 HP",
+          "dr": "DR 20",
+          "fuelRate": "0.03 / tick",
+          "fuelType": "Standard Aviation Fuel",
+          "hardpoints": 2,
+          "weapons": ["2x AGM-114 Laser-Guided Hellfire Missiles", "EO/IR Gimbal Surveillance Camera (4x Optical Zoom)"],
+          "desc": "Remotely operated drone aircraft controlled from the ground using a Drone Terminal. Features high-aspect glider wings for extreme endurance, nose satellite dome, and stabilized optical zoom camera targeting.",
+          "recipe": "Lightweight Aluminum (x8), Satellite Uplink Card (x1), Rotax Engine (x1), Camera Gimbal (x1)",
+          "controls": "Right-click Drone Controller item to link and assume remote FPV control from anywhere within 512 blocks."
+        },
+        {
+          "id": "attack_helicopter",
+          "name": "Attack Helicopter",
+          "entityId": "airarsenal:attack_helicopter",
+          "itemId": "airarsenal:attack_helicopter",
+          "category": "aircraft",
+          "role": "Close Air Support Gunship",
+          "tier": "Late Game",
+          "topSpeed": "40 blocks/s (0 b/s Hover)",
+          "stallSpeed": "0 blocks/s (True Hover)",
+          "health": "80 HP",
+          "dr": "DR 50",
+          "fuelRate": "0.10 / tick",
+          "fuelType": "Turboshaft Kerosene",
+          "hardpoints": 4,
+          "weapons": ["Chin-mounted 3-Barrel Minigun (AP-25)", "Twin 70mm Hydra Rocket Pods (14 Rockets)", "Hellfire Rails"],
+          "desc": "Twin-turboshaft tandem attack gunship capable of stationary hovering, sideways strafing maneuvers, and devastating saturation rocket attacks. Generates realistic rotor downwash particles.",
+          "recipe": "Hardened Steel Plates (x14), Dual Turboshaft Transmission (x1), Rotor Swashplate (x1), Stub Wing Racks (x2)",
+          "controls": "W/S: Forward/Backward | Q/E: Lateral Strafe Left/Right | Space/Shift: Collective Climb/Descend | Left-Click: Fire"
+        }
+      ]
+    },
+    {
+      "id": "vehicles",
+      "name": "Combat Vehicles",
+      "tagline": "3 Armored Ground Combat Units",
+      "items": [
+        {
+          "id": "tank",
+          "name": "Main Battle Tank",
+          "entityId": "airarsenal:tank",
+          "itemId": "airarsenal:tank",
+          "category": "vehicles",
+          "role": "Heavy Armored Fighting Vehicle",
+          "tier": "Heavy Armor",
+          "topSpeed": "0.15 blocks/tick",
+          "health": "250 HP",
+          "dr": "DR 80 (Armor-Piercing Resistant)",
+          "weapons": ["120mm Smoothbore Gun (Tank APFSDS Shell, 25 Dmg)", "Coaxial 7.62mm MG"],
+          "desc": "Heavy armored tracked combat vehicle. The rotating turret tracks player aim and fires high-velocity APFSDS kinetic rounds with flat ballistic trajectories that ignore standard player armor reduction.",
+          "recipe": "Composite Chobham Armor (x18), Diesel V12 Engine (x1), 120mm Gun Barrel (x1), Caterpillar Tracks (x2)",
+          "controls": "W/S: Drive Tracks | A/D: Pivot Hull | Mouse: Aim 360° Turret | Left-Click: Fire 120mm Cannon"
+        },
+        {
+          "id": "missile_truck",
+          "name": "Missile Command Truck",
+          "entityId": "airarsenal:missile_truck",
+          "itemId": "airarsenal:missile_truck",
+          "category": "vehicles",
+          "role": "Mobile Guided SAM / SSM Launcher",
+          "tier": "Tactical Artillery",
+          "topSpeed": "0.35 blocks/tick",
+          "health": "120 HP",
+          "dr": "DR 45",
+          "weapons": ["Dual Elevated Long-Range Missile Launch Cells (Truck Guided Missiles)"],
+          "desc": "6x6 tactical all-terrain armored truck equipped with dual hydraulically raised missile launch tubes. The player can drive the vehicle, deploy the outriggers, and guide supersonic cruise missiles into enemy bases.",
+          "recipe": "Heavy Truck Chassis (x1), 6x6 Offroad Tires (x6), Hydraulic Launch Piston (x2), Targeting Radar (x1)",
+          "controls": "Drive into position, press X to lock stabilizers, press Space to launch missile and assume missile-cam guidance."
+        },
+        {
+          "id": "armored_truck",
+          "name": "Armored Patrol Truck",
+          "entityId": "airarsenal:armored_truck",
+          "itemId": "airarsenal:armored_truck",
+          "category": "vehicles",
+          "role": "Armored Personnel Carrier / Escort",
+          "tier": "Convoy Patrol",
+          "topSpeed": "0.25 blocks/tick",
+          "health": "150 HP",
+          "dr": "DR 50",
+          "weapons": ["Roof Cupola Heavy Machine Gun (Heavy Rounds, AP-20)"],
+          "desc": "Armored troop carrier with reinforced front ramming bullbar and 360-degree rotating machine gun cupola. Spawns in convoy patrols across desert and plains biomes.",
+          "recipe": "Steel Plate Chassis (x10), Heavy All-Terrain Tires (x6), Machine Gun Turret Ring (x1)",
+          "controls": "Driver controls vehicle; secondary passenger operates the 360-degree high-angle machine gun cupola."
+        }
+      ]
+    },
+    {
+      "id": "missiles",
+      "name": "Guided Missiles",
+      "tagline": "6 Precision Guided Missiles & Rockets",
+      "items": [
+        {
+          "id": "hellfire",
+          "name": "AGM-114 Hellfire",
+          "entityId": "airarsenal:hellfire",
+          "itemId": "airarsenal:hellfire",
+          "category": "missiles",
+          "role": "Laser-Guided Air-to-Ground",
+          "speed": "3.2 blocks/tick",
+          "ap": "AP 100",
+          "blast": "6 Block Radius",
+          "desc": "Precision anti-armor missile. Tracks targets designated by an active Laser Designator beam, executing top-attack dive profiles against enemy tanks and fortifications."
+        },
+        {
+          "id": "brahmos",
+          "name": "BrahMos Cruise Missile",
+          "entityId": "airarsenal:brahmos",
+          "itemId": "airarsenal:brahmos_targeter",
+          "category": "missiles",
+          "role": "Supersonic Standoff Cruise Missile",
+          "speed": "4.8 blocks/tick (Mach 3)",
+          "ap": "AP 150",
+          "blast": "16 Block Crater Radius",
+          "desc": "Devastating supersonic cruise missile. Climbs to high altitude, navigates to coordinates specified by the BrahMos Targeter GPS card, and conducts a hypersonic terminal dive."
+        },
+        {
+          "id": "predator_missile",
+          "name": "Predator TV Missile",
+          "entityId": "airarsenal:predator_missile",
+          "itemId": "airarsenal:predator_missile",
+          "category": "missiles",
+          "role": "Optical TV-Guided Strike",
+          "speed": "3.5 blocks/tick",
+          "ap": "AP 90",
+          "blast": "8 Block Radius",
+          "desc": "Fired from aircraft or Predator Drones. Switches player perspective directly into the missile nose camera, allowing manually steered precision flight into windows or bunkers."
+        },
+        {
+          "id": "manpads_missile",
+          "name": "FIM-92 MANPADS Missile",
+          "entityId": "airarsenal:manpads_missile",
+          "itemId": "airarsenal:manpads",
+          "category": "missiles",
+          "role": "Shoulder-Fired IR Anti-Air",
+          "speed": "3.8 blocks/tick",
+          "ap": "AP 80",
+          "blast": "5 Block Airburst",
+          "desc": "Infrared homing surface-to-air missile fired from the portable MANPADS launcher. Emits a continuous lock-on tone when aimed at enemy aircraft engines."
+        },
+        {
+          "id": "truck_guided_missile",
+          "name": "Truck Guided Missile",
+          "entityId": "airarsenal:truck_guided_missile",
+          "itemId": "airarsenal:truck_guided_missile",
+          "category": "missiles",
+          "role": "Long-Range Tactical Surface Missile",
+          "speed": "3.6 blocks/tick",
+          "ap": "AP 110",
+          "blast": "10 Block Radius",
+          "desc": "Heavy missile launched from the Missile Command Truck. Features solid rocket booster stage and mid-course radio guidance."
+        },
+        {
+          "id": "mlrs_rocket",
+          "name": "227mm MLRS Rocket",
+          "entityId": "airarsenal:mlrs_rocket",
+          "itemId": "airarsenal:rocket_pod",
+          "category": "missiles",
+          "role": "Area Saturation Artillery Rocket",
+          "speed": "3.0 blocks/tick",
+          "ap": "AP 70",
+          "blast": "7 Block Radius",
+          "desc": "Unguided spin-stabilized artillery rocket fired in continuous salvos of 12 from MLRS launch pads to blanket enemy strongpoints."
+        }
+      ]
+    },
+    {
+      "id": "bombs",
+      "name": "Aerial Bombs",
+      "tagline": "8 Aerodynamic Air-Dropped Munitions",
+      "items": [
+        {
+          "id": "iron_bomb",
+          "name": "Iron Bomb",
+          "entityId": "airarsenal:iron_bomb",
+          "itemId": "airarsenal:iron_bomb",
+          "category": "bombs",
+          "blast": "8 Block Explosion",
+          "ap": "AP 40",
+          "desc": "General-purpose high explosive iron bomb with cruciform tail fins. Arcs naturally with inherited plane velocity upon release."
+        },
+        {
+          "id": "heavy_bomb",
+          "name": "Heavy Blockbuster Bomb",
+          "entityId": "airarsenal:heavy_bomb",
+          "itemId": "airarsenal:heavy_bomb",
+          "category": "bombs",
+          "blast": "18 Block Demolition Radius",
+          "ap": "AP 80",
+          "desc": "1,000kg high-capacity demolition bomb featuring a circular tail shroud ring. Obliterates stone structures and reinforced bunkers."
+        },
+        {
+          "id": "napalm_bomb",
+          "name": "Napalm Canister",
+          "entityId": "airarsenal:napalm_bomb",
+          "itemId": "airarsenal:napalm_canister",
+          "category": "bombs",
+          "blast": "12 Block Firestorm",
+          "ap": "AP 20",
+          "desc": "Jellied fuel incendiary bomb that bursts into a sprawling sea of persistent fire, denying ground movement for 60 seconds."
+        },
+        {
+          "id": "cluster_bomb",
+          "name": "Cluster Dispenser",
+          "entityId": "airarsenal:cluster_bomb",
+          "itemId": "airarsenal:cluster_bomb",
+          "category": "bombs",
+          "blast": "12x Sub-munition Bomblets",
+          "ap": "AP 50",
+          "desc": "Clamshell dispenser canister that splits open mid-fall, scattering 12 bouncing fragmentation bomblets across a wide perimeter."
+        },
+        {
+          "id": "emp_bomb",
+          "name": "EMP Pulse Bomb",
+          "entityId": "airarsenal:emp_bomb",
+          "itemId": "airarsenal:emp_bomb",
+          "category": "bombs",
+          "blast": "20 Block Disruption Radius",
+          "ap": "True Damage / Circuit Kill",
+          "desc": "High-tech electromagnetic pulse bomb. Emits cyan energy shockwave upon detonation, cutting airplane engines, disabling HUDs, and resetting redstone repeaters."
+        },
+        {
+          "id": "fuel_air_bomb",
+          "name": "Fuel-Air Thermobaric Bomb",
+          "entityId": "airarsenal:fuel_air_bomb",
+          "itemId": "airarsenal:fuel_air_bomb",
+          "category": "bombs",
+          "blast": "22 Block High-Pressure Crater",
+          "ap": "AP 120",
+          "desc": "Thermobaric weapon dispersing a vapor aerosol cloud ignited by a secondary burster charge, generating immense shockwave overpressure."
+        },
+        {
+          "id": "depth_charge",
+          "name": "Naval Depth Charge",
+          "entityId": "airarsenal:depth_charge",
+          "itemId": "airarsenal:depth_charge",
+          "category": "bombs",
+          "blast": "10 Block Underwater Pressure Wave",
+          "ap": "AP 60",
+          "desc": "Hydrostatic drum bomb designed to sink rapidly through water and detonate at preset depths, destroying submerged vessels."
+        },
+        {
+          "id": "smoke_bomb",
+          "name": "Tactical Smoke Screen Bomb",
+          "entityId": "airarsenal:smoke_bomb",
+          "itemId": "airarsenal:smoke_bomb",
+          "category": "bombs",
+          "blast": "16 Block Dense Fog",
+          "ap": "Non-Lethal Screen",
+          "desc": "Vented smoke canister generating a thick opaque smoke cloud that breaks laser targeting locks and obscures line-of-sight."
+        }
+      ]
+    },
+    {
+      "id": "artillery",
+      "name": "Artillery & Blocks",
+      "tagline": "7 Defensive Emplacements & Orbital Weapons",
+      "items": [
+        {
+          "id": "aa_cannon",
+          "name": "AA Autocannon",
+          "entityId": "airarsenal:aa_cannon",
+          "blockId": "airarsenal:aa_cannon",
+          "category": "artillery",
+          "rate": "4 rounds / sec",
+          "range": "64 blocks",
+          "desc": "Twin 20mm rapid-fire anti-aircraft autocannon. Swivels automatically to lead aerial targets and discharges high-speed flat tracer rounds."
+        },
+        {
+          "id": "flak_battery",
+          "name": "88mm Flak Battery",
+          "entityId": "airarsenal:flak_battery",
+          "blockId": "airarsenal:flak_battery",
+          "category": "artillery",
+          "rate": "0.8 rounds / sec",
+          "range": "96 blocks",
+          "desc": "Heavy flak artillery firing high-altitude timed shells that detonate into lethal shrapnel clouds, tearing wings off high-flying bombers."
+        },
+        {
+          "id": "howitzer",
+          "name": "155mm Field Howitzer",
+          "entityId": "airarsenal:howitzer",
+          "blockId": "airarsenal:howitzer",
+          "category": "artillery",
+          "rate": "0.2 rounds / sec",
+          "range": "240 blocks",
+          "desc": "Long-range indirect artillery cannon. Features adjustable azimuth and elevation angles to bombard target coordinates over mountains and hills."
+        },
+        {
+          "id": "mlrs",
+          "name": "MLRS Emplacement",
+          "entityId": "airarsenal:mlrs",
+          "blockId": "airarsenal:mlrs",
+          "category": "artillery",
+          "rate": "12-Rocket Salvo",
+          "range": "180 blocks",
+          "desc": "Multiple Launch Rocket System pod mounted on a fortified swivel base. Fires rapid 12-round rocket barrages."
+        },
+        {
+          "id": "static_missile_battery",
+          "name": "Static Missile Silo Battery",
+          "entityId": "airarsenal:static_missile_battery",
+          "blockId": "airarsenal:static_missile_battery",
+          "category": "artillery",
+          "rate": "Guided SAM",
+          "range": "128 blocks",
+          "desc": "Fortified vertical launch missile silo that automatically tracks and intercepts incoming enemy planes and cruise missiles."
+        },
+        {
+          "id": "orbital_cannon_core",
+          "name": "Orbital Cannon Multiblock Core",
+          "entityId": "airarsenal:orbital_cannon_core",
+          "blockId": "airarsenal:orbital_cannon_core",
+          "category": "artillery",
+          "rate": "300s Charge Cycle",
+          "range": "Global Dimension",
+          "desc": "Massive 3x3 multiblock structure. Once charged with redstone energy and designated with the Orbital Designator, calls down a hypervelocity Tungsten Rod from orbit causing dimensional screen-shake and total cratering."
+        }
+      ]
+    },
+    {
+      "id": "projectiles",
+      "name": "Ammunition & Shells",
+      "tagline": "6 Custom Ballistic Projectiles",
+      "items": [
+        {
+          "id": "bullet",
+          "name": "20mm Machine Gun Bullet",
+          "entityId": "airarsenal:bullet",
+          "category": "projectiles",
+          "speed": "3.5 blocks/tick",
+          "damage": "4 - 8 HP",
+          "ap": "AP 12 - 35",
+          "desc": "High-velocity copper-jacketed machine gun projectile with visible golden tracer trail and aerodynamic physics."
+        },
+        {
+          "id": "aa_shell",
+          "name": "AA Tracer Round",
+          "entityId": "airarsenal:aa_shell",
+          "category": "projectiles",
+          "speed": "2.0 blocks/tick",
+          "damage": "8 HP Flat",
+          "desc": "Anti-aircraft incendiary tracer shell with bright yellow-orange flight trace, specifically tuned to damage aircraft engines."
+        },
+        {
+          "id": "flak_shell",
+          "name": "88mm Flak Airburst Shell",
+          "entityId": "airarsenal:flak_shell",
+          "category": "projectiles",
+          "speed": "2.2 blocks/tick",
+          "damage": "14 HP Area Shrapnel",
+          "desc": "Time-fuzed artillery shell with mechanical clockwork detonator that bursts into a cloud of sharp steel fragments."
+        },
+        {
+          "id": "mortar_shell",
+          "name": "60mm Mortar Shell",
+          "entityId": "airarsenal:mortar_shell",
+          "category": "projectiles",
+          "speed": "1.4 blocks/tick",
+          "damage": "18 HP High Explosive",
+          "desc": "Teardrop aerodynamic mortar shell with tail boom stabilizing fins, designed for high-angle lobbed ballistic trajectories."
+        },
+        {
+          "id": "howitzer_shell",
+          "name": "155mm Howitzer Shell",
+          "entityId": "airarsenal:howitzer_shell",
+          "category": "projectiles",
+          "speed": "2.8 blocks/tick",
+          "damage": "35 HP Demolition",
+          "desc": "Heavy 155mm artillery projectile with copper rifling driving band and pointed ogive impact/proximity fuze."
+        },
+        {
+          "id": "tank_shell",
+          "name": "120mm APFSDS Kinetic Dart",
+          "entityId": "airarsenal:tank_shell",
+          "category": "projectiles",
+          "speed": "4.0 blocks/tick",
+          "damage": "25 HP True Kinetic Damage",
+          "desc": "Armour-Piercing Fin-Stabilized Discarding Sabot long-rod penetrator dart designed to punch through the thickest vehicle armor."
+        }
+      ]
+    }
+  ]
+}

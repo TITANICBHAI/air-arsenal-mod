@@ -1,0 +1,67 @@
+{
+  "__comment": "Model for StealthBomberEntity — Angular flying-wing radar-absorbent strategic bomber with internal bomb bay",
+  "texture_width": 128,
+  "texture_height": 128,
+  "bones": [
+    {
+      "name": "center_wing",
+      "pivot": [0, 4, 0],
+      "cubes": [
+        {
+          "__comment": "Center faceted cockpit and crew cabin",
+          "origin": [-12, 0, -8],
+          "size": [24, 8, 32],
+          "uv": [0, 0]
+        },
+        {
+          "__comment": "Nose apex",
+          "origin": [-6, 1, 24],
+          "size": [12, 5, 10],
+          "uv": [80, 0]
+        },
+        {
+          "__comment": "Internal bomb bay door structure",
+          "origin": [-10, -1, -6],
+          "size": [20, 2, 22],
+          "uv": [0, 40]
+        }
+      ]
+    },
+    {
+      "name": "outer_wings",
+      "pivot": [0, 4, 0],
+      "cubes": [
+        {
+          "__comment": "Left flying wing panel",
+          "origin": [12, 1, -22],
+          "size": [44, 4, 28],
+          "uv": [0, 64]
+        },
+        {
+          "__comment": "Right flying wing panel",
+          "origin": [-56, 1, -22],
+          "size": [44, 4, 28],
+          "uv": [0, 64]
+        }
+      ]
+    },
+    {
+      "name": "exhausts",
+      "pivot": [0, 4, -8],
+      "cubes": [
+        {
+          "__comment": "Shielded left exhaust trench",
+          "origin": [4, 4, -14],
+          "size": [6, 3, 10],
+          "uv": [64, 40]
+        },
+        {
+          "__comment": "Shielded right exhaust trench",
+          "origin": [-10, 4, -14],
+          "size": [6, 3, 10],
+          "uv": [64, 40]
+        }
+      ]
+    }
+  ]
+}

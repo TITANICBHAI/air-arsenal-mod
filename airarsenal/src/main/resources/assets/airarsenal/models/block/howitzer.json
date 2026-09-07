@@ -1,0 +1,48 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "particle": "blocks/anvil_base",
+    "base": "blocks/anvil_base",
+    "metal": "blocks/iron_block",
+    "barrel": "blocks/cauldron_inner"
+  },
+  "elements": [
+    {
+      "__comment": "Artillery split-trail carriage",
+      "from": [1, 0, 1],
+      "to": [15, 4, 15],
+      "faces": {
+        "down":  { "texture": "#base", "cullface": "down" },
+        "up":    { "texture": "#metal" },
+        "north": { "texture": "#metal" },
+        "south": { "texture": "#metal" },
+        "west":  { "texture": "#metal" },
+        "east":  { "texture": "#metal" }
+      }
+    },
+    {
+      "__comment": "Gun trunnion and recoil cradle",
+      "from": [4, 4, 3],
+      "to": [12, 10, 11],
+      "faces": {
+        "up":    { "texture": "#metal" },
+        "north": { "texture": "#metal" },
+        "south": { "texture": "#metal" },
+        "west":  { "texture": "#metal" },
+        "east":  { "texture": "#metal" }
+      }
+    },
+    {
+      "__comment": "Long 155mm rifled barrel",
+      "from": [6, 6, -6],
+      "to": [10, 10, 6],
+      "faces": {
+        "north": { "texture": "#barrel" },
+        "up":    { "texture": "#metal" },
+        "down":  { "texture": "#metal" },
+        "west":  { "texture": "#metal" },
+        "east":  { "texture": "#metal" }
+      }
+    }
+  ]
+}

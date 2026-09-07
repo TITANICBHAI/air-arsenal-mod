@@ -1,0 +1,49 @@
+{
+  "__comment": "Model for FuelAirBombEntity — Thermobaric aerosol explosion weapon with central burster tube",
+  "texture_width": 64,
+  "texture_height": 64,
+  "bones": [
+    {
+      "name": "thermobaric_tank",
+      "pivot": [0, 0, 0],
+      "cubes": [
+        {
+          "__comment": "Fuel-air slurry aerosol tank",
+          "origin": [-4.5, -4.5, -8],
+          "size": [9, 9, 16],
+          "uv": [0, 0]
+        },
+        {
+          "__comment": "Central high-explosive burster pipe",
+          "origin": [-1.5, -1.5, -10],
+          "size": [3, 3, 20],
+          "uv": [34, 0]
+        },
+        {
+          "__comment": "Dual-stage electronic delay igniter head",
+          "origin": [-2.5, -2.5, 8],
+          "size": [5, 5, 3],
+          "uv": [34, 23]
+        }
+      ]
+    },
+    {
+      "name": "tail_assembly",
+      "pivot": [0, 0, -8],
+      "cubes": [
+        {
+          "__comment": "Airbrake fin assembly (horizontal)",
+          "origin": [-7, -0.5, -13],
+          "size": [14, 1, 5],
+          "uv": [0, 25]
+        },
+        {
+          "__comment": "Airbrake fin assembly (vertical)",
+          "origin": [-0.5, -7, -13],
+          "size": [1, 14, 5],
+          "uv": [0, 25]
+        }
+      ]
+    }
+  ]
+}

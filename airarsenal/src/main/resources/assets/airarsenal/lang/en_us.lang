@@ -72,6 +72,7 @@ tile.airarsenal.orbital_cannon_core.name=Orbital Cannon Core
 tile.airarsenal.orbital_cannon_frame.name=Orbital Cannon Frame
 item.airarsenal.orbital_designator.name=Orbital Designator
 item.airarsenal.satellite_uplink_card.name=Satellite Uplink Card
+item.airarsenal.field_manual.name=TBTechs Field Manual
 entity.airarsenal.orbital_rod.name=Orbital Strike Rod
 entity.airarsenal.orbital_warning_marker.name=Orbital Warning Marker
 container.airarsenal.orbital_cannon=Orbital Cannon

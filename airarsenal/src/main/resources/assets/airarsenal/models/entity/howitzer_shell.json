@@ -1,0 +1,37 @@
+{
+  "__comment": "Model for HowitzerShellEntity — 155mm heavy ballistic artillery high-explosive shell",
+  "texture_width": 32,
+  "texture_height": 32,
+  "bones": [
+    {
+      "name": "shell",
+      "pivot": [0, 0, 0],
+      "cubes": [
+        {
+          "__comment": "Cylindrical forged steel payload body",
+          "origin": [-2, -2, -5],
+          "size": [4, 4, 8],
+          "uv": [0, 0]
+        },
+        {
+          "__comment": "Long aerodynamic ogive nose",
+          "origin": [-1.5, -1.5, 3],
+          "size": [3, 3, 4],
+          "uv": [16, 0]
+        },
+        {
+          "__comment": "Steel nose fuze plug",
+          "origin": [-0.75, -0.75, 7],
+          "size": [1.5, 1.5, 2],
+          "uv": [16, 7]
+        },
+        {
+          "__comment": "Dual copper rifling driving bands",
+          "origin": [-2.25, -2.25, -3],
+          "size": [4.5, 4.5, 2],
+          "uv": [0, 12]
+        }
+      ]
+    }
+  ]
+}

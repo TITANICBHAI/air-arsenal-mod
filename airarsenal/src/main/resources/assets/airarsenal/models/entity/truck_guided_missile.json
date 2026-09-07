@@ -1,0 +1,55 @@
+{
+  "__comment": "Model for TruckGuidedMissileEntity — Heavy command-guided ground-launched missile",
+  "texture_width": 64,
+  "texture_height": 32,
+  "bones": [
+    {
+      "name": "body",
+      "pivot": [0, 0, 0],
+      "cubes": [
+        {
+          "__comment": "Heavy missile body",
+          "origin": [-2, -2, -14],
+          "size": [4, 4, 28],
+          "uv": [0, 0]
+        },
+        {
+          "__comment": "Reinforced nose penetrator cap",
+          "origin": [-1.5, -1.5, 14],
+          "size": [3, 3, 3],
+          "uv": [36, 0]
+        }
+      ]
+    },
+    {
+      "name": "fins",
+      "pivot": [0, 0, 0],
+      "cubes": [
+        {
+          "__comment": "Mid cruciform wings (horizontal)",
+          "origin": [-7, -0.5, 2],
+          "size": [14, 1, 6],
+          "uv": [36, 6]
+        },
+        {
+          "__comment": "Mid cruciform wings (vertical)",
+          "origin": [-0.5, -7, 2],
+          "size": [1, 14, 6],
+          "uv": [36, 6]
+        },
+        {
+          "__comment": "Rear steering vanes (horizontal)",
+          "origin": [-5, -0.5, -13],
+          "size": [10, 1, 4],
+          "uv": [36, 13]
+        },
+        {
+          "__comment": "Rear steering vanes (vertical)",
+          "origin": [-0.5, -5, -13],
+          "size": [1, 10, 4],
+          "uv": [36, 13]
+        }
+      ]
+    }
+  ]
+}

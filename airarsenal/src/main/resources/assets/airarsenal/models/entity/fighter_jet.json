@@ -1,0 +1,109 @@
+{
+  "__comment": "Model for FighterJetEntity — Supersonic delta-wing fighter with twin exhausts, cockpit canopy, and 4 weapon hardpoints",
+  "texture_width": 128,
+  "texture_height": 128,
+  "bones": [
+    {
+      "name": "fuselage",
+      "pivot": [0, 4, 0],
+      "cubes": [
+        {
+          "__comment": "Needle nose radome",
+          "origin": [-3, 3, 24],
+          "size": [6, 4, 16],
+          "uv": [0, 0]
+        },
+        {
+          "__comment": "Cockpit section",
+          "origin": [-5, 3, 8],
+          "size": [10, 6, 16],
+          "uv": [0, 20]
+        },
+        {
+          "__comment": "Tinted canopy glass",
+          "origin": [-4, 9, 10],
+          "size": [8, 4, 12],
+          "uv": [40, 0]
+        },
+        {
+          "__comment": "Mid-fuselage and engine nacelles",
+          "origin": [-8, 2, -18],
+          "size": [16, 7, 26],
+          "uv": [0, 42]
+        },
+        {
+          "__comment": "Twin afterburner exhaust nozzles",
+          "origin": [-7, 3, -24],
+          "size": [14, 5, 6],
+          "uv": [60, 42]
+        }
+      ]
+    },
+    {
+      "name": "delta_wings",
+      "pivot": [0, 4, -4],
+      "cubes": [
+        {
+          "__comment": "Left delta wing",
+          "origin": [8, 4, -14],
+          "size": [34, 2, 20],
+          "uv": [0, 75]
+        },
+        {
+          "__comment": "Right delta wing",
+          "origin": [-42, 4, -14],
+          "size": [34, 2, 20],
+          "uv": [0, 75]
+        }
+      ]
+    },
+    {
+      "name": "twin_fins",
+      "pivot": [0, 8, -16],
+      "cubes": [
+        {
+          "__comment": "Left canted vertical tail fin",
+          "origin": [6, 8, -20],
+          "size": [2, 16, 12],
+          "uv": [88, 75]
+        },
+        {
+          "__comment": "Right canted vertical tail fin",
+          "origin": [-8, 8, -20],
+          "size": [2, 16, 12],
+          "uv": [88, 75]
+        }
+      ]
+    },
+    {
+      "name": "hardpoints",
+      "pivot": [0, 2, -6],
+      "cubes": [
+        {
+          "__comment": "Left outer missile rail",
+          "origin": [26, 2, -6],
+          "size": [2, 2, 12],
+          "uv": [116, 0]
+        },
+        {
+          "__comment": "Right outer missile rail",
+          "origin": [-28, 2, -6],
+          "size": [2, 2, 12],
+          "uv": [116, 0]
+        },
+        {
+          "__comment": "Left inner pylon",
+          "origin": [16, 2, -6],
+          "size": [2, 2, 12],
+          "uv": [116, 0]
+        },
+        {
+          "__comment": "Right inner pylon",
+          "origin": [-18, 2, -6],
+          "size": [2, 2, 12],
+          "uv": [116, 0]
+        }
+      ]
+    }
+  ]
+}

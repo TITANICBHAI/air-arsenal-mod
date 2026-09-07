@@ -1,0 +1,145 @@
+{
+  "__comment": "Model for AttackHelicopterEntity — Military attack gunship with main rotor, chin gun turret, stub wings, and tail rotor",
+  "texture_width": 128,
+  "texture_height": 128,
+  "bones": [
+    {
+      "name": "fuselage",
+      "pivot": [0, 4, 0],
+      "cubes": [
+        {
+          "__comment": "Main fuselage cabin",
+          "origin": [-6, 2, -12],
+          "size": [12, 12, 28],
+          "uv": [0, 0]
+        },
+        {
+          "__comment": "Tandem stepped cockpit canopy",
+          "origin": [-5, 6, 8],
+          "size": [10, 8, 14],
+          "uv": [52, 0]
+        },
+        {
+          "__comment": "Tail boom",
+          "origin": [-3, 6, -34],
+          "size": [6, 6, 22],
+          "uv": [0, 40]
+        },
+        {
+          "__comment": "Vertical tail fin",
+          "origin": [-1, 10, -38],
+          "size": [2, 14, 8],
+          "uv": [36, 40]
+        }
+      ]
+    },
+    {
+      "name": "chin_turret",
+      "pivot": [0, 1, 18],
+      "cubes": [
+        {
+          "__comment": "Chin minigun mount",
+          "origin": [-2, 0, 16],
+          "size": [4, 4, 6],
+          "uv": [56, 40]
+        },
+        {
+          "__comment": "Rotary 3-barrel rotary cannon",
+          "origin": [-1, 1, 22],
+          "size": [2, 2, 12],
+          "uv": [76, 40]
+        }
+      ]
+    },
+    {
+      "name": "stub_wings",
+      "pivot": [0, 6, 0],
+      "cubes": [
+        {
+          "__comment": "Left weapon pylon wing",
+          "origin": [6, 5, -3],
+          "size": [16, 2, 8],
+          "uv": [0, 68]
+        },
+        {
+          "__comment": "Right weapon pylon wing",
+          "origin": [-22, 5, -3],
+          "size": [16, 2, 8],
+          "uv": [0, 68]
+        },
+        {
+          "__comment": "Left rocket pod",
+          "origin": [12, 2, -6],
+          "size": [6, 6, 14],
+          "uv": [48, 68]
+        },
+        {
+          "__comment": "Right rocket pod",
+          "origin": [-18, 2, -6],
+          "size": [6, 6, 14],
+          "uv": [48, 68]
+        }
+      ]
+    },
+    {
+      "name": "main_rotor",
+      "pivot": [0, 15, 2],
+      "cubes": [
+        {
+          "__comment": "Rotor mast and hub",
+          "origin": [-2, 14, 0],
+          "size": [4, 4, 4],
+          "uv": [88, 0]
+        },
+        {
+          "__comment": "Rotor blade 1-2 (long axis)",
+          "origin": [-48, 16, 1],
+          "size": [96, 1, 2],
+          "uv": [0, 88]
+        },
+        {
+          "__comment": "Rotor blade 3-4 (cross axis)",
+          "origin": [-1, 16, -46],
+          "size": [2, 1, 96],
+          "uv": [0, 88]
+        }
+      ]
+    },
+    {
+      "name": "tail_rotor",
+      "pivot": [3, 16, -34],
+      "cubes": [
+        {
+          "__comment": "Tail rotor hub",
+          "origin": [1, 15, -35],
+          "size": [3, 2, 2],
+          "uv": [88, 8]
+        },
+        {
+          "__comment": "Tail rotor blades",
+          "origin": [3, 7, -35],
+          "size": [1, 18, 2],
+          "uv": [88, 12]
+        }
+      ]
+    },
+    {
+      "name": "landing_skids",
+      "pivot": [0, 0, 0],
+      "cubes": [
+        {
+          "__comment": "Left skid rail",
+          "origin": [8, -2, -14],
+          "size": [2, 2, 30],
+          "uv": [0, 92]
+        },
+        {
+          "__comment": "Right skid rail",
+          "origin": [-10, -2, -14],
+          "size": [2, 2, 30],
+          "uv": [0, 92]
+        }
+      ]
+    }
+  ]
+}

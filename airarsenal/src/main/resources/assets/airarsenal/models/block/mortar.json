@@ -1,0 +1,48 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "particle": "blocks/anvil_base",
+    "base": "blocks/anvil_base",
+    "tube": "blocks/cauldron_inner"
+  },
+  "elements": [
+    {
+      "__comment": "Mortar circular baseplate",
+      "from": [2, 0, 2],
+      "to": [14, 2, 14],
+      "faces": {
+        "down":  { "texture": "#base", "cullface": "down" },
+        "up":    { "texture": "#base" },
+        "north": { "texture": "#base" },
+        "south": { "texture": "#base" },
+        "west":  { "texture": "#base" },
+        "east":  { "texture": "#base" }
+      }
+    },
+    {
+      "__comment": "A-frame bipod support",
+      "from": [4, 2, 4],
+      "to": [12, 6, 12],
+      "faces": {
+        "up":    { "texture": "#base" },
+        "north": { "texture": "#base" },
+        "south": { "texture": "#base" },
+        "west":  { "texture": "#base" },
+        "east":  { "texture": "#base" }
+      }
+    },
+    {
+      "__comment": "High-angle mortar launch tube",
+      "from": [5, 4, 3],
+      "to": [11, 15, 9],
+      "faces": {
+        "up":    { "texture": "#tube" },
+        "down":  { "texture": "#base" },
+        "north": { "texture": "#base" },
+        "south": { "texture": "#base" },
+        "west":  { "texture": "#base" },
+        "east":  { "texture": "#base" }
+      }
+    }
+  ]
+}

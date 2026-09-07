@@ -1,0 +1,55 @@
+{
+  "__comment": "Model for EMPBombEntity — High-altitude electromagnetic pulse bomb with inductive flux-compression generator",
+  "texture_width": 48,
+  "texture_height": 32,
+  "bones": [
+    {
+      "name": "generator_core",
+      "pivot": [0, 0, 0],
+      "cubes": [
+        {
+          "__comment": "Central dielectric flux generator body",
+          "origin": [-3, -3, -5],
+          "size": [6, 6, 12],
+          "uv": [0, 0]
+        },
+        {
+          "__comment": "Forward discharge electrode emitter dome",
+          "origin": [-2, -2, 7],
+          "size": [4, 4, 3],
+          "uv": [24, 0]
+        },
+        {
+          "__comment": "Superconducting coil ring 1",
+          "origin": [-3.5, -3.5, 3],
+          "size": [7, 7, 2],
+          "uv": [24, 7]
+        },
+        {
+          "__comment": "Superconducting coil ring 2",
+          "origin": [-3.5, -3.5, -3],
+          "size": [7, 7, 2],
+          "uv": [24, 7]
+        }
+      ]
+    },
+    {
+      "name": "stabilizers",
+      "pivot": [0, 0, -6],
+      "cubes": [
+        {
+          "__comment": "Rear stabilizing fins",
+          "origin": [-5, -0.5, -9],
+          "size": [10, 1, 4],
+          "uv": [0, 18]
+        },
+        {
+          "__comment": "Vertical stabilizing fins",
+          "origin": [-0.5, -5, -9],
+          "size": [1, 10, 4],
+          "uv": [0, 18]
+        }
+      ]
+    }
+  ]
+}

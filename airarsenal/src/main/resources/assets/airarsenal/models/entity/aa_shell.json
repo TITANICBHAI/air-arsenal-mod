@@ -1,0 +1,31 @@
+{
+  "__comment": "Model for AAShellEntity — 20mm Anti-Aircraft tracer round with luminous chemical base",
+  "texture_width": 32,
+  "texture_height": 16,
+  "bones": [
+    {
+      "name": "shell",
+      "pivot": [0, 0, 0],
+      "cubes": [
+        {
+          "__comment": "Steel projectile body",
+          "origin": [-0.75, -0.75, -3],
+          "size": [1.5, 1.5, 6],
+          "uv": [0, 0]
+        },
+        {
+          "__comment": "Sharp kinetic penetrator nose",
+          "origin": [-0.5, -0.5, 3],
+          "size": [1, 1, 2],
+          "uv": [10, 0]
+        },
+        {
+          "__comment": "Phosphor tracer base well",
+          "origin": [-0.5, -0.5, -4],
+          "size": [1, 1, 1],
+          "uv": [10, 3]
+        }
+      ]
+    }
+  ]
+}

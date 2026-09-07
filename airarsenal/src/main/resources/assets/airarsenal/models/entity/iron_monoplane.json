@@ -1,0 +1,97 @@
+{
+  "__comment": "Model for IronMonoplaneEntity — 1 hardpoint nose-mounted LMG, single wing, propeller",
+  "texture_width": 128,
+  "texture_height": 64,
+  "bones": [
+    {
+      "name": "fuselage",
+      "pivot": [0, 4, 0],
+      "cubes": [
+        {
+          "__comment": "Fuselage main body",
+          "origin": [-6, 0, -18],
+          "size": [12, 12, 36],
+          "uv": [0, 0]
+        },
+        {
+          "__comment": "Nose engine cowling",
+          "origin": [-5, 1, 18],
+          "size": [10, 10, 8],
+          "uv": [60, 0]
+        },
+        {
+          "__comment": "Cockpit windscreen",
+          "origin": [-4, 12, -4],
+          "size": [8, 4, 8],
+          "uv": [60, 18]
+        }
+      ]
+    },
+    {
+      "name": "wings",
+      "pivot": [0, 6, 4],
+      "cubes": [
+        {
+          "__comment": "Left main wing",
+          "origin": [6, 6, -2],
+          "size": [36, 2, 12],
+          "uv": [0, 48]
+        },
+        {
+          "__comment": "Right main wing",
+          "origin": [-42, 6, -2],
+          "size": [36, 2, 12],
+          "uv": [0, 48]
+        }
+      ]
+    },
+    {
+      "name": "tail",
+      "pivot": [0, 6, -18],
+      "cubes": [
+        {
+          "__comment": "Vertical stabilizer",
+          "origin": [-1, 8, -26],
+          "size": [2, 12, 10],
+          "uv": [96, 0]
+        },
+        {
+          "__comment": "Horizontal elevator",
+          "origin": [-14, 6, -26],
+          "size": [28, 2, 8],
+          "uv": [0, 38]
+        }
+      ]
+    },
+    {
+      "name": "propeller",
+      "pivot": [0, 6, 26],
+      "cubes": [
+        {
+          "__comment": "Propeller spinner hub",
+          "origin": [-2, 4, 26],
+          "size": [4, 4, 3],
+          "uv": [112, 0]
+        },
+        {
+          "__comment": "Propeller blades",
+          "origin": [-14, 5, 27],
+          "size": [28, 2, 1],
+          "uv": [70, 32]
+        }
+      ]
+    },
+    {
+      "name": "weapon_lmg",
+      "pivot": [0, 10, 12],
+      "cubes": [
+        {
+          "__comment": "Nose-mounted Light Machine Gun barrel",
+          "origin": [-1, 10, 12],
+          "size": [2, 2, 14],
+          "uv": [100, 20]
+        }
+      ]
+    }
+  ]
+}

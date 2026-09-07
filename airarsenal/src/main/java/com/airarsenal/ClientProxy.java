@@ -6,16 +6,24 @@ import com.airarsenal.client.ScreenShakeHandler;
 import com.airarsenal.client.TacModeController;
 import com.airarsenal.client.gui.ManpadsHUD;
 import com.airarsenal.client.gui.TacModeHUD;
-import com.airarsenal.client.renderer.entity.OrbitalRodRenderer;
+import com.airarsenal.client.renderer.entity.*;
 import com.airarsenal.client.renderer.tileentity.OrbitalCannonTESR;
-import com.airarsenal.entity.projectile.OrbitalRodEntity;
+import com.airarsenal.entity.OrbitalWarningMarkerEntity;
+import com.airarsenal.entity.plane.*;
+import com.airarsenal.entity.projectile.*;
+import com.airarsenal.entity.vehicle.*;
+import com.airarsenal.registry.ModItems;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.item.Item;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
-import net.minecraftforge.fml.client.registry.RenderingRegistry;
+import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -30,6 +38,7 @@ public class ClientProxy extends CommonProxy {
     public void preInit(FMLPreInitializationEvent event) {
         super.preInit(event);
         KeyBindings.register();
+        MinecraftForge.EVENT_BUS.register(this);
     }
 
     @Override
@@ -41,14 +50,78 @@ public class ClientProxy extends CommonProxy {
         MinecraftForge.EVENT_BUS.register(new TacModeHUD(tacModeController));
         MinecraftForge.EVENT_BUS.register(new ManpadsHUD());
 
-        // Register config-changed listener here (client only) — ConfigChangedEvent
-        // is a client-only class and must NOT be referenced on a dedicated server.
-        MinecraftForge.EVENT_BUS.register(this);
+        // ── Entity Renderers ──────────────────────────────────────────────────
+        // Aircraft (Planes, Drones, Helicopters)
+        RenderingRegistry.registerEntityRenderingHandler(WoodBiplaneEntity.class, PlaneRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(IronMonoplaneEntity.class, PlaneRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(FighterJetEntity.class, PlaneRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(StealthBomberEntity.class, PlaneRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(PredatorDroneEntity.class, PlaneRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(AttackHelicopterEntity.class, PlaneRenderer::new);
+
+        // Ground Combat Vehicles
+        RenderingRegistry.registerEntityRenderingHandler(TankEntity.class, VehicleRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(MissileTruckEntity.class, VehicleRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(ArmoredTruckEntity.class, VehicleRenderer::new);
+
+        // Guided Missiles & Rockets
+        RenderingRegistry.registerEntityRenderingHandler(HellfireEntity.class, MissileRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(BrahMosEntity.class, MissileRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(PredatorMissileEntity.class, MissileRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(ManpadsEntity.class, MissileRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(TruckGuidedMissileEntity.class, MissileRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(MLRSRocketEntity.class, MissileRenderer::new);
+
+        // Aerial Bombs
+        RenderingRegistry.registerEntityRenderingHandler(IronBombEntity.class, BombRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(HeavyBombEntity.class, BombRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(NapalmBombEntity.class, BombRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(ClusterBombEntity.class, BombRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(EMPBombEntity.class, BombRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(SmokeBombEntity.class, BombRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(DepthChargeEntity.class, BombRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(FuelAirBombEntity.class, BombRenderer::new);
+
+        // Projectiles, Artillery Shells, Bullets, Shards
+        RenderingRegistry.registerEntityRenderingHandler(BulletEntity.class, ShellRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(AAShellEntity.class, ShellRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(FlakShellEntity.class, ShellRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(MortarShellEntity.class, ShellRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(HowitzerShellEntity.class, ShellRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(TankShellEntity.class, ShellRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(PropellerShardEntity.class, ShellRenderer::new);
 
         // ── Chunk 11 — Orbital Cannon ────────────────────────────────────────
         MinecraftForge.EVENT_BUS.register(new ScreenShakeHandler());
         ClientRegistry.bindTileEntitySpecialRenderer(OrbitalCannonTileEntity.class, new OrbitalCannonTESR());
         RenderingRegistry.registerEntityRenderingHandler(OrbitalRodEntity.class, OrbitalRodRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(OrbitalWarningMarkerEntity.class, InvisibleRenderer::new);
+    }
+
+    @SubscribeEvent
+    public void registerModels(ModelRegistryEvent event) {
+        registerItemModel(ModItems.WOOD_BIPLANE);
+        registerItemModel(ModItems.IRON_MONOPLANE);
+        registerItemModel(ModItems.IRON_BOMB);
+        registerItemModel(ModItems.HEAVY_BOMB);
+        registerItemModel(ModItems.NAPALM_CANISTER);
+        registerItemModel(ModItems.BRAHMOS_TARGETER);
+        registerItemModel(ModItems.MANPADS);
+        registerItemModel(ModItems.MORTAR_SHELL);
+        registerItemModel(ModItems.LASER_DESIGNATOR);
+        registerItemModel(ModItems.ROCKET_POD);
+        registerItemModel(ModItems.HEAVY_ROUND);
+        registerItemModel(ModItems.JET_FUEL);
+        registerItemModel(ModItems.DRONE_CONTROLLER);
+        registerItemModel(ModItems.ORBITAL_DESIGNATOR);
+        registerItemModel(ModItems.SATELLITE_UPLINK_CARD);
+    }
+
+    private static void registerItemModel(Item item) {
+        if (item != null && item.getRegistryName() != null) {
+            ModelLoader.setCustomModelResourceLocation(item, 0,
+                new ModelResourceLocation(item.getRegistryName(), "inventory"));
+        }
     }
 
     @Override

@@ -1,0 +1,31 @@
+{
+  "__comment": "Model for FlakShellEntity — 88mm heavy timed anti-aircraft burst projectile with mechanical time fuse",
+  "texture_width": 32,
+  "texture_height": 32,
+  "bones": [
+    {
+      "name": "shell",
+      "pivot": [0, 0, 0],
+      "cubes": [
+        {
+          "__comment": "Pre-fragmented steel shell casing",
+          "origin": [-1.5, -1.5, -4],
+          "size": [3, 3, 8],
+          "uv": [0, 0]
+        },
+        {
+          "__comment": "Clockwork time fuze nose cone",
+          "origin": [-1, -1, 4],
+          "size": [2, 2, 3],
+          "uv": [14, 0]
+        },
+        {
+          "__comment": "Copper driving band rifling ring",
+          "origin": [-1.75, -1.75, -3],
+          "size": [3.5, 3.5, 1],
+          "uv": [14, 5]
+        }
+      ]
+    }
+  ]
+}

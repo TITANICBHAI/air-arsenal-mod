@@ -1,0 +1,67 @@
+{
+  "__comment": "Model for MissileTruckEntity — 6x6 tactical truck chassis with dual elevatable missile launch tubes",
+  "texture_width": 128,
+  "texture_height": 128,
+  "bones": [
+    {
+      "name": "chassis",
+      "pivot": [0, 4, 0],
+      "cubes": [
+        {
+          "__comment": "Heavy steel frame chassis",
+          "origin": [-8, 4, -24],
+          "size": [16, 4, 48],
+          "uv": [0, 0]
+        },
+        {
+          "__comment": "Forward armored cab",
+          "origin": [-10, 8, 8],
+          "size": [20, 14, 16],
+          "uv": [0, 52]
+        },
+        {
+          "__comment": "Windshield and visor",
+          "origin": [-9, 13, 24],
+          "size": [18, 6, 2],
+          "uv": [56, 52]
+        }
+      ]
+    },
+    {
+      "name": "wheels",
+      "pivot": [0, 0, 0],
+      "cubes": [
+        { "origin": [9, 0, 14], "size": [4, 8, 8], "uv": [80, 0] },
+        { "origin": [-13, 0, 14], "size": [4, 8, 8], "uv": [80, 0] },
+        { "origin": [9, 0, -4], "size": [4, 8, 8], "uv": [80, 0] },
+        { "origin": [-13, 0, -4], "size": [4, 8, 8], "uv": [80, 0] },
+        { "origin": [9, 0, -18], "size": [4, 8, 8], "uv": [80, 0] },
+        { "origin": [-13, 0, -18], "size": [4, 8, 8], "uv": [80, 0] }
+      ]
+    },
+    {
+      "name": "missile_launcher",
+      "pivot": [0, 10, -10],
+      "cubes": [
+        {
+          "__comment": "Launcher pivot turntable base",
+          "origin": [-7, 8, -20],
+          "size": [14, 3, 20],
+          "uv": [0, 82]
+        },
+        {
+          "__comment": "Left missile launch canister tube",
+          "origin": [1, 11, -22],
+          "size": [6, 6, 26],
+          "uv": [48, 82]
+        },
+        {
+          "__comment": "Right missile launch canister tube",
+          "origin": [-7, 11, -22],
+          "size": [6, 6, 26],
+          "uv": [48, 82]
+        }
+      ]
+    }
+  ]
+}

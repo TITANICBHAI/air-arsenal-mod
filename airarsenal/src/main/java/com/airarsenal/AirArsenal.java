@@ -4,6 +4,7 @@ import com.airarsenal.network.ModNetwork;
 import com.airarsenal.registry.ModBlocks;
 import com.airarsenal.registry.ModEntities;
 import com.airarsenal.registry.ModItems;
+import com.airarsenal.item.ItemFieldManual;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -209,6 +210,24 @@ public class AirArsenal {
             'N', new ItemStack(Items.NETHER_STAR),
             'O', new ItemStack(Blocks.OBSIDIAN),
             'E', new ItemStack(Blocks.EMERALD_BLOCK)
+        );
+        // ── Field Manual signed by TBTechs ───────────────────────────────────
+        // [ ]  [R]  [ ]
+        // [ ]  [B]  [ ]
+        // [ ]  [ ]  [ ]
+        // B = Book and Quill or regular Book, R = Redstone
+        GameRegistry.addShapelessRecipe(
+            new ResourceLocation(MODID, "field_manual"), null,
+            ItemFieldManual.createSignedBook(),
+            net.minecraft.item.crafting.Ingredient.fromItem(Items.WRITABLE_BOOK),
+            net.minecraft.item.crafting.Ingredient.fromItem(Items.REDSTONE)
+        );
+        GameRegistry.addShapelessRecipe(
+            new ResourceLocation(MODID, "field_manual_alt"), null,
+            ItemFieldManual.createSignedBook(),
+            net.minecraft.item.crafting.Ingredient.fromItem(Items.BOOK),
+            net.minecraft.item.crafting.Ingredient.fromItem(Items.REDSTONE),
+            net.minecraft.item.crafting.Ingredient.fromItem(Items.FEATHER)
         );
     }
 }

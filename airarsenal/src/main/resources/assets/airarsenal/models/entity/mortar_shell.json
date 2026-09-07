@@ -1,0 +1,49 @@
+{
+  "__comment": "Model for MortarShellEntity — Finned teardrop aerodynamic mortar bomb",
+  "texture_width": 32,
+  "texture_height": 32,
+  "bones": [
+    {
+      "name": "body",
+      "pivot": [0, 0, 0],
+      "cubes": [
+        {
+          "__comment": "Bulbous teardrop explosive body",
+          "origin": [-2, -2, -2],
+          "size": [4, 4, 6],
+          "uv": [0, 0]
+        },
+        {
+          "__comment": "Nose point-detonating impact fuze",
+          "origin": [-1, -1, 4],
+          "size": [2, 2, 2],
+          "uv": [14, 0]
+        },
+        {
+          "__comment": "Narrow tail boom tube",
+          "origin": [-0.75, -0.75, -6],
+          "size": [1.5, 1.5, 4],
+          "uv": [14, 4]
+        }
+      ]
+    },
+    {
+      "name": "fins",
+      "pivot": [0, 0, -6],
+      "cubes": [
+        {
+          "__comment": "Perforated stabilizing fin blades (horizontal)",
+          "origin": [-3, -0.5, -7],
+          "size": [6, 1, 3],
+          "uv": [0, 12]
+        },
+        {
+          "__comment": "Perforated stabilizing fin blades (vertical)",
+          "origin": [-0.5, -3, -7],
+          "size": [1, 6, 3],
+          "uv": [0, 12]
+        }
+      ]
+    }
+  ]
+}
