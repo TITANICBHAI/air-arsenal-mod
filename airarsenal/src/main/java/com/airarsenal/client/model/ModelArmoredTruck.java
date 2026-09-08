@@ -88,10 +88,12 @@ public class ModelArmoredTruck extends ModelBase {
         this.armoredCabin.render(scale);
         this.bullbar.render(scale);
 
-        // Cupola & gun swivel
+        // Cupola & gun swivel and elevation
         float yawRad = netHeadYaw * 0.017453292F;
+        float pitchRad = headPitch * 0.017453292F;
         this.roofCupola.rotateAngleY = yawRad;
         this.machineGun.rotateAngleY = yawRad;
+        this.machineGun.rotateAngleX = pitchRad;
         this.ammoBox.rotateAngleY = yawRad;
 
         this.roofCupola.render(scale);

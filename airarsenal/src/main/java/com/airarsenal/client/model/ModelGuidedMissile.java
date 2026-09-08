@@ -54,6 +54,16 @@ public class ModelGuidedMissile extends ModelBase {
     @Override
     public void render(Entity entity, float limbSwing, float limbSwingAmount, float ageInTicks,
                        float netHeadYaw, float headPitch, float scale) {
+        // High speed spin-stabilization roll along flight axis
+        float spin = ageInTicks * 1.5F;
+        this.missileBody.rotateAngleZ = spin;
+        this.seekerNose.rotateAngleZ = spin;
+        this.finH1.rotateAngleZ = spin;
+        this.finH2.rotateAngleZ = spin;
+        this.finV1.rotateAngleZ = spin;
+        this.finV2.rotateAngleZ = spin;
+        this.exhaustNozzle.rotateAngleZ = spin;
+
         this.missileBody.render(scale);
         this.seekerNose.render(scale);
         this.finH1.render(scale);

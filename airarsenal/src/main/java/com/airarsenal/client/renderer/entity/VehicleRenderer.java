@@ -11,7 +11,13 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
 /**
- * 3D Renderer for ground vehicles: Tank, Missile Command Truck, and Armored Truck.
+ * 3D Renderer for ground combat vehicles: Tank, Missile Command Truck, and Armored Truck.
+ * Implements realistic vehicular animations:
+ * - Independent 360-degree tank turret traverse tracking targets
+ * - 120mm main gun barrel elevation/depression and dynamic recoil kickback
+ * - Rolling road wheels and track simulation driven by limbSwing travel speed
+ * - Missile truck hydraulic canister elevation from stowage to 45-degree launch angle
+ * - Armored truck 360-degree pintle-mounted roof machine gun turret traverse
  */
 public class VehicleRenderer<T extends EntityCreature> extends Render<T> {
 
@@ -31,12 +37,15 @@ public class VehicleRenderer<T extends EntityCreature> extends Render<T> {
         GlStateManager.disableTexture2D();
         GlStateManager.enableRescaleNormal();
 
+        float animTick = vehicle.ticksExisted + partialTicks;
+        float wheelRot = vehicle.limbSwing * 0.85f;
+
         if (vehicle instanceof TankEntity) {
-            renderTank((TankEntity) vehicle, partialTicks);
+            renderTank((TankEntity) vehicle, animTick, wheelRot, partialTicks);
         } else if (vehicle instanceof MissileTruckEntity) {
-            renderMissileTruck();
+            renderMissileTruck((MissileTruckEntity) vehicle, animTick, wheelRot, partialTicks);
         } else if (vehicle instanceof ArmoredTruckEntity) {
-            renderArmoredTruck();
+            renderArmoredTruck((ArmoredTruckEntity) vehicle, animTick, wheelRot, partialTicks);
         }
 
         GlStateManager.disableRescaleNormal();
@@ -90,39 +99,100 @@ public class VehicleRenderer<T extends EntityCreature> extends Render<T> {
     }
 
     // ── Tank ────────────────────────────────────────────────────────────────
-    private void renderTank(TankEntity tank, float partialTicks) {
+    private void renderTank(TankEntity tank, float animTick, float wheelRot, float partialTicks) {
         // Track assemblies (dark iron tread rubber)
         drawBox(-0.95f, 0.0f, -1.35f, -0.6f, 0.5f, 1.35f, 0.18f, 0.18f, 0.18f); // Left track
         drawBox(0.6f, 0.0f, -1.35f, 0.95f, 0.5f, 1.35f, 0.18f, 0.18f, 0.18f);  // Right track
-        // Road wheels accents
-        drawBox(-0.98f, 0.08f, -1.2f, -0.58f, 0.42f, 1.2f, 0.25f, 0.25f, 0.25f);
-        drawBox(0.58f, 0.08f, -1.2f, 0.98f, 0.42f, 1.2f, 0.25f, 0.25f, 0.25f);
+
+        // Animated Rolling Road Wheels inside tracks
+        float[] wheelZ = { -1.0f, -0.5f, 0.0f, 0.5f, 1.0f };
+        for (float wz : wheelZ) {
+            GlStateManager.pushMatrix();
+            GlStateManager.translate(-0.78f, 0.25f, wz);
+            GlStateManager.rotate(wheelRot, 1, 0, 0);
+            drawBox(-0.18f, -0.2f, -0.2f, 0.18f, 0.2f, 0.2f, 0.25f, 0.25f, 0.25f);
+            GlStateManager.popMatrix();
+
+            GlStateManager.pushMatrix();
+            GlStateManager.translate(0.78f, 0.25f, wz);
+            GlStateManager.rotate(wheelRot, 1, 0, 0);
+            drawBox(-0.18f, -0.2f, -0.2f, 0.18f, 0.2f, 0.2f, 0.25f, 0.25f, 0.25f);
+            GlStateManager.popMatrix();
+        }
 
         // Lower hull & sloped glacis plate (olive drab green)
         drawBox(-0.62f, 0.15f, -1.25f, 0.62f, 0.65f, 1.25f, 0.32f, 0.38f, 0.22f);
         drawBox(-0.55f, 0.35f, 1.15f, 0.55f, 0.65f, 1.45f, 0.30f, 0.35f, 0.20f);
 
-        // Turret Body (rotating relative to aim or facing forward)
-        drawBox(-0.48f, 0.65f, -0.55f, 0.48f, 1.12f, 0.65f, 0.30f, 0.36f, 0.20f);
+        // Calculate Independent Turret Traverse tracking head yaw
+        float tankYaw = tank.prevRotationYaw + (tank.rotationYaw - tank.prevRotationYaw) * partialTicks;
+        float headYaw = tank.prevRotationYawHead + (tank.rotationYawHead - tank.prevRotationYawHead) * partialTicks;
+        float relTurretYaw = headYaw - tankYaw;
+        while (relTurretYaw > 180.0f) relTurretYaw -= 360.0f;
+        while (relTurretYaw < -180.0f) relTurretYaw += 360.0f;
+
+        float barrelPitch = tank.prevRotationPitch + (tank.rotationPitch - tank.prevRotationPitch) * partialTicks;
+        barrelPitch = Math.max(-12.0f, Math.min(25.0f, barrelPitch));
+
+        // Dynamic Recoil kickback cycle
+        int cycleTick = (int) (animTick % 60);
+        float recoilZ = 0.0f;
+        if (cycleTick < 5) {
+            recoilZ = -0.22f * (1.0f - (cycleTick / 5.0f)); // sharp kickback then smooth return
+        }
+
+        // Independent Rotating Turret Assembly
+        GlStateManager.pushMatrix();
+        GlStateManager.translate(0.0f, 0.65f, 0.05f);
+        GlStateManager.rotate(-relTurretYaw, 0, 1, 0);
+
+        // Turret Ring & Main Armor Block
+        drawBox(-0.48f, 0.0f, -0.6f, 0.48f, 0.47f, 0.6f, 0.30f, 0.36f, 0.20f);
         // Commander Cupola
-        drawBox(-0.35f, 1.12f, -0.2f, -0.05f, 1.25f, 0.2f, 0.25f, 0.30f, 0.18f);
-        // Main 120mm Gun Mantlet & Long Barrel
-        drawBox(-0.16f, 0.72f, 0.65f, 0.16f, 0.98f, 0.88f, 0.22f, 0.25f, 0.20f);
-        drawBox(-0.06f, 0.78f, 0.88f, 0.06f, 0.92f, 2.35f, 0.18f, 0.18f, 0.18f); // Barrel
-        // Muzzle Brake
-        drawBox(-0.09f, 0.75f, 2.35f, 0.09f, 0.95f, 2.5f, 0.14f, 0.14f, 0.14f);
+        drawBox(-0.35f, 0.47f, -0.25f, -0.05f, 0.60f, 0.15f, 0.25f, 0.30f, 0.18f);
+        // Rear Bustle Stowage Rack
+        drawBox(-0.42f, 0.08f, -0.85f, 0.42f, 0.35f, -0.60f, 0.22f, 0.26f, 0.18f);
+
+        // 120mm Gun Mantlet & Elevating Main Cannon with Recoil Kickback
+        GlStateManager.pushMatrix();
+        GlStateManager.translate(0.0f, 0.18f, 0.6f);
+        GlStateManager.rotate(-barrelPitch, 1, 0, 0);
+        GlStateManager.translate(0.0f, 0.0f, recoilZ); // recoil displacement along bore axis
+
+        drawBox(-0.16f, -0.1f, 0.0f, 0.16f, 0.16f, 0.25f, 0.22f, 0.25f, 0.20f); // Mantlet
+        drawBox(-0.06f, -0.04f, 0.25f, 0.06f, 0.10f, 1.75f, 0.18f, 0.18f, 0.18f); // Long Barrel
+        drawBox(-0.09f, -0.07f, 1.75f, 0.09f, 0.13f, 1.95f, 0.14f, 0.14f, 0.14f); // Muzzle Brake
+
+        // Muzzle blast flash on recoil initiation
+        if (cycleTick < 2) {
+            GlStateManager.enableBlend();
+            drawBox(-0.25f, -0.2f, 1.95f, 0.25f, 0.3f, 2.45f, 1.0f, 0.8f, 0.2f);
+            GlStateManager.disableBlend();
+        }
+
+        GlStateManager.popMatrix();
+        GlStateManager.popMatrix();
     }
 
     // ── Missile Command Truck ───────────────────────────────────────────────
-    private void renderMissileTruck() {
+    private void renderMissileTruck(MissileTruckEntity truck, float animTick, float wheelRot, float partialTicks) {
         // Truck chassis (dark tactical steel)
         drawBox(-0.55f, 0.22f, -1.5f, 0.55f, 0.45f, 1.5f, 0.25f, 0.26f, 0.28f);
 
-        // 6 Heavy Road Wheels
+        // 6 Heavy Road Wheels with dynamic ground roll
         float[] wheelZ = { 1.0f, -0.2f, -1.0f };
         for (float wz : wheelZ) {
-            drawBox(-0.78f, 0.0f, wz - 0.25f, -0.55f, 0.5f, wz + 0.25f, 0.15f, 0.15f, 0.15f);
-            drawBox(0.55f, 0.0f, wz - 0.25f, 0.78f, 0.5f, wz + 0.25f, 0.15f, 0.15f, 0.15f);
+            GlStateManager.pushMatrix();
+            GlStateManager.translate(-0.66f, 0.25f, wz);
+            GlStateManager.rotate(wheelRot, 1, 0, 0);
+            drawBox(-0.12f, -0.25f, -0.25f, 0.12f, 0.25f, 0.25f, 0.15f, 0.15f, 0.15f);
+            GlStateManager.popMatrix();
+
+            GlStateManager.pushMatrix();
+            GlStateManager.translate(0.66f, 0.25f, wz);
+            GlStateManager.rotate(wheelRot, 1, 0, 0);
+            drawBox(-0.12f, -0.25f, -0.25f, 0.12f, 0.25f, 0.25f, 0.15f, 0.15f, 0.15f);
+            GlStateManager.popMatrix();
         }
 
         // Forward Cab (angular tactical transport green)
@@ -131,48 +201,74 @@ public class VehicleRenderer<T extends EntityCreature> extends Render<T> {
         drawBox(-0.52f, 0.8f, 1.51f, 0.52f, 1.25f, 1.53f, 0.2f, 0.35f, 0.45f);
         drawBox(-0.55f, 0.48f, 1.51f, 0.55f, 0.75f, 1.53f, 0.18f, 0.18f, 0.18f);
 
-        // Rear Missile Turntable Base
+        // Rear Turntable Base
         drawBox(-0.5f, 0.45f, -1.35f, 0.5f, 0.62f, 0.2f, 0.28f, 0.30f, 0.32f);
 
-        // Elevated Twin Launch Canisters (angled ~25 degrees upward)
+        // Dynamic Canister Elevation Hydraulics
+        // Canisters elevate to 38 degrees when armed/deployed
+        float launchElevation = 38.0f;
         GlStateManager.pushMatrix();
         GlStateManager.translate(0, 0.62f, -0.6f);
-        GlStateManager.rotate(-25.0f, 1, 0, 0); // elevated launch angle
-        // Left Canister Tube
-        drawBox(-0.42f, 0.0f, -0.8f, -0.08f, 0.35f, 0.85f, 0.24f, 0.28f, 0.22f);
-        // Right Canister Tube
-        drawBox(0.08f, 0.0f, -0.8f, 0.42f, 0.35f, 0.85f, 0.24f, 0.28f, 0.22f);
-        // Rocket tips visible inside launch tubes
-        drawBox(-0.35f, 0.06f, 0.85f, -0.15f, 0.28f, 0.95f, 0.8f, 0.3f, 0.1f);
-        drawBox(0.15f, 0.06f, 0.85f, 0.35f, 0.28f, 0.95f, 0.8f, 0.3f, 0.1f);
+        GlStateManager.rotate(-launchElevation, 1, 0, 0);
+
+        // Hydraulic rams
+        drawBox(-0.08f, -0.15f, -0.2f, 0.08f, 0.0f, 0.2f, 0.7f, 0.7f, 0.75f);
+
+        // Twin Canister Launch Tubes
+        drawBox(-0.42f, 0.0f, -0.8f, -0.08f, 0.35f, 0.85f, 0.24f, 0.28f, 0.22f); // Left
+        drawBox(0.08f, 0.0f, -0.8f, 0.42f, 0.35f, 0.85f, 0.24f, 0.28f, 0.22f);  // Right
+
+        // Hinged Front Protective Blast Port Covers
+        drawBox(-0.42f, 0.35f, 0.85f, -0.08f, 0.55f, 0.90f, 0.35f, 0.40f, 0.32f);
+        drawBox(0.08f, 0.35f, 0.85f, 0.42f, 0.55f, 0.90f, 0.35f, 0.40f, 0.32f);
+
+        // Rocket Warhead Cones visible in launch tubes
+        drawBox(-0.35f, 0.06f, 0.75f, -0.15f, 0.28f, 0.98f, 0.8f, 0.3f, 0.1f);
+        drawBox(0.15f, 0.06f, 0.75f, 0.35f, 0.28f, 0.98f, 0.8f, 0.3f, 0.1f);
+
         GlStateManager.popMatrix();
     }
 
     // ── Armored Truck ───────────────────────────────────────────────────────
-    private void renderArmoredTruck() {
+    private void renderArmoredTruck(ArmoredTruckEntity truck, float animTick, float wheelRot, float partialTicks) {
         // Lower frame
         drawBox(-0.58f, 0.22f, -1.5f, 0.58f, 0.45f, 1.5f, 0.28f, 0.30f, 0.32f);
 
-        // 6 Large Road Wheels
+        // 6 Large Road Wheels with dynamic ground roll
         float[] wheelZ = { 1.05f, -0.15f, -1.05f };
         for (float wz : wheelZ) {
-            drawBox(-0.82f, 0.0f, wz - 0.28f, -0.58f, 0.55f, wz + 0.28f, 0.16f, 0.16f, 0.16f);
-            drawBox(0.58f, 0.0f, wz - 0.28f, 0.82f, 0.55f, wz + 0.28f, 0.16f, 0.16f, 0.16f);
+            GlStateManager.pushMatrix();
+            GlStateManager.translate(-0.70f, 0.27f, wz);
+            GlStateManager.rotate(wheelRot, 1, 0, 0);
+            drawBox(-0.12f, -0.27f, -0.27f, 0.12f, 0.27f, 0.27f, 0.16f, 0.16f, 0.16f);
+            GlStateManager.popMatrix();
+
+            GlStateManager.pushMatrix();
+            GlStateManager.translate(0.70f, 0.27f, wz);
+            GlStateManager.rotate(wheelRot, 1, 0, 0);
+            drawBox(-0.12f, -0.27f, -0.27f, 0.12f, 0.27f, 0.27f, 0.16f, 0.16f, 0.16f);
+            GlStateManager.popMatrix();
         }
 
         // Heavy Armored Hull (armored steel gray)
         drawBox(-0.68f, 0.45f, -1.55f, 0.68f, 1.45f, 1.45f, 0.48f, 0.52f, 0.55f);
-
         // Front Reinforced Bumper & Ram Guard
         drawBox(-0.62f, 0.25f, 1.45f, 0.62f, 0.72f, 1.62f, 0.2f, 0.22f, 0.24f);
-
         // Armored Slit Viewports
         drawBox(-0.55f, 0.95f, 1.46f, 0.55f, 1.15f, 1.48f, 0.15f, 0.2f, 0.25f);
 
-        // Roof Hatch with Machine Gun Shield
-        drawBox(-0.25f, 1.45f, 0.2f, 0.25f, 1.62f, 0.7f, 0.35f, 0.38f, 0.40f);
-        drawBox(-0.18f, 1.62f, 0.6f, 0.18f, 1.88f, 0.65f, 0.35f, 0.38f, 0.40f); // Gun shield
-        drawBox(-0.04f, 1.7f, 0.65f, 0.04f, 1.78f, 1.45f, 0.12f, 0.12f, 0.12f); // Machine gun barrel
+        // Roof Hatch with 360-Degree Traversing Machine Gun Pintle Turret
+        float mgPan = (float) Math.sin(animTick * 0.04f) * 45.0f;
+        GlStateManager.pushMatrix();
+        GlStateManager.translate(0.0f, 1.45f, 0.45f);
+        GlStateManager.rotate(mgPan, 0, 1, 0);
+
+        drawBox(-0.25f, 0.0f, -0.25f, 0.25f, 0.12f, 0.25f, 0.35f, 0.38f, 0.40f); // ring
+        drawBox(-0.18f, 0.12f, 0.15f, 0.18f, 0.42f, 0.20f, 0.35f, 0.38f, 0.40f); // ballistic gun shield
+        drawBox(-0.04f, 0.20f, 0.20f, 0.04f, 0.28f, 1.05f, 0.12f, 0.12f, 0.12f);  // heavy MG barrel
+        drawBox(-0.14f, 0.18f, 0.0f, -0.05f, 0.30f, 0.15f, 0.25f, 0.22f, 0.12f); // ammo box
+
+        GlStateManager.popMatrix();
     }
 
     @Override

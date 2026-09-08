@@ -71,6 +71,13 @@ public class ModelArtilleryCannon extends ModelBase {
         this.rightBarrel.rotateAngleY = yawRad;
         this.rightBarrel.rotateAngleX = -pitchRad;
 
+        // Alternating twin barrel recoil kickback
+        int cycle = (int) (ageInTicks % 20);
+        float lRecoil = (cycle < 4) ? -3.0F * (1.0F - cycle / 4.0F) : 0.0F;
+        float rRecoil = (cycle >= 10 && cycle < 14) ? -3.0F * (1.0F - (cycle - 10) / 4.0F) : 0.0F;
+        this.leftBarrel.setRotationPoint(0.0F, 20.0F, lRecoil);
+        this.rightBarrel.setRotationPoint(0.0F, 20.0F, rRecoil);
+
         this.swivelRing.render(scale);
         this.trunnionLeft.render(scale);
         this.trunnionRight.render(scale);

@@ -88,6 +88,24 @@ const server = http.createServer((req, res) => {
   res.end('Air Arsenal Documentation Not Found');
 });
 
+server.on('error', (err: NodeJS.ErrnoException) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`Port ${PORT} is already in use. Please wait or kill the old process.`);
+    process.exit(1);
+  } else {
+    console.error('Server error:', err);
+  }
+});
+
+process.on('SIGTERM', () => {
+  server.close(() => process.exit(0));
+});
+
+process.on('SIGINT', () => {
+  server.close(() => process.exit(0));
+});
+
 server.listen(PORT, HOST, () => {
   console.log(`Air Arsenal documentation server running on http://${HOST}:${PORT}`);
 });
+

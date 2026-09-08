@@ -111,6 +111,15 @@ public class ModelMissileTruck extends ModelBase {
     @Override
     public void render(Entity entity, float limbSwing, float limbSwingAmount, float ageInTicks,
                        float netHeadYaw, float headPitch, float scale) {
+        // Dynamic hydraulic canister elevation (elevates for firing when stopped, stows flat when driving)
+        float targetElevation = (limbSwingAmount < 0.1F) ? -0.55F : -0.08F;
+        this.leftMissileTube.rotateAngleX = targetElevation;
+        this.rightMissileTube.rotateAngleX = targetElevation;
+        this.missileNoseL.rotateAngleX = targetElevation;
+        this.missileNoseR.rotateAngleX = targetElevation;
+        this.launchPistonL.rotateAngleX = targetElevation * 0.7F;
+        this.launchPistonR.rotateAngleX = targetElevation * 0.7F;
+
         this.chassis.render(scale);
         this.bullbar.render(scale);
         this.cab.render(scale);

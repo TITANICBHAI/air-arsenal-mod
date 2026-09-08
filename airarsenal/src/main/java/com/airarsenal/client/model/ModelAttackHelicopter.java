@@ -83,8 +83,18 @@ public class ModelAttackHelicopter extends ModelBase {
         this.stubWings.render(scale);
         this.leftSkid.render(scale);
         this.rightSkid.render(scale);
+        // Animate chin turret aiming
+        float yawRad = netHeadYaw * 0.017453292F;
+        float pitchRad = headPitch * 0.017453292F;
+        this.chinTurret.rotateAngleY = yawRad;
+        this.chinTurret.rotateAngleX = pitchRad;
         this.chinTurret.render(scale);
         this.mainRotorMast.render(scale);
+
+        // Cyclic tilt (rotor disc tilts slightly forward with forward flight)
+        float cyclicForward = -0.08F;
+        this.mainRotorBlade1.rotateAngleX = cyclicForward;
+        this.mainRotorBlade2.rotateAngleX = cyclicForward;
 
         // Rotate main rotor
         this.mainRotorBlade1.rotateAngleY = ageInTicks * 1.2F;

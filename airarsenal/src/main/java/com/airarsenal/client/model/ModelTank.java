@@ -112,6 +112,10 @@ public class ModelTank extends ModelBase {
         float yawRad = netHeadYaw * 0.017453292F;
         float pitchRad = headPitch * 0.017453292F;
 
+        // Dynamic 120mm cannon recoil kickback cycle
+        int cycleTick = (int) (ageInTicks % 60);
+        float recoilOffset = (cycleTick < 5) ? -2.5F * (1.0F - (cycleTick / 5.0F)) : 0.0F;
+
         this.turret.rotateAngleY = yawRad;
         this.cupola.rotateAngleY = yawRad;
         this.smokeGrenadesL.rotateAngleY = yawRad;
@@ -123,6 +127,9 @@ public class ModelTank extends ModelBase {
         this.gunMantlet.rotateAngleX = pitchRad;
         this.mainGunBarrel.rotateAngleX = pitchRad;
         this.muzzleBrake.rotateAngleX = pitchRad;
+
+        this.mainGunBarrel.setRotationPoint(0.0F, 16.0F, recoilOffset);
+        this.muzzleBrake.setRotationPoint(0.0F, 16.0F, recoilOffset);
 
         this.turret.render(scale);
         this.cupola.render(scale);

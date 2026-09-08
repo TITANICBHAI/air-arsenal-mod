@@ -49,6 +49,16 @@ public class ModelStealthBomber extends ModelBase {
     @Override
     public void render(Entity entity, float limbSwing, float limbSwingAmount, float ageInTicks,
                        float netHeadYaw, float headPitch, float scale) {
+        // Dynamic bank roll into turns
+        float yawRad = netHeadYaw * 0.017453292F;
+        float bankAngle = yawRad * 0.3F;
+        this.leftWing.rotateAngleZ = bankAngle;
+        this.rightWing.rotateAngleZ = bankAngle;
+        this.centerBody.rotateAngleZ = bankAngle;
+        this.cockpitRidge.rotateAngleZ = bankAngle;
+        this.leftExhaust.rotateAngleZ = bankAngle;
+        this.rightExhaust.rotateAngleZ = bankAngle;
+
         this.centerBody.render(scale);
         this.cockpitRidge.render(scale);
         this.leftWing.render(scale);

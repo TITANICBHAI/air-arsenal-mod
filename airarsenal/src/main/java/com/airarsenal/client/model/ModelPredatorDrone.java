@@ -63,6 +63,9 @@ public class ModelPredatorDrone extends ModelBase {
         this.longGliderWings.render(scale);
         this.leftInvertedVFin.render(scale);
         this.rightInvertedVFin.render(scale);
+        // Animate 2-axis electro-optical surveillance turret scanning
+        this.sensorTurret.rotateAngleY = (float) Math.sin(ageInTicks * 0.05F) * 0.5F;
+        this.sensorTurret.rotateAngleX = 0.25F + (float) Math.sin(ageInTicks * 0.08F) * 0.2F;
         this.sensorTurret.render(scale);
 
         this.rearPusherPropeller.rotateAngleZ = ageInTicks * 0.95F;

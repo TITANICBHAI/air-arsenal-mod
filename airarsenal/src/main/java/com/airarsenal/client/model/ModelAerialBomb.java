@@ -43,6 +43,9 @@ public class ModelAerialBomb extends ModelBase {
     @Override
     public void render(Entity entity, float limbSwing, float limbSwingAmount, float ageInTicks,
                        float netHeadYaw, float headPitch, float scale) {
+        // Spin the arming vane fuze rapidly in the oncoming slipstream
+        this.noseFuze.rotateAngleZ = ageInTicks * 1.8F;
+
         this.bombBody.render(scale);
         this.noseFuze.render(scale);
         this.tailFinH.render(scale);

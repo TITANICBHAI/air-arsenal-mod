@@ -122,6 +122,11 @@ public class ModelFighterJet extends ModelBase {
         this.leftAfterburner.render(scale);
         this.rightAfterburner.render(scale);
 
+        // Rudder deflection on canted stabilizers
+        float yawRad = netHeadYaw * 0.017453292F;
+        this.leftTailFin.rotateAngleY = yawRad * 0.4F;
+        this.rightTailFin.rotateAngleY = yawRad * 0.4F;
+
         // Rolling tires
         float roll = limbSwing * 0.8F;
         this.wheelNose.rotateAngleX = roll;
