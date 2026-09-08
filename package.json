@@ -7,6 +7,7 @@
     "start": "node server.ts",
     "dev": "node server.ts",
     "build": "echo 'Air Arsenal Minecraft Forge 1.12.2 Mod ready'",
+    "watch:build": "node scripts/watch-github-action.mjs",
     "lint": "echo 'Code quality check passed'"
   },
   "private": true,

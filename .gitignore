@@ -54,3 +54,8 @@ airarsenal/.gradle/
 airarsenal/run/
 airarsenal/eclipse/
 airarsenal/out/
+
+# Secrets & local tokens
+.env
+.token
+*.token

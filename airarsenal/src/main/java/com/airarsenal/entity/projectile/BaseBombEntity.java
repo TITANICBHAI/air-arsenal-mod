@@ -34,8 +34,6 @@ public abstract class BaseBombEntity extends Entity {
     /** The entity (plane/player) that dropped this bomb — used for friendly-fire checks. */
     protected Entity droppedByEntity;
 
-    private int ticksExisted = 0;
-
     // ── Construction ──────────────────────────────────────────────────────────
 
     public BaseBombEntity(World world) {
@@ -73,7 +71,6 @@ public abstract class BaseBombEntity extends Entity {
     @Override
     public void onUpdate() {
         super.onUpdate();
-        ticksExisted++;
 
         // ── Apply physics ─────────────────────────────────────────────────────
         motionY -= 0.03;         // gravity
