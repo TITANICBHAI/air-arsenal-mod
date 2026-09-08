@@ -112,9 +112,11 @@ public class ModelTank extends ModelBase {
         float yawRad = netHeadYaw * 0.017453292F;
         float pitchRad = headPitch * 0.017453292F;
 
-        // Dynamic 120mm cannon recoil kickback cycle
-        int cycleTick = (int) (ageInTicks % 60);
-        float recoilOffset = (cycleTick < 5) ? -2.5F * (1.0F - (cycleTick / 5.0F)) : 0.0F;
+        // Real-world hydro-pneumatic 120mm cannon recoil stroke (buffer + recuperator)
+        float cycleTick = (ageInTicks % 60.0F);
+        float recoilOffset = com.airarsenal.client.util.VehicleKinematicsHelper.calculateHydroPneumaticRecoil(
+            cycleTick, 2.0F, 12.0F, 2.8F
+        );
 
         this.turret.rotateAngleY = yawRad;
         this.cupola.rotateAngleY = yawRad;

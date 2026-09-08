@@ -188,16 +188,19 @@ public class PlaneRenderer<T extends BasePlaneEntity> extends Render<T> {
         drawBox(-0.85f, -0.03f, -0.4f, 0.85f, 0.03f, 0.0f, 0.80f, 0.76f, 0.62f);
         GlStateManager.popMatrix();
 
-        // Landing Gear Struts & Rolling Wheels
-        drawBox(-0.55f, -0.55f, 0.3f, -0.45f, -0.2f, 0.5f, 0.25f, 0.25f, 0.25f);
-        drawBox(0.45f, -0.55f, 0.3f, 0.55f, -0.2f, 0.5f, 0.25f, 0.25f, 0.25f);
+        // Procedural Oleo-Pneumatic Landing Gear Struts & Rolling Wheels
+        float strutCompression = com.airarsenal.client.util.VehicleKinematicsHelper.calculateOleoCompression(
+            plane.onGround, plane.motionY, speed, animTick, 0.12f
+        );
+        drawBox(-0.55f, -0.55f + strutCompression, 0.3f, -0.45f, -0.2f, 0.5f, 0.25f, 0.25f, 0.25f);
+        drawBox(0.45f, -0.55f + strutCompression, 0.3f, 0.55f, -0.2f, 0.5f, 0.25f, 0.25f, 0.25f);
         GlStateManager.pushMatrix();
-        GlStateManager.translate(-0.5f, -0.55f, 0.4f);
+        GlStateManager.translate(-0.5f, -0.55f + strutCompression, 0.4f);
         GlStateManager.rotate(wheelRot, 1, 0, 0);
         drawBox(-0.08f, -0.16f, -0.16f, 0.08f, 0.16f, 0.16f, 0.12f, 0.12f, 0.12f);
         GlStateManager.popMatrix();
         GlStateManager.pushMatrix();
-        GlStateManager.translate(0.5f, -0.55f, 0.4f);
+        GlStateManager.translate(0.5f, -0.55f + strutCompression, 0.4f);
         GlStateManager.rotate(wheelRot, 1, 0, 0);
         drawBox(-0.08f, -0.16f, -0.16f, 0.08f, 0.16f, 0.16f, 0.12f, 0.12f, 0.12f);
         GlStateManager.popMatrix();
@@ -253,23 +256,43 @@ public class PlaneRenderer<T extends BasePlaneEntity> extends Render<T> {
         drawBox(-0.04f, -0.3f, -0.35f, 0.04f, 0.3f, 0.0f, 0.55f, 0.58f, 0.60f);
         GlStateManager.popMatrix();
 
-        // Tail dynamic elevator
+        // Dynamic Tail dynamic elevator
         GlStateManager.pushMatrix();
         GlStateManager.translate(0, 0.38f, -1.45f);
         GlStateManager.rotate(-pitch * 0.45f, 1, 0, 0);
         drawBox(-0.95f, -0.03f, -0.35f, 0.95f, 0.03f, 0.0f, 0.58f, 0.60f, 0.64f);
         GlStateManager.popMatrix();
 
-        // Rolling Wheels
+        // Procedural Oleo-Pneumatic Struts, Castoring Tail Gear & Rolling Wheels
+        float monoplaneOleo = com.airarsenal.client.util.VehicleKinematicsHelper.calculateOleoCompression(
+            plane.onGround, plane.motionY, speed, animTick, 0.16f
+        );
+        float casterSteer = com.airarsenal.client.util.VehicleKinematicsHelper.calculateNoseWheelSteer(
+            -yawDelta * 2.2f, speed, plane.onGround
+        );
+
+        // Main Gear Struts with Oleo Compression
+        drawBox(-0.65f, -0.45f + monoplaneOleo, 0.25f, -0.55f, 0.1f, 0.35f, 0.32f, 0.33f, 0.35f);
+        drawBox(0.55f, -0.45f + monoplaneOleo, 0.25f, 0.65f, 0.1f, 0.35f, 0.32f, 0.33f, 0.35f);
+
+        // Rolling Main Wheels
         GlStateManager.pushMatrix();
-        GlStateManager.translate(-0.6f, -0.45f, 0.3f);
+        GlStateManager.translate(-0.6f, -0.45f + monoplaneOleo, 0.3f);
         GlStateManager.rotate(wheelRot, 1, 0, 0);
         drawBox(-0.09f, -0.16f, -0.16f, 0.09f, 0.16f, 0.16f, 0.12f, 0.12f, 0.12f);
         GlStateManager.popMatrix();
         GlStateManager.pushMatrix();
-        GlStateManager.translate(0.6f, -0.45f, 0.3f);
+        GlStateManager.translate(0.6f, -0.45f + monoplaneOleo, 0.3f);
         GlStateManager.rotate(wheelRot, 1, 0, 0);
         drawBox(-0.09f, -0.16f, -0.16f, 0.09f, 0.16f, 0.16f, 0.12f, 0.12f, 0.12f);
+        GlStateManager.popMatrix();
+
+        // Steerable Tail Wheel Assembly
+        GlStateManager.pushMatrix();
+        GlStateManager.translate(0.0f, 0.12f, -1.55f);
+        GlStateManager.rotate(casterSteer, 0, 1, 0);
+        GlStateManager.rotate(wheelRot * 1.5f, 1, 0, 0);
+        drawBox(-0.04f, -0.16f, -0.06f, 0.04f, -0.02f, 0.06f, 0.15f, 0.15f, 0.15f);
         GlStateManager.popMatrix();
 
         // Animated High-Speed Propeller
@@ -341,6 +364,57 @@ public class PlaneRenderer<T extends BasePlaneEntity> extends Render<T> {
             drawBox(-2.45f, 0.02f, -2.4f, -2.35f, 0.08f, -1.3f, 0.95f, 0.98f, 1.0f);
             drawBox(2.35f, 0.02f, -2.4f, 2.45f, 0.08f, -1.3f, 0.95f, 0.98f, 1.0f);
             GlStateManager.disableBlend();
+        }
+
+        // Procedural Retractable Tricycle Landing Gear (Bay Doors, Oleo Struts, Nose Caster)
+        float gearDeploy = plane.onGround ? 1.0f : (speed < 1.8f ? 1.0f : Math.max(0.0f, 1.0f - (speed - 1.8f) * 1.5f));
+        if (gearDeploy > 0.01f) {
+            com.airarsenal.client.util.VehicleKinematicsHelper.LandingGearKinematics gear =
+                com.airarsenal.client.util.VehicleKinematicsHelper.calculateProceduralLandingGear(
+                    gearDeploy, plane.onGround, speed, animTick
+                );
+            float noseCaster = com.airarsenal.client.util.VehicleKinematicsHelper.calculateNoseWheelSteer(
+                -yawDelta * 2.5f, speed, plane.onGround
+            );
+
+            // Forward Nose Gear Assembly
+            GlStateManager.pushMatrix();
+            GlStateManager.translate(0.0f, -0.15f, 1.1f);
+            GlStateManager.rotate(gear.strutRetractAngle, 1, 0, 0); // folds back into fuselage bay
+            // Nose Strut
+            drawBox(-0.05f, -0.42f + gear.strutCompression, -0.05f, 0.05f, 0.0f, 0.05f, 0.35f, 0.36f, 0.38f);
+            // Steerable nose wheel
+            GlStateManager.pushMatrix();
+            GlStateManager.translate(0.0f, -0.42f + gear.strutCompression, 0.0f);
+            GlStateManager.rotate(noseCaster, 0, 1, 0);
+            GlStateManager.rotate(gear.wheelRollRad * 57.29578f, 1, 0, 0);
+            drawBox(-0.06f, -0.12f, -0.12f, 0.06f, 0.12f, 0.12f, 0.12f, 0.12f, 0.12f);
+            GlStateManager.popMatrix();
+            GlStateManager.popMatrix();
+
+            // Main Left Gear Leg (inward folding into wing root)
+            GlStateManager.pushMatrix();
+            GlStateManager.translate(-0.65f, -0.15f, -0.2f);
+            GlStateManager.rotate(-gear.strutRetractAngle, 0, 0, 1);
+            drawBox(-0.06f, -0.52f + gear.strutCompression, -0.06f, 0.06f, 0.0f, 0.06f, 0.35f, 0.36f, 0.38f);
+            GlStateManager.pushMatrix();
+            GlStateManager.translate(0.0f, -0.52f + gear.strutCompression, 0.0f);
+            GlStateManager.rotate(gear.wheelRollRad * 57.29578f, 1, 0, 0);
+            drawBox(-0.08f, -0.15f, -0.15f, 0.08f, 0.15f, 0.15f, 0.12f, 0.12f, 0.12f);
+            GlStateManager.popMatrix();
+            GlStateManager.popMatrix();
+
+            // Main Right Gear Leg (inward folding into wing root)
+            GlStateManager.pushMatrix();
+            GlStateManager.translate(0.65f, -0.15f, -0.2f);
+            GlStateManager.rotate(gear.strutRetractAngle, 0, 0, 1);
+            drawBox(-0.06f, -0.52f + gear.strutCompression, -0.06f, 0.06f, 0.0f, 0.06f, 0.35f, 0.36f, 0.38f);
+            GlStateManager.pushMatrix();
+            GlStateManager.translate(0.0f, -0.52f + gear.strutCompression, 0.0f);
+            GlStateManager.rotate(gear.wheelRollRad * 57.29578f, 1, 0, 0);
+            drawBox(-0.08f, -0.15f, -0.15f, 0.08f, 0.15f, 0.15f, 0.12f, 0.12f, 0.12f);
+            GlStateManager.popMatrix();
+            GlStateManager.popMatrix();
         }
     }
 

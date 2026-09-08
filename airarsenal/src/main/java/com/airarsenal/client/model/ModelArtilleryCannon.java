@@ -71,10 +71,13 @@ public class ModelArtilleryCannon extends ModelBase {
         this.rightBarrel.rotateAngleY = yawRad;
         this.rightBarrel.rotateAngleX = -pitchRad;
 
-        // Alternating twin barrel recoil kickback
-        int cycle = (int) (ageInTicks % 20);
-        float lRecoil = (cycle < 4) ? -3.0F * (1.0F - cycle / 4.0F) : 0.0F;
-        float rRecoil = (cycle >= 10 && cycle < 14) ? -3.0F * (1.0F - (cycle - 10) / 4.0F) : 0.0F;
+        // Synchronized alternating twin autocannon barrel recoil strokes
+        float lRecoil = com.airarsenal.client.util.VehicleKinematicsHelper.calculateAlternatingRecoil(
+            ageInTicks, 20, 0, 2, 3.2F
+        );
+        float rRecoil = com.airarsenal.client.util.VehicleKinematicsHelper.calculateAlternatingRecoil(
+            ageInTicks, 20, 1, 2, 3.2F
+        );
         this.leftBarrel.setRotationPoint(0.0F, 20.0F, lRecoil);
         this.rightBarrel.setRotationPoint(0.0F, 20.0F, rRecoil);
 
